@@ -188,6 +188,19 @@ int main(int argc, char **argv) {
     if (meta[1] == 77) assert(traced == 0); /* ptrace forbidden by host */
     else assert(traced == 4 && meta[2] == SIGKILL && meta[5] == 0);
     assert(run("exit", "127", 0, 2000, 0) == 0 && meta[1] == 127);
+    for (int capture = 0; capture <= 1; ++capture) {
+        const char *states[] = {"close-sleep", "session-sleep"};
+        for (size_t i = 0; i < sizeof states / sizeof states[0]; ++i) {
+            char path[] = "/tmp/goose-process-state-XXXXXX";
+            int marker = mkostemp(path, O_CLOEXEC); assert(marker >= 0);
+            assert(run(states[i], path, 1, 1000, capture) == 4);
+            assert(meta[1] == -1 && meta[2] == SIGKILL && meta[5] == 0);
+            assert(meta[3] == 0 && meta[4] == 0);
+            char reached;
+            assert(read(marker, &reached, 1) == 1 && reached == (i == 0 ? 'C' : 'S'));
+            assert(close(marker) == 0 && unlink(path) == 0);
+        }
+    }
     double start = now(); assert(run("sleep", "1000", 0, 20, 1) == 4);
     assert(now() - start < 2.0);
     start = now(); assert(run("descendant", NULL, 1, 250, 1) == 4);

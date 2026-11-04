@@ -8,7 +8,7 @@ FUZZ_RUNS ?= 10000
 CFLAGS = -std=c11 -Wall -Wextra -Werror
 DEADLINE_WRAPS = -Wl,--wrap=clock_gettime -Wl,--wrap=poll -Wl,--wrap=__poll_chk -Wl,--wrap=posix_spawn
 
-.PHONY: setup format check test helpers native sanitize bench fuzz profile
+.PHONY: setup format check test helpers native sanitize bench fuzz profile memcheck
 setup:
 	./scripts/setup-goose.sh
 format:
@@ -47,6 +47,8 @@ native: helpers
 	python3 scripts/run.py .build/deadlines
 	$(CC) $(CFLAGS) -O2 -shared -fPIC native/process.c -o .build/process.so
 	python3 tests/model.py
+	$(CC) $(CFLAGS) -O2 -shared -fPIC tests/validation.c native/process.c -Wl,--wrap=posix_spawn -Wl,--wrap=clock_gettime -o .build/validation.so
+	python3 tests/validation.py
 sanitize: helpers
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie -pthread tests/native.c native/process.c -o .build/native-sanitize
 	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/native-sanitize $(abspath .build/helper)
@@ -69,3 +71,6 @@ fuzz:
 profile: helpers
 	$(CC) $(CFLAGS) -O2 bench/profile.c native/process.c -o .build/profile
 	strace -c -e trace=wait4,read,poll -o .build/syscalls.txt .build/profile $(abspath .build/helper)
+memcheck: helpers
+	$(CC) $(CFLAGS) -O1 -g bench/profile.c native/process.c -o .build/memcheck
+	python3 scripts/run.py valgrind --tool=memcheck --error-exitcode=99 --track-origins=yes --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=definite,indirect,possible --child-silent-after-fork=yes --log-file=.build/memcheck.log .build/memcheck $(abspath .build/helper)

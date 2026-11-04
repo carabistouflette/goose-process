@@ -72,6 +72,7 @@ make sanitize SANITIZER_CC=gcc
 make sanitize SANITIZER_CC=clang
 make bench BENCH_ITERATIONS=100
 make fuzz FUZZ_RUNS=10000
+make memcheck # optional; requires Valgrind
 ```
 
 Setup requires Git, CMake 3.27+, C/C++20 compilers and Make. Tests require Python
@@ -89,6 +90,10 @@ covers both ordinary and fortified libc entry points.
 Protected pages check exact input/output boundaries, resource-limit tests check
 descriptor exhaustion, and signal storms exercise interrupted cancellation.
 Traced-child stop notifications have real and deterministic injected regressions.
+Independent classification tests cover exact native input limits while refusing
+execution; cancellation tests also cover early output closure and new sessions.
+The classification model freezes time to isolate validation from scheduling;
+real deadlines and child cleanup remain covered by the integration tests.
 The optional Clang/libFuzzer target mutates native validation/setup inputs under
 ASan/UBSan and refuses all execution through an intercepted spawn call.
 The [benchmark](bench/README.md) records local end-to-end measurements and raw

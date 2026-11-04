@@ -22,6 +22,12 @@ static void pause_ms(long ms) {
     struct timespec t = {ms / 1000, (ms % 1000) * 1000000};
     while (nanosleep(&t, &t) && errno == EINTR) {}
 }
+static void mark_state(const char *path, char state) {
+    int fd = open(path, O_WRONLY);
+    if (fd < 0) _exit(100);
+    emit(fd, &state, 1);
+    if (close(fd) < 0) _exit(100);
+}
 int main(int argc, char **argv) {
     if (argc < 2) return 91;
     if (!strcmp(argv[1], "args")) {
@@ -46,6 +52,14 @@ int main(int argc, char **argv) {
         return 98;
     } else if (!strcmp(argv[1], "sleep")) {
         pause_ms(argc > 2 ? atol(argv[2]) : 1000);
+    } else if (!strcmp(argv[1], "close-sleep")) {
+        close(STDOUT_FILENO); close(STDERR_FILENO);
+        if (argc > 2) mark_state(argv[2], 'C');
+        pause_ms(5000);
+    } else if (!strcmp(argv[1], "session-sleep")) {
+        if (setsid() < 0) return 99;
+        if (argc > 2) mark_state(argv[2], 'S');
+        pause_ms(5000);
     } else if (!strcmp(argv[1], "descendant")) {
         pid_t pid = fork(); if (pid < 0) return 95;
         if (pid == 0) { pause_ms(2000); _exit(0); }
