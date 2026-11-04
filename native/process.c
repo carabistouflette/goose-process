@@ -6,6 +6,7 @@
 #endif
 #include <errno.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <poll.h>
 #include <signal.h>
 #include <spawn.h>
@@ -23,8 +24,10 @@ enum { GP_ARG_BYTES = 65536, GP_ARGS = 256, GP_ARG = 16384,
        GP_PATH = 4095, GP_OUTPUT = 1048576 };
 
 static void close_fd(int *fd) {
+    int saved = errno;
     if (*fd >= 0) close(*fd); /* Linux releases the fd even on EINTR. */
     *fd = -1;
+    errno = saved;
 }
 
 /* Move private descriptors out of the child stdio range before spawn actions. */
@@ -52,10 +55,13 @@ static int make_pipe(int fds[2]) {
     return 0;
 }
 
-static int64_t milliseconds(void) {
+static int64_t nanoseconds(void) {
     struct timespec now;
     if (clock_gettime(CLOCK_MONOTONIC, &now) < 0) return -1;
-    return (int64_t)now.tv_sec * 1000 + now.tv_nsec / 1000000;
+    if (now.tv_sec < 0 || now.tv_sec > (INT64_MAX - now.tv_nsec) / 1000000000) {
+        errno = EOVERFLOW; return -1;
+    }
+    return (int64_t)now.tv_sec * 1000000000 + now.tv_nsec;
 }
 
 static bool overlaps(gp_output a, gp_output b) {
@@ -130,9 +136,11 @@ int64_t gp_run(gp_input packed, gp_input cwd, int64_t timeout_ms,
     bool reaped = false, actions_ready = false, attributes_ready = false;
     posix_spawn_file_actions_t actions;
     posix_spawnattr_t attributes;
-    int64_t began = milliseconds();
+    int64_t began = nanoseconds();
     if (began < 0) goto system_error;
-    int64_t deadline = began + timeout_ms;
+    int64_t budget = timeout_ms * 1000000;
+    if (began > INT64_MAX - budget) { errno = EOVERFLOW; goto system_error; }
+    int64_t deadline = began + budget;
     struct sigaction disposition;
     if (sigaction(SIGCHLD, NULL, &disposition) < 0) goto system_error;
     if (disposition.sa_handler == SIG_IGN || (disposition.sa_flags & SA_NOCLDWAIT)) {
@@ -160,6 +168,9 @@ int64_t gp_run(gp_input packed, gp_input cwd, int64_t timeout_ms,
     if (cwd.len) ACTION(posix_spawn_file_actions_addchdir_np(&actions, dir));
     ACTION(posix_spawn_file_actions_addclosefrom_np(&actions, 3));
 #undef ACTION
+    int64_t before_spawn = nanoseconds();
+    if (before_spawn < 0) goto system_error;
+    if (before_spawn >= deadline) { result = GP_TIMEOUT; goto cleanup; }
     saved = posix_spawn(&pid, argv[0], &actions, &attributes, argv, environ);
     if (saved) { pid = -1; result = GP_LAUNCH; goto cleanup; }
     close_fd(&nullfd);
@@ -184,13 +195,15 @@ int64_t gp_run(gp_input packed, gp_input cwd, int64_t timeout_ms,
             }
         }
         if (reaped && pipes[0][0] < 0 && pipes[1][0] < 0) { result = GP_OK; break; }
-        int64_t now = milliseconds();
+        int64_t now = nanoseconds();
         if (now < 0) goto system_error;
         if (now >= deadline) { result = GP_TIMEOUT; break; }
         struct pollfd fds[3] = {
             {pipes[0][0], POLLIN, 0}, {pipes[1][0], POLLIN, 0}, {pidfd, POLLIN, 0}
         };
-        int ready = poll(fds, 3, (int)(deadline - now));
+        int64_t remaining = deadline - now;
+        int64_t wait_ms = remaining / 1000000 + (remaining % 1000000 != 0);
+        int ready = poll(fds, 3, wait_ms > INT_MAX ? INT_MAX : (int)wait_ms);
         if (ready < 0) { if (errno == EINTR) continue; goto system_error; }
         for (int i = 0; i < 3; ++i) {
             if (fds[i].revents & POLLNVAL) { errno = EBADF; goto system_error; }

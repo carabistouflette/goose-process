@@ -1,0 +1,17 @@
+-Wl,--wrap=malloc
+-Wl,--wrap=open
+-Wl,--wrap=pipe2
+-Wl,--wrap=fcntl
+-Wl,--wrap=close
+-Wl,--wrap=clock_gettime
+-Wl,--wrap=poll
+-Wl,--wrap=read
+-Wl,--wrap=posix_spawn_file_actions_init
+-Wl,--wrap=posix_spawnattr_init
+-Wl,--wrap=posix_spawnattr_setsigmask
+-Wl,--wrap=posix_spawnattr_setsigdefault
+-Wl,--wrap=posix_spawnattr_setflags
+-Wl,--wrap=posix_spawn_file_actions_adddup2
+-Wl,--wrap=posix_spawn_file_actions_addchdir_np
+-Wl,--wrap=posix_spawn_file_actions_addclosefrom_np
+-Wl,--wrap=posix_spawn

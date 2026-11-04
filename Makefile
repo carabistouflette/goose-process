@@ -6,6 +6,7 @@ BENCH_CC ?= gcc
 FUZZ_CC ?= clang
 FUZZ_RUNS ?= 10000
 CFLAGS = -std=c11 -Wall -Wextra -Werror
+DEADLINE_WRAPS = -Wl,--wrap=clock_gettime -Wl,--wrap=poll -Wl,--wrap=posix_spawn
 
 .PHONY: setup format check test helpers native sanitize bench fuzz profile
 setup:
@@ -40,6 +41,10 @@ native: helpers
 	python3 scripts/run.py .build/native $(abspath .build/helper)
 	$(CC) $(CFLAGS) -O2 tests/failures.c native/process.c -Wl,--wrap=syscall -Wl,--wrap=kill -Wl,--wrap=waitpid -o .build/failures
 	python3 scripts/run.py .build/failures
+	$(CC) $(CFLAGS) -O2 tests/syscalls.c native/process.c @tests/syscalls.wraps -o .build/syscalls-test
+	python3 scripts/run.py .build/syscalls-test $(abspath .build/helper)
+	$(CC) $(CFLAGS) -O2 tests/deadlines.c native/process.c $(DEADLINE_WRAPS) -o .build/deadlines
+	python3 scripts/run.py .build/deadlines
 	$(CC) $(CFLAGS) -O2 -shared -fPIC native/process.c -o .build/process.so
 	python3 tests/model.py
 sanitize: helpers
@@ -47,6 +52,10 @@ sanitize: helpers
 	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/native-sanitize $(abspath .build/helper)
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/failures.c native/process.c -Wl,--wrap=syscall -Wl,--wrap=kill -Wl,--wrap=waitpid -o .build/failures-sanitize
 	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/failures-sanitize
+	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/syscalls.c native/process.c @tests/syscalls.wraps -o .build/syscalls-sanitize
+	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/syscalls-sanitize $(abspath .build/helper)
+	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/deadlines.c native/process.c $(DEADLINE_WRAPS) -o .build/deadlines-sanitize
+	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/deadlines-sanitize
 bench: helpers
 	python3 scripts/native-manifest.py --check
 	mkdir -p .build
