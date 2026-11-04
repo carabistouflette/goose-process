@@ -24,6 +24,11 @@ fn main() {
     }
     status = process::run([helper[..], "signal"], options, out, err);
     assert(status.error == process::Error.None && status.exit_code == -1 && status.signal == 15);
+    options.timeout_ms = 250;
+    status = process::run([helper[..], "trace"], options, out, err);
+    if status.exit_code == 77 { assert(process::success(status)); }
+    else { assert(status.error == process::Error.TimedOut && status.signal == 9 && status.unreaped_pid == 0); }
+    options.timeout_ms = 30000;
     status = process::run([helper[..], "stdin"], options, out, err);
     assert(process::success(status));
     status = process::run(["/no/such/goose-process-executable"], options, out, err);

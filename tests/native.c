@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <sys/resource.h>
+#include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -94,6 +96,44 @@ static void closed_stdio(void) {
         assert(WIFEXITED(status) && WEXITSTATUS(status) == 0);
     }
 }
+static void exhausted_descriptors(void) {
+    struct rlimit original;
+    assert(getrlimit(RLIMIT_NOFILE, &original) == 0);
+    int count = descriptors();
+    for (rlim_t limit = 3; limit <= 15 && limit <= original.rlim_cur; ++limit) {
+        struct rlimit bounded = original; bounded.rlim_cur = limit;
+        assert(setrlimit(RLIMIT_NOFILE, &bounded) == 0);
+        int result = run("exit", NULL, 1, 2000, 1);
+        assert(setrlimit(RLIMIT_NOFILE, &original) == 0);
+        assert((result == 0 && meta[1] == 0) || (result == 3 && meta[0] == EMFILE));
+        assert(meta[5] == 0 && descriptors() == count);
+    }
+}
+static volatile sig_atomic_t interruptions;
+static void alarm_handler(int signal) { (void)signal; ++interruptions; }
+static void interrupted_wait(void) {
+    struct sigaction action = {0}, old;
+    action.sa_handler = alarm_handler; sigemptyset(&action.sa_mask);
+    assert(sigaction(SIGALRM, &action, &old) == 0);
+    struct itimerval timer = {{0, 100}, {0, 100}}, previous;
+    assert(setitimer(ITIMER_REAL, &timer, &previous) == 0);
+    double start = now();
+    int result = run("sleep", "2000", 1, 20, 1);
+    double elapsed = now() - start;
+    sigset_t alarms, old_mask;
+    sigemptyset(&alarms); sigaddset(&alarms, SIGALRM);
+    assert(pthread_sigmask(SIG_BLOCK, &alarms, &old_mask) == 0);
+    timer = (struct itimerval){{0, 0}, {0, 0}};
+    assert(setitimer(ITIMER_REAL, &timer, NULL) == 0);
+    struct timespec zero = {0, 0};
+    while (sigtimedwait(&alarms, NULL, &zero) >= 0) {}
+    assert(errno == EAGAIN);
+    assert(sigaction(SIGALRM, &old, NULL) == 0);
+    assert(setitimer(ITIMER_REAL, &previous, NULL) == 0);
+    assert(pthread_sigmask(SIG_SETMASK, &old_mask, NULL) == 0);
+    assert(result == 4 && meta[2] == SIGKILL && meta[5] == 0);
+    assert(interruptions > 0 && elapsed < 1.5);
+}
 int main(int argc, char **argv) {
     assert(argc == 2); helper = argv[1]; assert(helper[0] == '/');
     malformed();
@@ -109,6 +149,9 @@ int main(int argc, char **argv) {
     for (int i = 0; i < 256; ++i) assert(err[i] == 'e');
     assert(run("stdin", NULL, 0, 2000, 1) == 0 && meta[1] == 0);
     assert(run("signal", NULL, 0, 2000, 1) == 0 && meta[1] == -1 && meta[2] == SIGTERM);
+    int traced = run("trace", NULL, 1, 250, 1);
+    if (meta[1] == 77) assert(traced == 0); /* ptrace forbidden by host */
+    else assert(traced == 4 && meta[2] == SIGKILL && meta[5] == 0);
     assert(run("exit", "127", 0, 2000, 0) == 0 && meta[1] == 127);
     double start = now(); assert(run("sleep", "1000", 0, 20, 1) == 4);
     assert(now() - start < 2.0);
@@ -120,6 +163,8 @@ int main(int argc, char **argv) {
     assert(dup2(fd, 199) == 199); close(fd);
     assert(run("fd", NULL, 0, 2000, 1) == 0 && meta[1] == 0); close(199);
     closed_stdio();
+    exhausted_descriptors();
+    interrupted_wait();
     struct sigaction old, ignored = {0}; ignored.sa_handler = SIG_IGN;
     assert(sigaction(SIGCHLD, &ignored, &old) == 0);
     assert(run("exit", NULL, 0, 2000, 1) == 3 && meta[0] == EINVAL);

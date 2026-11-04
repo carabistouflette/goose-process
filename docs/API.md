@@ -64,6 +64,9 @@ checks. A pidfd makes child completion pollable without periodic sleeps. On
 timeout, overflow or post-launch system error, the runner requests `SIGKILL`
 and reaps its direct child. If pidfd signaling is unavailable/denied, it falls
 back to signaling that unreaped PID. Already-reaped PIDs are never signaled.
+Stopped or traced-child notifications are not termination: the deadline still
+applies, and cleanup waits for a terminal exit/signal status before releasing
+child ownership.
 
 If **both cancellation mechanisms fail**, cleanup performs a nonblocking wait
 and returns `SystemError` with the cancellation errno. A nonzero `unreaped_pid`

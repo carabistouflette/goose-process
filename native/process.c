@@ -64,6 +64,13 @@ static bool overlaps(gp_output a, gp_output b) {
     return x <= y ? y - x < (uint64_t)a.len : x - y < (uint64_t)b.len;
 }
 
+/* waitpid also reports ptrace stops without WUNTRACED. Only these states reap. */
+static bool terminal_status(int status, gp_metadata meta) {
+    if (WIFEXITED(status)) { meta.data[1] = WEXITSTATUS(status); return true; }
+    if (WIFSIGNALED(status)) { meta.data[2] = WTERMSIG(status); return true; }
+    return false;
+}
+
 /* One bounded read per stream per iteration: neither stream starves deadlines. */
 static int drain(int *fd, gp_output target, int64_t *length) {
     uint8_t block[16384];
@@ -164,11 +171,9 @@ int64_t gp_run(gp_input packed, gp_input cwd, int64_t timeout_ms,
         int status;
         if (!reaped) {
             pid_t waited = waitpid(pid, &status, WNOHANG);
-            if (waited == pid) {
+            if (waited == pid && terminal_status(status, meta)) {
                 reaped = true;
                 close_fd(&pidfd);
-                if (WIFEXITED(status)) meta.data[1] = WEXITSTATUS(status);
-                else if (WIFSIGNALED(status)) meta.data[2] = WTERMSIG(status);
             } else if (waited < 0 && errno != EINTR) {
                 /* ECHILD means the PID is no longer ours to signal. */
                 if (errno == ECHILD) reaped = true;
@@ -223,10 +228,10 @@ cleanup:
         int status;
         pid_t waited;
         do { waited = waitpid(pid, &status, denied ? WNOHANG : 0); }
-        while (waited < 0 && errno == EINTR);
+        while ((waited < 0 && errno == EINTR) ||
+               (waited == pid && !terminal_status(status, meta) && !denied));
         if (waited == pid) {
-            if (WIFEXITED(status)) meta.data[1] = WEXITSTATUS(status);
-            else if (WIFSIGNALED(status)) meta.data[2] = WTERMSIG(status);
+            if (!terminal_status(status, meta)) meta.data[5] = pid;
         } else if (waited == 0) {
             /* Cancellation was denied: explicitly transfer this child to caller. */
             meta.data[5] = pid;

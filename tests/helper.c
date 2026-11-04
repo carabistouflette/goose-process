@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <sys/ptrace.h>
 #include <unistd.h>
 static void emit(int fd, const void *data, size_t length) {
     const char *p = data;
@@ -38,6 +39,11 @@ int main(int argc, char **argv) {
         char c; return read(0, &c, 1) == 0 ? 0 : 93;
     } else if (!strcmp(argv[1], "fd")) {
         return fcntl(199, F_GETFD) == -1 && errno == EBADF ? 0 : 94;
+    } else if (!strcmp(argv[1], "trace")) {
+        /* Some CI sandboxes deny ptrace; deterministic injected tests still run. */
+        if (ptrace(PTRACE_TRACEME, 0, NULL, NULL) < 0) return 77;
+        raise(SIGSTOP);
+        return 98;
     } else if (!strcmp(argv[1], "sleep")) {
         pause_ms(argc > 2 ? atol(argv[2]) : 1000);
     } else if (!strcmp(argv[1], "descendant")) {
