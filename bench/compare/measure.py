@@ -34,6 +34,8 @@ def main():
     parser.add_argument('--rounds', type=int, default=9)
     parser.add_argument('--iterations', type=int, default=40)
     parser.add_argument('--build-only', action='store_true')
+    parser.add_argument('--shared-kernel', action='store_true',
+                        help='diagnostic Rust front end using the identical C engine and safety policies')
     parser.add_argument('--output', type=Path, default=ROOT / '.build/comparison.json')
     args = parser.parse_args()
     if not 1 <= args.rounds <= 100 or not 1 <= args.iterations <= 10000:
@@ -45,6 +47,7 @@ def main():
     build = ROOT / '.build'
     build.mkdir(exist_ok=True)
     fixture = build / 'compare-fixture'
+    run([sys.executable, ROOT / 'scripts/native-manifest.py', '--check'])
     sources = [ROOT / 'process.goose', ROOT / 'process.build', ROOT / 'GOOSE_REVISION',
                *sorted((ROOT / 'native').glob('*.[ch]')), *sorted(HERE.glob('*'))]
     sources = [path for path in sources if path.is_file()]
@@ -60,19 +63,33 @@ def main():
 
     run([args.cc, '-std=c11', '-Wall', '-Wextra', '-Werror', '-O2', HERE / 'fixture.c', '-o', fixture])
     run([goose, 'build', HERE / 'driver.goose', '--cc', args.cc, '-O2', '-o', build / 'compare-goose'])
-    run(['rustc', '-C', 'opt-level=2', HERE / 'driver.rs', '-o', build / 'compare-rust'])
-    run(['go', 'build', '-trimpath', '-o', build / 'compare-go', HERE / 'driver.go'])
-    variants = {'Goose': [build / 'compare-goose'], 'Rust': [build / 'compare-rust'],
-                'Go': [build / 'compare-go'], 'Python': [sys.executable, HERE / 'driver.py']}
+    binaries = [fixture, build / 'compare-goose']
+    if args.shared_kernel:
+        objects = []
+        for source in ['process', 'launch']:
+            target = build / f'compare-{source}.o'
+            run([args.cc, '-std=c11', '-Wall', '-Wextra', '-Werror', '-O2', '-fPIC', '-c',
+                 ROOT / 'native' / f'{source}.c', '-o', target])
+            objects.append(target)
+        run(['ar', 'rcs', build / 'libgpcompare.a', *objects])
+        run(['rustc', '-C', 'opt-level=2', HERE / 'shared.rs', '-L', f'native={build}',
+             '-l', 'static=gpcompare', '-o', build / 'compare-shared'])
+        variants = {'Goose': [build / 'compare-goose'], 'Rust/shared-kernel': [build / 'compare-shared']}
+        binaries.append(build / 'compare-shared')
+    else:
+        run(['rustc', '-C', 'opt-level=2', HERE / 'driver.rs', '-o', build / 'compare-rust'])
+        run(['go', 'build', '-trimpath', '-o', build / 'compare-go', HERE / 'driver.go'])
+        variants = {'Goose': [build / 'compare-goose'], 'Rust': [build / 'compare-rust'],
+                    'Go': [build / 'compare-go'], 'Python': [sys.executable, HERE / 'driver.py']}
+        binaries.extend([build / 'compare-rust', build / 'compare-go'])
     check_sources()
-    binaries = [fixture, build / 'compare-goose', build / 'compare-rust', build / 'compare-go']
     binary_hashes = {str(path.relative_to(ROOT)): digest(path) for path in binaries}
     if args.build_only:
         for mode in MODES:
             for command in variants.values():
                 if int(run([*command, fixture, mode, 1])) <= 0:
                     raise ValueError('invalid driver output')
-        print('All 24 driver/fixture checks passed')
+        print(f'All {len(MODES) * len(variants)} driver/fixture checks passed')
         return
     samples = {mode: {variant: [] for variant in variants} for mode in MODES}
     randomizer = random.Random(3025)
@@ -94,18 +111,24 @@ def main():
     check_sources()
     if binary_hashes != {str(path.relative_to(ROOT)): digest(path) for path in binaries}:
         raise RuntimeError('binaries changed during measurement')
+    version_commands = {'Goose': [goose, 'version'], 'C': [args.cc, '--version'],
+                        'Rust': ['rustc', '--version', '--verbose'],
+                        'Python': [sys.executable, '--version']}
+    if not args.shared_kernel:
+        version_commands['Go'] = ['go', 'version']
     report = dict(timestamp=datetime.now(timezone.utc).isoformat(), cpu=cpu,
         affinity_cpu=args.cpu, platform=platform.platform(), libc=platform.libc_ver(),
         source_revision=revision, source_dirty=dirty,
-        versions={name: run(command) for name, command in {
-            'Goose': [goose, 'version'], 'C': [args.cc, '--version'],
-            'Rust': ['rustc', '--version', '--verbose'], 'Go': ['go', 'version'],
-            'Python': [sys.executable, '--version']}.items()},
-        build_flags={'C/Goose': ['-O2'], 'Rust': ['-C', 'opt-level=2'], 'Go': ['-trimpath']},
+        versions={name: run(command) for name, command in version_commands.items()},
+        build_flags={'C/Goose': ['-O2'], 'Rust': ['-C', 'opt-level=2'],
+            'native_C': ['-std=c11', '-Wall', '-Wextra', '-Werror', '-O2', '-fPIC'],
+            **({} if args.shared_kernel else {'Go': ['-trimpath']})},
         iterations=args.iterations, warmups_per_sample=3, rounds=args.rounds, shuffle_seed=3025,
         unit='nanoseconds per successful call, including output verification',
         aggregation='Each sample is a batch mean; medians are medians of batch means, not individual-call latency medians.',
-        contract='Matched successful argv/environment/stdin/output bytes. Baselines do not implement the complete Goose safety contract: hard caps, finite deadline and reset-all child signals. Python closes foreign FDs by default and restores selected signals; Rust/Go foreign-FD policies differ. Input transport: Goose socket, baseline pipes.',
+        track='shared-native-kernel diagnostic' if args.shared_kernel else 'native standard-library APIs',
+        contract=('Both front ends call the identical native C engine with identical caps/deadlines/signal reset/FD isolation/socket input. Rust wrapper is diagnostic, not an independent Rust process implementation.' if args.shared_kernel else
+            'Matched successful argv/environment/stdin/output bytes. Baselines do not implement the complete Goose safety contract: hard caps, finite deadline and reset-all child signals. Python closes foreign FDs by default and restores selected signals; Rust/Go foreign-FD policies differ. Input transport: Goose socket, baseline pipes.'),
         host_context=dict(load_average=os.getloadavg(), environment_entries=len(os.environ),
             environment_bytes=sum(len(os.fsencode(k)) + len(os.fsencode(v)) + 2 for k, v in os.environ.items()),
             scheduler_open_fds=len(list(Path('/proc/self/fd').iterdir())),

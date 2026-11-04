@@ -69,3 +69,29 @@ See [the feature and semantic comparison](../../docs/COMPARISON.md) and
 [the execution contract](../../docs/API.md). A matched safety-contract comparison
 would need independently validated bounded-output/deadline/FD adapters for all
 baselines, with their work included in timing. This harness makes no such claim.
+
+## Shared-kernel diagnostic track
+
+```sh
+python3 bench/compare/measure.py --shared-kernel --build-only
+python3 bench/compare/measure.py --shared-kernel --cpu 0 --rounds 9 --iterations 40
+```
+
+This track compares the Goose public wrapper with a small Rust FFI front end
+that links **the same native C engine**. Caps, deadline, child signal reset,
+FD isolation, finite socket input, draining and cleanup code are identical.
+Both stage argument/input bytes and zero-initialize reusable captures before
+calling gp_execute; both verify exact status/output inside timing. The Rust
+wrapper only supports these fixed fixtures; it is not a production API.
+
+The purpose is to separate wrapper/allocation/checking cost from subprocess
+policy differences in the standard-library track. It is **not** an independent
+Rust implementation of the safety contract, an additional Rust standard-library
+result, or independent evidence that the shared engine is correct. Shared native
+bugs are shared by both drivers. No broad feature-parity or language ranking can
+be inferred from this diagnostic. The native ABI is private and may change.
+
+The scheduler applies the same warmups, shuffled rounds, hash guards and raw
+provenance as above. Native objects and the Rust executable are rebuilt locally;
+no crates are downloaded. Keep traced syscall profiles separate from untraced
+elapsed-time results because tracing changes scheduling and cost.
