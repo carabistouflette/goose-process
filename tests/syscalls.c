@@ -25,6 +25,7 @@ enum Hook {
 static enum Hook target;
 static int occurrence, seen, injected, fault_errno, diagnostics, stdio_mask;
 static bool enabled, noisy_close;
+static int spawn_attempts;
 
 static bool fail(enum Hook hook) {
     if (enabled && target == hook && ++seen == occurrence) {
@@ -59,6 +60,7 @@ int __wrap_pipe2(int fds[2], int flags) {
 }
 int __real_fcntl(int fd, int command, ...);
 int __wrap_fcntl(int fd, int command, ...) {
+    if (command == F_GETFD) return __real_fcntl(fd, command);
     if (command == F_GETFL) return fail(GET_FLAGS) ? -1 : __real_fcntl(fd, command);
     require(command == F_DUPFD_CLOEXEC || command == F_SETFL, "unexpected fcntl command");
     va_list args; va_start(args, command); int argument = va_arg(args, int); va_end(args);
@@ -100,6 +102,7 @@ ssize_t __wrap___read_chk(int fd, void *buffer, size_t length, size_t bytes) {
 #define ACTION_WRAPPER(name, hook, parameters, arguments) \
     int __real_##name parameters; \
     int __wrap_##name parameters { \
+        if (enabled && (hook) == SPAWN) ++spawn_attempts; \
         if (fail(hook)) { errno = EBUSY; return fault_errno; } \
         return __real_##name arguments; \
     }
@@ -176,6 +179,44 @@ static void check_call(const char *helper, enum Hook hook, int nth, int error,
     require(waitpid(-1, &status, WNOHANG) == -1 && errno == ECHILD, "no live child or zombie");
 }
 
+static void preparation_faults(const char *helper) {
+    int before = descriptors(), sources[3], flags[3];
+    for (int i = 0; i < 3; ++i) {
+        sources[i] = __real_open("/dev/null", O_RDWR | O_CLOEXEC);
+        assert(sources[i] >= 3);
+        flags[i] = __real_fcntl(sources[i], F_GETFD);
+        assert(flags[i] >= 0);
+    }
+    int with_sources = descriptors();
+    uint8_t change[] = "GOOSE_PROCESS_TEST=present\0";
+    int64_t config[11] = {2000, 5, 5, 3, sources[1], sources[2], sources[0], 1, 0, 0, 0};
+    for (int test = 0; test < 4; ++test) {
+        int64_t owner[24] = {0}, values[6];
+        gp_metadata state = {owner, 24}, meta = {values, 6};
+        target = test == 0 ? ALLOCATE : DUP_FD;
+        /* Arguments allocate first; explicit environment construction is second. */
+        occurrence = test == 0 ? 2 : test;
+        seen = injected = spawn_attempts = 0;
+        fault_errno = test == 0 ? ENOMEM : EMFILE; noisy_close = false;
+        enabled = true;
+        int result = (int)gp_start((gp_input){(const uint8_t *)helper, (int64_t)strlen(helper) + 1},
+            (gp_input){NULL, 0}, (gp_input){change, sizeof change - 1}, (gp_input){NULL, 0},
+            0, (gp_metadata){config, 11}, state, meta);
+        enabled = false;
+        require(injected == 1 && spawn_attempts == 0, "preparation fails before spawn");
+        require(result == 3 && values[0] == fault_errno && values[5] == 0, "preparation error preserved");
+        require(gp_id(state) == -1 && gp_can_start(state), "failed owner reusable");
+        require(gp_close(state, meta) == 3 && values[5] == 0, "failed owner closes without transfer");
+        require(descriptors() == with_sources, "partial preparation descriptors restored");
+        for (int i = 0; i < 3; ++i)
+            require(__real_fcntl(sources[i], F_GETFD) == flags[i], "borrowed source survives unchanged");
+        int status;
+        require(waitpid(-1, &status, WNOHANG) == -1 && errno == ECHILD, "preparation has no child");
+    }
+    for (int i = 0; i < 3; ++i) assert(__real_close(sources[i]) == 0);
+    assert(descriptors() == before);
+}
+
 static void matrix(const char *helper) {
     check_call(helper, NONE, 1, 0, false, false);
     const enum Hook single[] = {ALLOCATE, OPEN, ACTION_INIT, ATTR_INIT, ATTR_MASK,
@@ -207,6 +248,7 @@ int main(int argc, char **argv) {
     diagnostics = __real_fcntl(STDERR_FILENO, F_DUPFD_CLOEXEC, 3);
     assert(diagnostics >= 3);
     matrix(argv[1]);
+    preparation_faults(argv[1]);
     for (stdio_mask = 1; stdio_mask < 8; ++stdio_mask) {
         pid_t child = fork(); require(child >= 0, "fork closed-stdio case");
         if (child == 0) {

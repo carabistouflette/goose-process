@@ -143,6 +143,37 @@ static void exhausted_descriptors(void) {
         assert(meta[5] == 0 && descriptors() == count);
     }
 }
+/* Linux's minimum exec argument budget is 32 pages. This fixture needs 4 KiB
+   pages so its 200 KiB argv exceeds that floor while meeting library limits. */
+static void kernel_argument_budget(void) {
+    if (sysconf(_SC_PAGESIZE) != 4096) {
+        puts("kernel E2BIG fixture skipped: requires 4 KiB pages"); return;
+    }
+    pid_t child = fork(); assert(child >= 0);
+    if (child == 0) {
+        struct rlimit limit;
+        assert(getrlimit(RLIMIT_STACK, &limit) == 0);
+        if (limit.rlim_cur > 262144) limit.rlim_cur = 262144;
+        assert(setrlimit(RLIMIT_STACK, &limit) == 0);
+        const char command[] = "/bin/true";
+        size_t size = sizeof command + 2 * 100001;
+        uint8_t *packed = malloc(size); assert(packed);
+        memcpy(packed, command, sizeof command);
+        memset(packed + sizeof command, 'a', size - sizeof command);
+        packed[sizeof command + 100000] = packed[size - 1] = 0;
+        int before = descriptors();
+        int result = (int)gp_run((gp_input){packed, (int64_t)size}, (gp_input){NULL, 0},
+            2000, 1, (gp_output){NULL, 0}, (gp_output){NULL, 0}, (gp_metadata){meta, 6});
+        free(packed);
+        assert(result == 2 && meta[0] == E2BIG && meta[1] == -1 && meta[2] == 0);
+        assert(meta[3] == 0 && meta[4] == 0 && meta[5] == 0 && descriptors() == before);
+        int status;
+        assert(waitpid(-1, &status, WNOHANG) == -1 && errno == ECHILD);
+        _exit(0);
+    }
+    int status;
+    assert(waitpid(child, &status, 0) == child && WIFEXITED(status) && WEXITSTATUS(status) == 0);
+}
 static volatile sig_atomic_t interruptions;
 static void alarm_handler(int signal) { (void)signal; ++interruptions; }
 static void interrupted_wait(void) {
@@ -212,6 +243,7 @@ int main(int argc, char **argv) {
     assert(run("fd", NULL, 0, 2000, 1) == 0 && meta[1] == 0); close(199);
     closed_stdio();
     exhausted_descriptors();
+    kernel_argument_budget();
     interrupted_wait();
     struct sigaction old, ignored = {0}; ignored.sa_handler = SIG_IGN;
     assert(sigaction(SIGCHLD, &ignored, &old) == 0);
