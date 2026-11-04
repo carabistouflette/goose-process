@@ -1,0 +1,1901 @@
+{
+  "timestamp": "2026-11-04T12:26:39.347183+00:00",
+  "cpu": "Intel(R) Core(TM) Ultra 7 258V",
+  "affinity_cpu": 0,
+  "platform": "Linux-7.2.11-arch1-1-x86_64-with-glibc2.44",
+  "libc": [
+    "glibc",
+    "2.44"
+  ],
+  "source_revision": "12c509e49ec0b1a83c2621db4dea0d7f2001645d",
+  "source_dirty": false,
+  "versions": {
+    "Goose": "goose eadca40 (runtime 3025e5810379)",
+    "C": "gcc (GCC) 16.2.1 20260810\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+    "Rust": "rustc 1.101.0-nightly (822182db4 2026-10-13)\nbinary: rustc\ncommit-hash: 822182db4c4a1827256881d8c7aa685f0bcf2b11\ncommit-date: 2026-10-13\nhost: x86_64-unknown-linux-gnu\nrelease: 1.101.0-nightly\nLLVM version: 23.1.3",
+    "Go": "go version go1.27.3-X:nodwarf5 linux/amd64",
+    "Python": "Python 3.14.9"
+  },
+  "build_flags": {
+    "C/Goose": [
+      "-O2"
+    ],
+    "Rust": [
+      "-C",
+      "opt-level=2"
+    ],
+    "Go": [
+      "-trimpath"
+    ]
+  },
+  "iterations": 40,
+  "warmups_per_sample": 3,
+  "rounds": 9,
+  "shuffle_seed": 3025,
+  "unit": "nanoseconds per successful call, including output verification",
+  "aggregation": "Each sample is a batch mean; medians are medians of batch means, not individual-call latency medians.",
+  "contract": "Matched successful argv/environment/stdin/output bytes. Baselines do not implement the complete Goose safety contract: hard caps, finite deadline and reset-all child signals. Python closes foreign FDs by default and restores selected signals; Rust/Go foreign-FD policies differ. Input transport: Goose socket, baseline pipes.",
+  "host_context": {
+    "load_average": [
+      5.91943359375,
+      5.171875,
+      4.3798828125
+    ],
+    "environment_entries": 77,
+    "environment_bytes": 3225,
+    "scheduler_open_fds": 4,
+    "governor": "powersave"
+  },
+  "source_sha256": {
+    "process.goose": "45560bb7843592b988df1c4232f30c2d34f7b8dce9a019cbd96fd6229da0969f",
+    "process.build": "c60e7df7847f4055332f373568545123138a559f6eb67089a37d60190edc6eae",
+    "GOOSE_REVISION": "64e14b181dfe96743211738fb0f1b1f7798ea940da2ca50ff122e6f028c24e15",
+    "native/internal.h": "b2c259a1cca4ad5dabd41fa979a4bfdaa6b143e356944d3b0dc57f824d2f901a",
+    "native/launch.c": "3ead2723d3da3c6d83e44fde7d37ad28eddbd6f299296f62c306ecf1f8be63a3",
+    "native/process.c": "f47ca147ed2d63b30db4aee62f30bf7fb596daa6a62925b1c628d748a0bd8138",
+    "native/process.h": "cea1518e8bdf6a37710473f9f96d5e588adeafbace7b7393c1b3f5a39ebe8d38",
+    "bench/compare/README.md": "c97d424f5afee76a084386a60de669c5f938823838142f3c9cb27eb5ecba15c1",
+    "bench/compare/driver.go": "8fc24fa0f6932616eac7a7dbd1c266070249c81c383404b07b0d139a2e9145e7",
+    "bench/compare/driver.goose": "e932e1ce676b0b712ad7c95d1611beb3e81b8e4bb550c40a40e996f23c8cf0af",
+    "bench/compare/driver.py": "2fa355aef7809f8b515d692468c7eaae79f7d78b18a558405c2c7749427ad23a",
+    "bench/compare/driver.rs": "3f0d312f352681bb8b621d842ab3fc2151c9b96d83ac01230d4c5138e6fbdaae",
+    "bench/compare/fixture.c": "d5831a078721468c3976ee97997d8fbaff09b32dd864a7ba4a24f5cf9f278f47",
+    "bench/compare/measure.py": "1041be71562542fa20c6433deaf3663fc39265a7bb7255f15bbdf7c62190e3b4"
+  },
+  "executable_sha256": {
+    ".build/compare-fixture": "6731f56ec0c146cb035124de4fc926e56a27ee06d70d64edcacb5649b8eaa9de",
+    ".build/compare-goose": "59cb5b38fde0c3a42ddcf8713eed15fd3999cb0cdcde2a50d80f61beaccfa6c2",
+    ".build/compare-rust": "10290933a86b12a2d7924677698bc533e3c4b7b30b28710eb45ed25c7eac57d2",
+    ".build/compare-go": "4b1faf6b8c6653cb1cca531dd9c8271d760fde94cb4e70d3416d46c5b6e961d0"
+  },
+  "samples": {
+    "empty": {
+      "Goose": [
+        661625,
+        596858,
+        654592,
+        668006,
+        617686,
+        603804,
+        602988,
+        584690,
+        583688
+      ],
+      "Rust": [
+        637876,
+        588712,
+        595699,
+        578176,
+        647772,
+        567817,
+        564780,
+        633239,
+        576311
+      ],
+      "Go": [
+        800567,
+        774840,
+        787925,
+        781940,
+        842631,
+        744689,
+        747265,
+        707599,
+        775580
+      ],
+      "Python": [
+        878729,
+        824802,
+        853042,
+        834034,
+        853684,
+        814021,
+        811051,
+        823497,
+        803445
+      ]
+    },
+    "args": {
+      "Goose": [
+        715461,
+        674110,
+        659380,
+        719412,
+        698300,
+        662371,
+        651458,
+        667185,
+        648952
+      ],
+      "Rust": [
+        756934,
+        611138,
+        602717,
+        622146,
+        690808,
+        600180,
+        630541,
+        620184,
+        626465
+      ],
+      "Go": [
+        822065,
+        843046,
+        803075,
+        834314,
+        816620,
+        780785,
+        789267,
+        786026,
+        790830
+      ],
+      "Python": [
+        959017,
+        861468,
+        945811,
+        942627,
+        885986,
+        850547,
+        872962,
+        877750,
+        893854
+      ]
+    },
+    "streams": {
+      "Goose": [
+        721683,
+        700981,
+        764479,
+        720309,
+        695785,
+        665698,
+        702832,
+        716915,
+        687896
+      ],
+      "Rust": [
+        742140,
+        725573,
+        787104,
+        792626,
+        728887,
+        727401,
+        738830,
+        730752,
+        732666
+      ],
+      "Go": [
+        1067010,
+        1100711,
+        1121347,
+        1128402,
+        1127889,
+        996924,
+        1010456,
+        1015112,
+        1043239
+      ],
+      "Python": [
+        1123065,
+        1064712,
+        1031072,
+        1053141,
+        1056056,
+        1016005,
+        1048613,
+        1054528,
+        1083498
+      ]
+    },
+    "input": {
+      "Goose": [
+        1063721,
+        1034539,
+        1026159,
+        1077065,
+        1060405,
+        997436,
+        1030590,
+        1054414,
+        1056294
+      ],
+      "Rust": [
+        1103249,
+        1006381,
+        1008553,
+        1070445,
+        1009134,
+        975784,
+        1006136,
+        1032926,
+        993042
+      ],
+      "Go": [
+        1485316,
+        1345794,
+        1365100,
+        1427692,
+        1377232,
+        1352344,
+        1356413,
+        1370864,
+        1330049
+      ],
+      "Python": [
+        1493983,
+        1581904,
+        1558582,
+        1567552,
+        1678140,
+        1513377,
+        1493462,
+        1483176,
+        1536912
+      ]
+    },
+    "environment": {
+      "Goose": [
+        646928,
+        579770,
+        575201,
+        596767,
+        602336,
+        581677,
+        572467,
+        559504,
+        582885
+      ],
+      "Rust": [
+        548674,
+        553298,
+        541902,
+        568826,
+        531233,
+        517889,
+        512534,
+        530824,
+        536911
+      ],
+      "Go": [
+        682657,
+        704263,
+        661575,
+        748512,
+        696880,
+        669961,
+        680573,
+        682791,
+        715846
+      ],
+      "Python": [
+        946565,
+        808402,
+        841604,
+        846012,
+        804263,
+        763116,
+        787441,
+        788916,
+        769366
+      ]
+    },
+    "redirect": {
+      "Goose": [
+        719607,
+        669179,
+        659599,
+        721869,
+        681283,
+        641766,
+        669050,
+        646108,
+        659088
+      ],
+      "Rust": [
+        656482,
+        630544,
+        631235,
+        643137,
+        654855,
+        617507,
+        627869,
+        627750,
+        682789
+      ],
+      "Go": [
+        946682,
+        884451,
+        931828,
+        851939,
+        878726,
+        876229,
+        873751,
+        902093,
+        867469
+      ],
+      "Python": [
+        901508,
+        915601,
+        863627,
+        907779,
+        879908,
+        828975,
+        846793,
+        830805,
+        839581
+      ]
+    }
+  },
+  "raw": [
+    {
+      "round": 0,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "646928",
+      "ns_per_call": 646928
+    },
+    {
+      "round": 0,
+      "mode": "streams",
+      "variant": "Python",
+      "stdout": "1123065",
+      "ns_per_call": 1123065
+    },
+    {
+      "round": 0,
+      "mode": "environment",
+      "variant": "Python",
+      "stdout": "946565",
+      "ns_per_call": 946565
+    },
+    {
+      "round": 0,
+      "mode": "empty",
+      "variant": "Go",
+      "stdout": "800567",
+      "ns_per_call": 800567
+    },
+    {
+      "round": 0,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "719607",
+      "ns_per_call": 719607
+    },
+    {
+      "round": 0,
+      "mode": "input",
+      "variant": "Go",
+      "stdout": "1485316",
+      "ns_per_call": 1485316
+    },
+    {
+      "round": 0,
+      "mode": "environment",
+      "variant": "Go",
+      "stdout": "682657",
+      "ns_per_call": 682657
+    },
+    {
+      "round": 0,
+      "mode": "args",
+      "variant": "Rust",
+      "stdout": "756934",
+      "ns_per_call": 756934
+    },
+    {
+      "round": 0,
+      "mode": "empty",
+      "variant": "Python",
+      "stdout": "878729",
+      "ns_per_call": 878729
+    },
+    {
+      "round": 0,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "721683",
+      "ns_per_call": 721683
+    },
+    {
+      "round": 0,
+      "mode": "redirect",
+      "variant": "Python",
+      "stdout": "901508",
+      "ns_per_call": 901508
+    },
+    {
+      "round": 0,
+      "mode": "input",
+      "variant": "Rust",
+      "stdout": "1103249",
+      "ns_per_call": 1103249
+    },
+    {
+      "round": 0,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "715461",
+      "ns_per_call": 715461
+    },
+    {
+      "round": 0,
+      "mode": "args",
+      "variant": "Python",
+      "stdout": "959017",
+      "ns_per_call": 959017
+    },
+    {
+      "round": 0,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "661625",
+      "ns_per_call": 661625
+    },
+    {
+      "round": 0,
+      "mode": "streams",
+      "variant": "Go",
+      "stdout": "1067010",
+      "ns_per_call": 1067010
+    },
+    {
+      "round": 0,
+      "mode": "redirect",
+      "variant": "Rust",
+      "stdout": "656482",
+      "ns_per_call": 656482
+    },
+    {
+      "round": 0,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "1063721",
+      "ns_per_call": 1063721
+    },
+    {
+      "round": 0,
+      "mode": "input",
+      "variant": "Python",
+      "stdout": "1493983",
+      "ns_per_call": 1493983
+    },
+    {
+      "round": 0,
+      "mode": "redirect",
+      "variant": "Go",
+      "stdout": "946682",
+      "ns_per_call": 946682
+    },
+    {
+      "round": 0,
+      "mode": "args",
+      "variant": "Go",
+      "stdout": "822065",
+      "ns_per_call": 822065
+    },
+    {
+      "round": 0,
+      "mode": "streams",
+      "variant": "Rust",
+      "stdout": "742140",
+      "ns_per_call": 742140
+    },
+    {
+      "round": 0,
+      "mode": "environment",
+      "variant": "Rust",
+      "stdout": "548674",
+      "ns_per_call": 548674
+    },
+    {
+      "round": 0,
+      "mode": "empty",
+      "variant": "Rust",
+      "stdout": "637876",
+      "ns_per_call": 637876
+    },
+    {
+      "round": 1,
+      "mode": "environment",
+      "variant": "Python",
+      "stdout": "808402",
+      "ns_per_call": 808402
+    },
+    {
+      "round": 1,
+      "mode": "environment",
+      "variant": "Go",
+      "stdout": "704263",
+      "ns_per_call": 704263
+    },
+    {
+      "round": 1,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "1034539",
+      "ns_per_call": 1034539
+    },
+    {
+      "round": 1,
+      "mode": "environment",
+      "variant": "Rust",
+      "stdout": "553298",
+      "ns_per_call": 553298
+    },
+    {
+      "round": 1,
+      "mode": "empty",
+      "variant": "Go",
+      "stdout": "774840",
+      "ns_per_call": 774840
+    },
+    {
+      "round": 1,
+      "mode": "redirect",
+      "variant": "Python",
+      "stdout": "915601",
+      "ns_per_call": 915601
+    },
+    {
+      "round": 1,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "674110",
+      "ns_per_call": 674110
+    },
+    {
+      "round": 1,
+      "mode": "redirect",
+      "variant": "Rust",
+      "stdout": "630544",
+      "ns_per_call": 630544
+    },
+    {
+      "round": 1,
+      "mode": "streams",
+      "variant": "Go",
+      "stdout": "1100711",
+      "ns_per_call": 1100711
+    },
+    {
+      "round": 1,
+      "mode": "input",
+      "variant": "Python",
+      "stdout": "1581904",
+      "ns_per_call": 1581904
+    },
+    {
+      "round": 1,
+      "mode": "streams",
+      "variant": "Rust",
+      "stdout": "725573",
+      "ns_per_call": 725573
+    },
+    {
+      "round": 1,
+      "mode": "streams",
+      "variant": "Python",
+      "stdout": "1064712",
+      "ns_per_call": 1064712
+    },
+    {
+      "round": 1,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "579770",
+      "ns_per_call": 579770
+    },
+    {
+      "round": 1,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "700981",
+      "ns_per_call": 700981
+    },
+    {
+      "round": 1,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "669179",
+      "ns_per_call": 669179
+    },
+    {
+      "round": 1,
+      "mode": "input",
+      "variant": "Rust",
+      "stdout": "1006381",
+      "ns_per_call": 1006381
+    },
+    {
+      "round": 1,
+      "mode": "args",
+      "variant": "Go",
+      "stdout": "843046",
+      "ns_per_call": 843046
+    },
+    {
+      "round": 1,
+      "mode": "empty",
+      "variant": "Rust",
+      "stdout": "588712",
+      "ns_per_call": 588712
+    },
+    {
+      "round": 1,
+      "mode": "args",
+      "variant": "Python",
+      "stdout": "861468",
+      "ns_per_call": 861468
+    },
+    {
+      "round": 1,
+      "mode": "empty",
+      "variant": "Python",
+      "stdout": "824802",
+      "ns_per_call": 824802
+    },
+    {
+      "round": 1,
+      "mode": "input",
+      "variant": "Go",
+      "stdout": "1345794",
+      "ns_per_call": 1345794
+    },
+    {
+      "round": 1,
+      "mode": "redirect",
+      "variant": "Go",
+      "stdout": "884451",
+      "ns_per_call": 884451
+    },
+    {
+      "round": 1,
+      "mode": "args",
+      "variant": "Rust",
+      "stdout": "611138",
+      "ns_per_call": 611138
+    },
+    {
+      "round": 1,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "596858",
+      "ns_per_call": 596858
+    },
+    {
+      "round": 2,
+      "mode": "args",
+      "variant": "Rust",
+      "stdout": "602717",
+      "ns_per_call": 602717
+    },
+    {
+      "round": 2,
+      "mode": "input",
+      "variant": "Go",
+      "stdout": "1365100",
+      "ns_per_call": 1365100
+    },
+    {
+      "round": 2,
+      "mode": "environment",
+      "variant": "Go",
+      "stdout": "661575",
+      "ns_per_call": 661575
+    },
+    {
+      "round": 2,
+      "mode": "empty",
+      "variant": "Python",
+      "stdout": "853042",
+      "ns_per_call": 853042
+    },
+    {
+      "round": 2,
+      "mode": "input",
+      "variant": "Python",
+      "stdout": "1558582",
+      "ns_per_call": 1558582
+    },
+    {
+      "round": 2,
+      "mode": "streams",
+      "variant": "Rust",
+      "stdout": "787104",
+      "ns_per_call": 787104
+    },
+    {
+      "round": 2,
+      "mode": "args",
+      "variant": "Go",
+      "stdout": "803075",
+      "ns_per_call": 803075
+    },
+    {
+      "round": 2,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "575201",
+      "ns_per_call": 575201
+    },
+    {
+      "round": 2,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "659380",
+      "ns_per_call": 659380
+    },
+    {
+      "round": 2,
+      "mode": "empty",
+      "variant": "Rust",
+      "stdout": "595699",
+      "ns_per_call": 595699
+    },
+    {
+      "round": 2,
+      "mode": "environment",
+      "variant": "Python",
+      "stdout": "841604",
+      "ns_per_call": 841604
+    },
+    {
+      "round": 2,
+      "mode": "redirect",
+      "variant": "Go",
+      "stdout": "931828",
+      "ns_per_call": 931828
+    },
+    {
+      "round": 2,
+      "mode": "args",
+      "variant": "Python",
+      "stdout": "945811",
+      "ns_per_call": 945811
+    },
+    {
+      "round": 2,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "764479",
+      "ns_per_call": 764479
+    },
+    {
+      "round": 2,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "654592",
+      "ns_per_call": 654592
+    },
+    {
+      "round": 2,
+      "mode": "redirect",
+      "variant": "Python",
+      "stdout": "863627",
+      "ns_per_call": 863627
+    },
+    {
+      "round": 2,
+      "mode": "redirect",
+      "variant": "Rust",
+      "stdout": "631235",
+      "ns_per_call": 631235
+    },
+    {
+      "round": 2,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "659599",
+      "ns_per_call": 659599
+    },
+    {
+      "round": 2,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "1026159",
+      "ns_per_call": 1026159
+    },
+    {
+      "round": 2,
+      "mode": "input",
+      "variant": "Rust",
+      "stdout": "1008553",
+      "ns_per_call": 1008553
+    },
+    {
+      "round": 2,
+      "mode": "environment",
+      "variant": "Rust",
+      "stdout": "541902",
+      "ns_per_call": 541902
+    },
+    {
+      "round": 2,
+      "mode": "empty",
+      "variant": "Go",
+      "stdout": "787925",
+      "ns_per_call": 787925
+    },
+    {
+      "round": 2,
+      "mode": "streams",
+      "variant": "Go",
+      "stdout": "1121347",
+      "ns_per_call": 1121347
+    },
+    {
+      "round": 2,
+      "mode": "streams",
+      "variant": "Python",
+      "stdout": "1031072",
+      "ns_per_call": 1031072
+    },
+    {
+      "round": 3,
+      "mode": "redirect",
+      "variant": "Go",
+      "stdout": "851939",
+      "ns_per_call": 851939
+    },
+    {
+      "round": 3,
+      "mode": "input",
+      "variant": "Rust",
+      "stdout": "1070445",
+      "ns_per_call": 1070445
+    },
+    {
+      "round": 3,
+      "mode": "args",
+      "variant": "Rust",
+      "stdout": "622146",
+      "ns_per_call": 622146
+    },
+    {
+      "round": 3,
+      "mode": "empty",
+      "variant": "Rust",
+      "stdout": "578176",
+      "ns_per_call": 578176
+    },
+    {
+      "round": 3,
+      "mode": "streams",
+      "variant": "Python",
+      "stdout": "1053141",
+      "ns_per_call": 1053141
+    },
+    {
+      "round": 3,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "1077065",
+      "ns_per_call": 1077065
+    },
+    {
+      "round": 3,
+      "mode": "empty",
+      "variant": "Go",
+      "stdout": "781940",
+      "ns_per_call": 781940
+    },
+    {
+      "round": 3,
+      "mode": "args",
+      "variant": "Go",
+      "stdout": "834314",
+      "ns_per_call": 834314
+    },
+    {
+      "round": 3,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "668006",
+      "ns_per_call": 668006
+    },
+    {
+      "round": 3,
+      "mode": "input",
+      "variant": "Python",
+      "stdout": "1567552",
+      "ns_per_call": 1567552
+    },
+    {
+      "round": 3,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "596767",
+      "ns_per_call": 596767
+    },
+    {
+      "round": 3,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "719412",
+      "ns_per_call": 719412
+    },
+    {
+      "round": 3,
+      "mode": "streams",
+      "variant": "Rust",
+      "stdout": "792626",
+      "ns_per_call": 792626
+    },
+    {
+      "round": 3,
+      "mode": "redirect",
+      "variant": "Python",
+      "stdout": "907779",
+      "ns_per_call": 907779
+    },
+    {
+      "round": 3,
+      "mode": "environment",
+      "variant": "Python",
+      "stdout": "846012",
+      "ns_per_call": 846012
+    },
+    {
+      "round": 3,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "721869",
+      "ns_per_call": 721869
+    },
+    {
+      "round": 3,
+      "mode": "args",
+      "variant": "Python",
+      "stdout": "942627",
+      "ns_per_call": 942627
+    },
+    {
+      "round": 3,
+      "mode": "empty",
+      "variant": "Python",
+      "stdout": "834034",
+      "ns_per_call": 834034
+    },
+    {
+      "round": 3,
+      "mode": "redirect",
+      "variant": "Rust",
+      "stdout": "643137",
+      "ns_per_call": 643137
+    },
+    {
+      "round": 3,
+      "mode": "environment",
+      "variant": "Go",
+      "stdout": "748512",
+      "ns_per_call": 748512
+    },
+    {
+      "round": 3,
+      "mode": "input",
+      "variant": "Go",
+      "stdout": "1427692",
+      "ns_per_call": 1427692
+    },
+    {
+      "round": 3,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "720309",
+      "ns_per_call": 720309
+    },
+    {
+      "round": 3,
+      "mode": "environment",
+      "variant": "Rust",
+      "stdout": "568826",
+      "ns_per_call": 568826
+    },
+    {
+      "round": 3,
+      "mode": "streams",
+      "variant": "Go",
+      "stdout": "1128402",
+      "ns_per_call": 1128402
+    },
+    {
+      "round": 4,
+      "mode": "redirect",
+      "variant": "Python",
+      "stdout": "879908",
+      "ns_per_call": 879908
+    },
+    {
+      "round": 4,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "617686",
+      "ns_per_call": 617686
+    },
+    {
+      "round": 4,
+      "mode": "input",
+      "variant": "Go",
+      "stdout": "1377232",
+      "ns_per_call": 1377232
+    },
+    {
+      "round": 4,
+      "mode": "redirect",
+      "variant": "Rust",
+      "stdout": "654855",
+      "ns_per_call": 654855
+    },
+    {
+      "round": 4,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "1060405",
+      "ns_per_call": 1060405
+    },
+    {
+      "round": 4,
+      "mode": "empty",
+      "variant": "Go",
+      "stdout": "842631",
+      "ns_per_call": 842631
+    },
+    {
+      "round": 4,
+      "mode": "args",
+      "variant": "Python",
+      "stdout": "885986",
+      "ns_per_call": 885986
+    },
+    {
+      "round": 4,
+      "mode": "input",
+      "variant": "Python",
+      "stdout": "1678140",
+      "ns_per_call": 1678140
+    },
+    {
+      "round": 4,
+      "mode": "empty",
+      "variant": "Rust",
+      "stdout": "647772",
+      "ns_per_call": 647772
+    },
+    {
+      "round": 4,
+      "mode": "args",
+      "variant": "Rust",
+      "stdout": "690808",
+      "ns_per_call": 690808
+    },
+    {
+      "round": 4,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "602336",
+      "ns_per_call": 602336
+    },
+    {
+      "round": 4,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "681283",
+      "ns_per_call": 681283
+    },
+    {
+      "round": 4,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "698300",
+      "ns_per_call": 698300
+    },
+    {
+      "round": 4,
+      "mode": "streams",
+      "variant": "Go",
+      "stdout": "1127889",
+      "ns_per_call": 1127889
+    },
+    {
+      "round": 4,
+      "mode": "empty",
+      "variant": "Python",
+      "stdout": "853684",
+      "ns_per_call": 853684
+    },
+    {
+      "round": 4,
+      "mode": "args",
+      "variant": "Go",
+      "stdout": "816620",
+      "ns_per_call": 816620
+    },
+    {
+      "round": 4,
+      "mode": "streams",
+      "variant": "Python",
+      "stdout": "1056056",
+      "ns_per_call": 1056056
+    },
+    {
+      "round": 4,
+      "mode": "environment",
+      "variant": "Go",
+      "stdout": "696880",
+      "ns_per_call": 696880
+    },
+    {
+      "round": 4,
+      "mode": "streams",
+      "variant": "Rust",
+      "stdout": "728887",
+      "ns_per_call": 728887
+    },
+    {
+      "round": 4,
+      "mode": "redirect",
+      "variant": "Go",
+      "stdout": "878726",
+      "ns_per_call": 878726
+    },
+    {
+      "round": 4,
+      "mode": "input",
+      "variant": "Rust",
+      "stdout": "1009134",
+      "ns_per_call": 1009134
+    },
+    {
+      "round": 4,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "695785",
+      "ns_per_call": 695785
+    },
+    {
+      "round": 4,
+      "mode": "environment",
+      "variant": "Python",
+      "stdout": "804263",
+      "ns_per_call": 804263
+    },
+    {
+      "round": 4,
+      "mode": "environment",
+      "variant": "Rust",
+      "stdout": "531233",
+      "ns_per_call": 531233
+    },
+    {
+      "round": 5,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "581677",
+      "ns_per_call": 581677
+    },
+    {
+      "round": 5,
+      "mode": "redirect",
+      "variant": "Python",
+      "stdout": "828975",
+      "ns_per_call": 828975
+    },
+    {
+      "round": 5,
+      "mode": "args",
+      "variant": "Python",
+      "stdout": "850547",
+      "ns_per_call": 850547
+    },
+    {
+      "round": 5,
+      "mode": "environment",
+      "variant": "Rust",
+      "stdout": "517889",
+      "ns_per_call": 517889
+    },
+    {
+      "round": 5,
+      "mode": "redirect",
+      "variant": "Go",
+      "stdout": "876229",
+      "ns_per_call": 876229
+    },
+    {
+      "round": 5,
+      "mode": "streams",
+      "variant": "Python",
+      "stdout": "1016005",
+      "ns_per_call": 1016005
+    },
+    {
+      "round": 5,
+      "mode": "input",
+      "variant": "Rust",
+      "stdout": "975784",
+      "ns_per_call": 975784
+    },
+    {
+      "round": 5,
+      "mode": "empty",
+      "variant": "Rust",
+      "stdout": "567817",
+      "ns_per_call": 567817
+    },
+    {
+      "round": 5,
+      "mode": "streams",
+      "variant": "Rust",
+      "stdout": "727401",
+      "ns_per_call": 727401
+    },
+    {
+      "round": 5,
+      "mode": "empty",
+      "variant": "Python",
+      "stdout": "814021",
+      "ns_per_call": 814021
+    },
+    {
+      "round": 5,
+      "mode": "redirect",
+      "variant": "Rust",
+      "stdout": "617507",
+      "ns_per_call": 617507
+    },
+    {
+      "round": 5,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "665698",
+      "ns_per_call": 665698
+    },
+    {
+      "round": 5,
+      "mode": "input",
+      "variant": "Go",
+      "stdout": "1352344",
+      "ns_per_call": 1352344
+    },
+    {
+      "round": 5,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "641766",
+      "ns_per_call": 641766
+    },
+    {
+      "round": 5,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "997436",
+      "ns_per_call": 997436
+    },
+    {
+      "round": 5,
+      "mode": "environment",
+      "variant": "Python",
+      "stdout": "763116",
+      "ns_per_call": 763116
+    },
+    {
+      "round": 5,
+      "mode": "empty",
+      "variant": "Go",
+      "stdout": "744689",
+      "ns_per_call": 744689
+    },
+    {
+      "round": 5,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "603804",
+      "ns_per_call": 603804
+    },
+    {
+      "round": 5,
+      "mode": "environment",
+      "variant": "Go",
+      "stdout": "669961",
+      "ns_per_call": 669961
+    },
+    {
+      "round": 5,
+      "mode": "args",
+      "variant": "Go",
+      "stdout": "780785",
+      "ns_per_call": 780785
+    },
+    {
+      "round": 5,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "662371",
+      "ns_per_call": 662371
+    },
+    {
+      "round": 5,
+      "mode": "input",
+      "variant": "Python",
+      "stdout": "1513377",
+      "ns_per_call": 1513377
+    },
+    {
+      "round": 5,
+      "mode": "streams",
+      "variant": "Go",
+      "stdout": "996924",
+      "ns_per_call": 996924
+    },
+    {
+      "round": 5,
+      "mode": "args",
+      "variant": "Rust",
+      "stdout": "600180",
+      "ns_per_call": 600180
+    },
+    {
+      "round": 6,
+      "mode": "redirect",
+      "variant": "Rust",
+      "stdout": "627869",
+      "ns_per_call": 627869
+    },
+    {
+      "round": 6,
+      "mode": "empty",
+      "variant": "Go",
+      "stdout": "747265",
+      "ns_per_call": 747265
+    },
+    {
+      "round": 6,
+      "mode": "redirect",
+      "variant": "Python",
+      "stdout": "846793",
+      "ns_per_call": 846793
+    },
+    {
+      "round": 6,
+      "mode": "input",
+      "variant": "Python",
+      "stdout": "1493462",
+      "ns_per_call": 1493462
+    },
+    {
+      "round": 6,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "602988",
+      "ns_per_call": 602988
+    },
+    {
+      "round": 6,
+      "mode": "input",
+      "variant": "Go",
+      "stdout": "1356413",
+      "ns_per_call": 1356413
+    },
+    {
+      "round": 6,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "669050",
+      "ns_per_call": 669050
+    },
+    {
+      "round": 6,
+      "mode": "empty",
+      "variant": "Python",
+      "stdout": "811051",
+      "ns_per_call": 811051
+    },
+    {
+      "round": 6,
+      "mode": "streams",
+      "variant": "Python",
+      "stdout": "1048613",
+      "ns_per_call": 1048613
+    },
+    {
+      "round": 6,
+      "mode": "streams",
+      "variant": "Rust",
+      "stdout": "738830",
+      "ns_per_call": 738830
+    },
+    {
+      "round": 6,
+      "mode": "args",
+      "variant": "Python",
+      "stdout": "872962",
+      "ns_per_call": 872962
+    },
+    {
+      "round": 6,
+      "mode": "empty",
+      "variant": "Rust",
+      "stdout": "564780",
+      "ns_per_call": 564780
+    },
+    {
+      "round": 6,
+      "mode": "environment",
+      "variant": "Rust",
+      "stdout": "512534",
+      "ns_per_call": 512534
+    },
+    {
+      "round": 6,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "651458",
+      "ns_per_call": 651458
+    },
+    {
+      "round": 6,
+      "mode": "environment",
+      "variant": "Python",
+      "stdout": "787441",
+      "ns_per_call": 787441
+    },
+    {
+      "round": 6,
+      "mode": "streams",
+      "variant": "Go",
+      "stdout": "1010456",
+      "ns_per_call": 1010456
+    },
+    {
+      "round": 6,
+      "mode": "redirect",
+      "variant": "Go",
+      "stdout": "873751",
+      "ns_per_call": 873751
+    },
+    {
+      "round": 6,
+      "mode": "input",
+      "variant": "Rust",
+      "stdout": "1006136",
+      "ns_per_call": 1006136
+    },
+    {
+      "round": 6,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "702832",
+      "ns_per_call": 702832
+    },
+    {
+      "round": 6,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "572467",
+      "ns_per_call": 572467
+    },
+    {
+      "round": 6,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "1030590",
+      "ns_per_call": 1030590
+    },
+    {
+      "round": 6,
+      "mode": "args",
+      "variant": "Go",
+      "stdout": "789267",
+      "ns_per_call": 789267
+    },
+    {
+      "round": 6,
+      "mode": "environment",
+      "variant": "Go",
+      "stdout": "680573",
+      "ns_per_call": 680573
+    },
+    {
+      "round": 6,
+      "mode": "args",
+      "variant": "Rust",
+      "stdout": "630541",
+      "ns_per_call": 630541
+    },
+    {
+      "round": 7,
+      "mode": "redirect",
+      "variant": "Python",
+      "stdout": "830805",
+      "ns_per_call": 830805
+    },
+    {
+      "round": 7,
+      "mode": "environment",
+      "variant": "Go",
+      "stdout": "682791",
+      "ns_per_call": 682791
+    },
+    {
+      "round": 7,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "1054414",
+      "ns_per_call": 1054414
+    },
+    {
+      "round": 7,
+      "mode": "empty",
+      "variant": "Rust",
+      "stdout": "633239",
+      "ns_per_call": 633239
+    },
+    {
+      "round": 7,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "667185",
+      "ns_per_call": 667185
+    },
+    {
+      "round": 7,
+      "mode": "redirect",
+      "variant": "Go",
+      "stdout": "902093",
+      "ns_per_call": 902093
+    },
+    {
+      "round": 7,
+      "mode": "args",
+      "variant": "Python",
+      "stdout": "877750",
+      "ns_per_call": 877750
+    },
+    {
+      "round": 7,
+      "mode": "empty",
+      "variant": "Python",
+      "stdout": "823497",
+      "ns_per_call": 823497
+    },
+    {
+      "round": 7,
+      "mode": "input",
+      "variant": "Rust",
+      "stdout": "1032926",
+      "ns_per_call": 1032926
+    },
+    {
+      "round": 7,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "559504",
+      "ns_per_call": 559504
+    },
+    {
+      "round": 7,
+      "mode": "args",
+      "variant": "Go",
+      "stdout": "786026",
+      "ns_per_call": 786026
+    },
+    {
+      "round": 7,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "646108",
+      "ns_per_call": 646108
+    },
+    {
+      "round": 7,
+      "mode": "redirect",
+      "variant": "Rust",
+      "stdout": "627750",
+      "ns_per_call": 627750
+    },
+    {
+      "round": 7,
+      "mode": "streams",
+      "variant": "Python",
+      "stdout": "1054528",
+      "ns_per_call": 1054528
+    },
+    {
+      "round": 7,
+      "mode": "input",
+      "variant": "Go",
+      "stdout": "1370864",
+      "ns_per_call": 1370864
+    },
+    {
+      "round": 7,
+      "mode": "args",
+      "variant": "Rust",
+      "stdout": "620184",
+      "ns_per_call": 620184
+    },
+    {
+      "round": 7,
+      "mode": "empty",
+      "variant": "Go",
+      "stdout": "707599",
+      "ns_per_call": 707599
+    },
+    {
+      "round": 7,
+      "mode": "environment",
+      "variant": "Python",
+      "stdout": "788916",
+      "ns_per_call": 788916
+    },
+    {
+      "round": 7,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "716915",
+      "ns_per_call": 716915
+    },
+    {
+      "round": 7,
+      "mode": "environment",
+      "variant": "Rust",
+      "stdout": "530824",
+      "ns_per_call": 530824
+    },
+    {
+      "round": 7,
+      "mode": "streams",
+      "variant": "Go",
+      "stdout": "1015112",
+      "ns_per_call": 1015112
+    },
+    {
+      "round": 7,
+      "mode": "input",
+      "variant": "Python",
+      "stdout": "1483176",
+      "ns_per_call": 1483176
+    },
+    {
+      "round": 7,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "584690",
+      "ns_per_call": 584690
+    },
+    {
+      "round": 7,
+      "mode": "streams",
+      "variant": "Rust",
+      "stdout": "730752",
+      "ns_per_call": 730752
+    },
+    {
+      "round": 8,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "659088",
+      "ns_per_call": 659088
+    },
+    {
+      "round": 8,
+      "mode": "streams",
+      "variant": "Go",
+      "stdout": "1043239",
+      "ns_per_call": 1043239
+    },
+    {
+      "round": 8,
+      "mode": "args",
+      "variant": "Python",
+      "stdout": "893854",
+      "ns_per_call": 893854
+    },
+    {
+      "round": 8,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "583688",
+      "ns_per_call": 583688
+    },
+    {
+      "round": 8,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "648952",
+      "ns_per_call": 648952
+    },
+    {
+      "round": 8,
+      "mode": "environment",
+      "variant": "Python",
+      "stdout": "769366",
+      "ns_per_call": 769366
+    },
+    {
+      "round": 8,
+      "mode": "redirect",
+      "variant": "Go",
+      "stdout": "867469",
+      "ns_per_call": 867469
+    },
+    {
+      "round": 8,
+      "mode": "args",
+      "variant": "Go",
+      "stdout": "790830",
+      "ns_per_call": 790830
+    },
+    {
+      "round": 8,
+      "mode": "args",
+      "variant": "Rust",
+      "stdout": "626465",
+      "ns_per_call": 626465
+    },
+    {
+      "round": 8,
+      "mode": "input",
+      "variant": "Go",
+      "stdout": "1330049",
+      "ns_per_call": 1330049
+    },
+    {
+      "round": 8,
+      "mode": "empty",
+      "variant": "Python",
+      "stdout": "803445",
+      "ns_per_call": 803445
+    },
+    {
+      "round": 8,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "687896",
+      "ns_per_call": 687896
+    },
+    {
+      "round": 8,
+      "mode": "empty",
+      "variant": "Go",
+      "stdout": "775580",
+      "ns_per_call": 775580
+    },
+    {
+      "round": 8,
+      "mode": "input",
+      "variant": "Rust",
+      "stdout": "993042",
+      "ns_per_call": 993042
+    },
+    {
+      "round": 8,
+      "mode": "empty",
+      "variant": "Rust",
+      "stdout": "576311",
+      "ns_per_call": 576311
+    },
+    {
+      "round": 8,
+      "mode": "input",
+      "variant": "Python",
+      "stdout": "1536912",
+      "ns_per_call": 1536912
+    },
+    {
+      "round": 8,
+      "mode": "streams",
+      "variant": "Rust",
+      "stdout": "732666",
+      "ns_per_call": 732666
+    },
+    {
+      "round": 8,
+      "mode": "environment",
+      "variant": "Rust",
+      "stdout": "536911",
+      "ns_per_call": 536911
+    },
+    {
+      "round": 8,
+      "mode": "redirect",
+      "variant": "Rust",
+      "stdout": "682789",
+      "ns_per_call": 682789
+    },
+    {
+      "round": 8,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "582885",
+      "ns_per_call": 582885
+    },
+    {
+      "round": 8,
+      "mode": "streams",
+      "variant": "Python",
+      "stdout": "1083498",
+      "ns_per_call": 1083498
+    },
+    {
+      "round": 8,
+      "mode": "environment",
+      "variant": "Go",
+      "stdout": "715846",
+      "ns_per_call": 715846
+    },
+    {
+      "round": 8,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "1056294",
+      "ns_per_call": 1056294
+    },
+    {
+      "round": 8,
+      "mode": "redirect",
+      "variant": "Python",
+      "stdout": "839581",
+      "ns_per_call": 839581
+    }
+  ],
+  "medians": {
+    "empty": {
+      "Goose": 603804,
+      "Rust": 588712,
+      "Go": 775580,
+      "Python": 824802
+    },
+    "args": {
+      "Goose": 667185,
+      "Rust": 622146,
+      "Go": 803075,
+      "Python": 885986
+    },
+    "streams": {
+      "Goose": 702832,
+      "Rust": 732666,
+      "Go": 1067010,
+      "Python": 1054528
+    },
+    "input": {
+      "Goose": 1054414,
+      "Rust": 1008553,
+      "Go": 1365100,
+      "Python": 1536912
+    },
+    "environment": {
+      "Goose": 581677,
+      "Rust": 536911,
+      "Go": 682791,
+      "Python": 804263
+    },
+    "redirect": {
+      "Goose": 669050,
+      "Rust": 631235,
+      "Go": 878726,
+      "Python": 863627
+    }
+  }
+}

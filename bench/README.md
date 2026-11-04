@@ -2,6 +2,8 @@
 
 For the checked Rust/Go/Python successful-workload comparison, see
 [the comparative harness and its contract differences](compare/README.md).
+Its [recorded results](compare/RESULTS.md) include checked Rust/Go/Python/Goose
+workloads and raw samples; standard-library safety contracts differ.
 
 `make bench BENCH_ITERATIONS=100` builds an optimized native Goose harness with
 GCC by default (`BENCH_CC=clang` selects Clang), warms reusable buffers once per

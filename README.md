@@ -33,7 +33,7 @@ sanitizer and fuzz targets below.
 ## Usage
 
 ```goose
-import process from "carabistouflette/goose-process@9fd737c08f491ff842725c16189073891c8cfff7";
+import process from "carabistouflette/goose-process@12c509e49ec0b1a83c2621db4dea0d7f2001645d";
 import std;
 
 fn main() {

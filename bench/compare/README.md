@@ -1,5 +1,8 @@
 # Rust, Go, Python and Goose process comparison
 
+[Recorded results, toolchains and sample ranges](RESULTS.md) are available with
+[all raw samples](../results/linux-stdlib-2026-11-04.json).
+
 Run from the repository root on Linux after `make setup`:
 
 ```sh
