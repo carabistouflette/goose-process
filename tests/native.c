@@ -99,12 +99,14 @@ int main(int argc, char **argv) {
     malformed();
     int before = descriptors();
     assert(run("bytes", NULL, 256, 2000, 1) == 0 && meta[1] == 0);
-    for (int i = 0; i < 256; ++i) assert(out[i] == i && err[i] == i);
+    for (int i = 0; i < 256; ++i) assert(out[i] == i && err[i] == 255 - i);
     assert(run("streams", "1048576", 1048576, 5000, 1) == 0);
     assert(meta[3] == 1048576 && meta[4] == 1048576);
     assert(run("streams", "1048577", 1048576, 5000, 1) == 5);
     assert(run("streams", "0", 0, 2000, 1) == 0);
     assert(run("streams", "1", 0, 2000, 1) == 5);
+    assert(run("stderr", "257", 256, 2000, 1) == 5 && meta[3] == 0 && meta[4] == 256);
+    for (int i = 0; i < 256; ++i) assert(err[i] == 'e');
     assert(run("stdin", NULL, 0, 2000, 1) == 0 && meta[1] == 0);
     assert(run("signal", NULL, 0, 2000, 1) == 0 && meta[1] == -1 && meta[2] == SIGTERM);
     assert(run("exit", "127", 0, 2000, 0) == 0 && meta[1] == 127);

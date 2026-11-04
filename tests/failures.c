@@ -13,6 +13,11 @@
 static int failure;
 long __real_syscall(long number, ...);
 int __real_kill(pid_t pid, int signal);
+pid_t __real_waitpid(pid_t pid, int *status, int options);
+pid_t __wrap_waitpid(pid_t pid, int *status, int options) {
+    if (failure == 4) { errno = EPERM; return -1; }
+    return __real_waitpid(pid, status, options);
+}
 long __wrap_syscall(long number, ...) {
     va_list args; va_start(args, number);
     long result;
@@ -35,16 +40,16 @@ int __wrap_kill(pid_t pid, int signal) {
 }
 int main(void) {
     uint8_t packed[] = "/bin/sleep\0" "10\0";
-    for (failure = 1; failure <= 3; ++failure) {
+    for (failure = 1; failure <= 4; ++failure) {
         int64_t meta[6];
         int result = (int)gp_run((gp_input){packed, sizeof packed - 1}, (gp_input){NULL, 0},
             20, 1, (gp_output){NULL, 0}, (gp_output){NULL, 0}, (gp_metadata){meta, 6});
         if (failure == 1) assert(result == 4 && meta[2] == SIGKILL && meta[5] == 0);
-        if (failure == 2) {
+        if (failure == 2 || failure == 4) {
             assert(result == 3 && meta[0] == EPERM && meta[5] > 0);
             pid_t pid = (pid_t)meta[5];
             assert(__real_kill(pid, SIGKILL) == 0);
-            int status; assert(waitpid(pid, &status, 0) == pid && WIFSIGNALED(status));
+            int status; assert(__real_waitpid(pid, &status, 0) == pid && WIFSIGNALED(status));
         }
         if (failure == 3) assert(result == 3 && meta[0] == ENOSYS && meta[2] == SIGKILL && meta[5] == 0);
     }

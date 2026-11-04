@@ -230,7 +230,10 @@ cleanup:
         } else if (waited == 0) {
             /* Cancellation was denied: explicitly transfer this child to caller. */
             meta.data[5] = pid;
-        } else if (!saved) { saved = errno; result = GP_SYSTEM; }
+        } else {
+            saved = errno; result = GP_SYSTEM;
+            if (errno != ECHILD) meta.data[5] = pid;
+        }
     }
     close_fd(&pidfd);
     free(text);

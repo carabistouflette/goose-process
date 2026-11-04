@@ -36,14 +36,14 @@ test: helpers
 native: helpers
 	$(CC) $(CFLAGS) -O2 -pthread tests/native.c native/process.c -o .build/native
 	python3 scripts/run.py .build/native $(abspath .build/helper)
-	$(CC) $(CFLAGS) -O2 tests/failures.c native/process.c -Wl,--wrap=syscall -Wl,--wrap=kill -o .build/failures
+	$(CC) $(CFLAGS) -O2 tests/failures.c native/process.c -Wl,--wrap=syscall -Wl,--wrap=kill -Wl,--wrap=waitpid -o .build/failures
 	python3 scripts/run.py .build/failures
 	$(CC) $(CFLAGS) -O2 -shared -fPIC native/process.c -o .build/process.so
 	python3 tests/model.py
 sanitize: helpers
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie -pthread tests/native.c native/process.c -o .build/native-sanitize
 	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/native-sanitize $(abspath .build/helper)
-	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/failures.c native/process.c -Wl,--wrap=syscall -Wl,--wrap=kill -o .build/failures-sanitize
+	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/failures.c native/process.c -Wl,--wrap=syscall -Wl,--wrap=kill -Wl,--wrap=waitpid -o .build/failures-sanitize
 	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/failures-sanitize
 bench:
 	python3 scripts/native-manifest.py --check

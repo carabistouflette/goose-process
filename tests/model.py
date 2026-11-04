@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import random
 import subprocess
+import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -21,7 +22,7 @@ def main():
     helper = os.fsencode(ROOT / '.build/helper')
     cases = 0
 
-    def run(args, cap=65536, cwd=b''):
+    def run(args, cap=65536, cwd=b'', capture=1):
         nonlocal cases
         packed = b'\0'.join(args) + b'\0'
         inp = c.create_string_buffer(packed)
@@ -31,7 +32,7 @@ def main():
         err = c.create_string_buffer(b'\x5a' * (cap + 16), cap + 16)
         meta = (c.c_int64 * 6)()
         result = lib.gp_run(Slice(c.addressof(inp), len(packed)),
-            Slice(c.addressof(directory), len(cwd)), 5000, 1,
+            Slice(c.addressof(directory), len(cwd)), 5000, capture,
             Slice(c.addressof(out), cap), Slice(c.addressof(err), cap),
             Slice(c.addressof(meta), 6))
         assert 0 <= meta[3] <= cap and 0 <= meta[4] <= cap
@@ -39,6 +40,15 @@ def main():
         assert meta[5] == 0
         cases += 1
         return result, list(meta), out.raw[:meta[3]], err.raw[:meta[4]]
+
+    if len(sys.argv) > 1 and sys.argv[1] == 'inherit':
+        result, meta, out, err = run([helper, b'bytes'], capture=0)
+        assert result == 0 and meta[1] == 0 and out == err == b''
+        return
+    inherited = subprocess.run([sys.executable, __file__, 'inherit'],
+        capture_output=True, timeout=10, check=True)
+    assert inherited.stdout == bytes(range(256))
+    assert inherited.stderr == bytes(reversed(range(256)))
 
     rng = random.Random(3025)
     fixtures = [[b'', b'a b', b"'\";$(echo bad)\\*?", b'\xff\xfe\n\r']]
@@ -59,8 +69,10 @@ def main():
             assert result == (5 if length > cap else 0)
             assert out == b'x' * min(length, cap)
             # On overflow stdout may trigger cancellation before stderr is drained.
-            assert err == b'x' * len(err)
+            assert err == b'y' * len(err)
             if length <= cap: assert len(err) == length
+        result, meta, out, err = run([helper, b'stderr', str(cap + 1).encode()], cap)
+        assert result == 5 and out == b'' and err == b'e' * cap
     for args in [[helper, b'args', b'x' * 16385], [helper, b'args', *([b''] * 255)],
                  [helper, b'args', *([b'x' * 16384] * 4)], [b'true'], [b'']]:
         assert run(args)[0] == 1

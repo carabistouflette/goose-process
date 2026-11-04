@@ -27,7 +27,9 @@ int main(int argc, char **argv) {
         for (int i = 2; i < argc; ++i) emit(1, argv[i], strlen(argv[i]) + 1);
     } else if (!strcmp(argv[1], "bytes")) {
         unsigned char b[256]; for (int i = 0; i < 256; ++i) b[i] = (unsigned char)i;
-        emit(1, b, sizeof b); emit(2, b, sizeof b);
+        emit(1, b, sizeof b);
+        for (int i = 0; i < 256; ++i) b[i] = (unsigned char)(255 - i);
+        emit(2, b, sizeof b);
     } else if (!strcmp(argv[1], "exit")) {
         return argc > 2 ? atoi(argv[2]) : 0;
     } else if (!strcmp(argv[1], "signal")) {
@@ -46,10 +48,18 @@ int main(int argc, char **argv) {
         emit(1, path, strlen(path));
     } else if (!strcmp(argv[1], "streams")) {
         long n = argc > 2 ? atol(argv[2]) : 0;
-        char block[4096]; memset(block, 'x', sizeof block);
+        char block[4096], errors[4096];
+        memset(block, 'x', sizeof block); memset(errors, 'y', sizeof errors);
         while (n > 0) {
             size_t take = n < (long)sizeof block ? (size_t)n : sizeof block;
-            emit(1, block, take); emit(2, block, take); n -= (long)take;
+            emit(1, block, take); emit(2, errors, take); n -= (long)take;
+        }
+    } else if (!strcmp(argv[1], "stderr")) {
+        long n = argc > 2 ? atol(argv[2]) : 0;
+        char block[4096]; memset(block, 'e', sizeof block);
+        while (n > 0) {
+            size_t take = n < (long)sizeof block ? (size_t)n : sizeof block;
+            emit(2, block, take); n -= (long)take;
         }
     } else if (!strcmp(argv[1], "flood")) {
         char block[4096]; memset(block, 'x', sizeof block);

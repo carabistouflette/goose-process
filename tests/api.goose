@@ -14,7 +14,7 @@ fn main() {
     assert(out == "\x00a b\x00\";$(false)*\x00" && err.len == 0);
     status = process::run([helper[..], "bytes"], options, out, err);
     assert(process::success(status) && out.len == 256 && err.len == 256);
-    for i in 256 { assert(out[i] == i && err[i] == i); }
+    for i in 256 { assert(out[i] == i && err[i] == 255 - i); }
     for code in [0, 1, 126, 127] {
         let text_storage = str(code);
         let text: const u8[:] = text_storage[..];
