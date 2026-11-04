@@ -18,6 +18,10 @@ must refresh the package fingerprint with `make format`. Never commit generated
 compiler output, credentials, or private workspace notes. Compiler changes
 require a reviewed full upstream revision in `GOOSE_REVISION` and full validation.
 
+Native validation/setup changes also require `make fuzz` with Clang/libFuzzer.
+It must keep the spawn interception: never execute mutated command paths. Preserve
+crash artifacts and sanitizer diagnostics when investigating a fuzz failure.
+
 Profile before optimizing. Preserve safety checks, keep raw benchmark samples
 with compiler, platform, flags and source revision, and avoid universal claims
 from local measurements. CI checks execution rather than timing thresholds.

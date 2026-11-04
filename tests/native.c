@@ -13,6 +13,7 @@
 #include <sys/wait.h>
 #include <sys/resource.h>
 #include <sys/time.h>
+#include <sys/mman.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -36,6 +37,39 @@ static int descriptors(void) {
     DIR *dir = opendir("/proc/self/fd"); assert(dir);
     int n = 0; while (readdir(dir)) ++n;
     closedir(dir); return n;
+}
+static void guarded_boundaries(void) {
+    long page = sysconf(_SC_PAGESIZE); assert(page >= 4096);
+    uint8_t *regions[5], *ends[5];
+    for (int i = 0; i < 5; ++i) {
+        regions[i] = mmap(NULL, (size_t)page * 3, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+        assert(regions[i] != MAP_FAILED);
+        assert(mprotect(regions[i] + page, (size_t)page, PROT_READ | PROT_WRITE) == 0);
+        ends[i] = regions[i] + page * 2;
+    }
+    size_t length = strlen(helper) + 1 + sizeof "bytes";
+    assert(length <= (size_t)page);
+    uint8_t *packed = ends[0] - length;
+    memcpy(packed, helper, strlen(helper) + 1);
+    memcpy(packed + strlen(helper) + 1, "bytes", sizeof "bytes");
+    uint8_t *cwd = ends[1] - 4; memcpy(cwd, "/tmp", 4);
+    assert(mprotect(regions[0] + page, (size_t)page, PROT_READ) == 0);
+    assert(mprotect(regions[1] + page, (size_t)page, PROT_READ) == 0);
+    int64_t *metadata = (int64_t *)(ends[4] - 6 * sizeof(int64_t));
+    int result = (int)gp_run((gp_input){packed, (int64_t)length}, (gp_input){cwd, 4}, 2000, 1,
+        (gp_output){ends[2] - 256, 256}, (gp_output){ends[3] - 256, 256}, (gp_metadata){metadata, 6});
+    assert(result == 0 && metadata[1] == 0 && metadata[3] == 256 && metadata[4] == 256);
+    for (int i = 0; i < 256; ++i) {
+        assert((ends[2] - 256)[i] == i && (ends[3] - 256)[i] == 255 - i);
+    }
+    /* Empty spans may point immediately at an inaccessible page. */
+    result = (int)gp_run((gp_input){packed, (int64_t)length}, (gp_input){ends[1], 0}, 2000, 1,
+        (gp_output){ends[2], 0}, (gp_output){ends[3], 0}, (gp_metadata){metadata, 6});
+    assert(result == 5 && metadata[3] == 0 && metadata[4] == 0 && metadata[5] == 0);
+    result = (int)gp_run((gp_input){ends[0], 0}, (gp_input){ends[1], 0}, 2000, 1,
+        (gp_output){ends[2], 0}, (gp_output){ends[3], 0}, (gp_metadata){metadata, 6});
+    assert(result == 1);
+    for (int i = 0; i < 5; ++i) assert(munmap(regions[i], (size_t)page * 3) == 0);
 }
 static void malformed(void) {
     uint8_t good[] = "/bin/true\0";
@@ -137,6 +171,7 @@ static void interrupted_wait(void) {
 int main(int argc, char **argv) {
     assert(argc == 2); helper = argv[1]; assert(helper[0] == '/');
     malformed();
+    guarded_boundaries();
     int before = descriptors();
     assert(run("bytes", NULL, 256, 2000, 1) == 0 && meta[1] == 0);
     for (int i = 0; i < 256; ++i) assert(out[i] == i && err[i] == 255 - i);

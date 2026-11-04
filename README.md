@@ -47,6 +47,7 @@ make format check test
 make sanitize SANITIZER_CC=gcc
 make sanitize SANITIZER_CC=clang
 make bench BENCH_ITERATIONS=100
+make fuzz FUZZ_RUNS=10000
 ```
 
 Setup requires Git, CMake 3.27+, C/C++20 compilers and Make. Tests require Python
@@ -59,6 +60,11 @@ input/output ownership rejection; binary and adversarial argument oracles;
 simultaneous stream saturation, exact limits and cancellation; signal defaults;
 closed standard descriptors; descriptor/zombie leaks; concurrent callers; and
 injected syscall failures. GCC and Clang ASan/UBSan instrument the native kernel.
+Protected pages check exact input/output boundaries, resource-limit tests check
+descriptor exhaustion, and signal storms exercise interrupted cancellation.
+Traced-child stop notifications have real and deterministic injected regressions.
+The optional Clang/libFuzzer target mutates native validation/setup inputs under
+ASan/UBSan and refuses all execution through an intercepted spawn call.
 The [benchmark](bench/README.md) records local end-to-end measurements and raw
 samples; there is no universal throughput claim.
 

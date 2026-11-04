@@ -26,3 +26,5 @@ jobs:
       - run: make bench BENCH_ITERATIONS=5
         env:
           BENCH_CC: ${{ matrix.cc }}
+      - run: make fuzz
+        if: ${{ matrix.cc == 'clang' }}
