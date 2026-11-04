@@ -8,6 +8,8 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import platform
+import selectors
 import signal
 import subprocess
 import sys
@@ -32,6 +34,38 @@ fn main() {
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def resources(pid):
+    """Current Linux process values, not a subprocess spawner's high-water RSS."""
+    root = Path('/proc') / str(pid)
+    status = root.joinpath('status').read_text()
+    values = dict(line.split(':', 1) for line in status.splitlines() if ':' in line)
+    return dict(rss_kib=int(values['VmRSS'].split()[0]),
+                fds=len(list(root.joinpath('fd').iterdir())))
+
+
+def drain_for(proc, seconds):
+    """Drain both finite fixture streams during its supervised hold, with a cap."""
+    captured = [bytearray(), bytearray()]
+    deadline = time.monotonic() + seconds
+    with selectors.DefaultSelector() as selector:
+        for index, stream in enumerate([proc.stdout, proc.stderr]):
+            os.set_blocking(stream.fileno(), False)
+            selector.register(stream, selectors.EVENT_READ, index)
+        while time.monotonic() < deadline:
+            for key, _ in selector.select(min(0.02, max(0, deadline-time.monotonic()))):
+                try:
+                    chunk = os.read(key.fd, 65536)
+                except BlockingIOError:
+                    continue
+                if not chunk:
+                    selector.unregister(key.fileobj)
+                    continue
+                captured[key.data].extend(chunk)
+                if len(captured[key.data]) > 1024*1024:
+                    raise RuntimeError('fixture stream exceeded 1 MiB controller cap')
+    return tuple(bytes(value) for value in captured)
 
 
 def service_identity(proc, child):
@@ -100,12 +134,22 @@ def main():
     parser.add_argument('--honk', type=Path, required=True)
     parser.add_argument('--goose', type=Path, required=True)
     parser.add_argument('--rounds', type=int, default=12)
+    parser.add_argument('--duration-seconds', type=int, default=0,
+                        help='measured duration after warmup; overrides rounds')
+    parser.add_argument('--warmup-rounds', type=int, default=0)
+    parser.add_argument('--hold-seconds', type=float, default=None)
+    parser.add_argument('--pressure', action='store_true',
+                        help='write and verify 256 KiB on each service stream')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--consumer-revision', required=True)
     parser.add_argument('--consumer-source', type=Path, required=True)
     args = parser.parse_args()
     if not 1 <= args.rounds <= 100:
         parser.error('rounds must be 1..100')
+    if not 0 <= args.duration_seconds <= 3600 or not 0 <= args.warmup_rounds <= 100:
+        parser.error('duration must be 0..3600 and warmup rounds 0..100')
+    if args.hold_seconds is not None and not 0.03 <= args.hold_seconds <= 30:
+        parser.error('hold seconds must be finite and 0.03..30')
     honk, goose = args.honk.resolve(), args.goose.resolve()
     identities = {str(p): digest(p) for p in [honk, goose]}
     script = Path(__file__).resolve()
@@ -117,7 +161,16 @@ def main():
             raise RuntimeError('consumer checkout differs from requested clean revision')
     verify_source()
     before_fds = len(list(Path('/proc/self/fd').iterdir()))
+    source = SOURCE
+    if args.pressure:
+        source = source.replace('    for i in 6000',
+                                '    for n in 4096 { write_stdout("' + 'X'*64 + '"); '
+                                'write_stderr("' + 'Y'*64 + '"); }\n'
+                                '    flush_stdout();\n    for i in 6000')
     samples = []
+    started_at = datetime.now(timezone.utc).isoformat()
+    measured_start = None
+    measured_started_at = None
     with tempfile.TemporaryDirectory(prefix='goose process soak ') as temporary:
         root = Path(temporary)
         project = root / 'service'
@@ -134,15 +187,26 @@ def main():
             finally:
                 cleanup(proc)
         command('new', str(project), '--name', 'process_soak')
-        (project/'src/main.goose').write_text(SOURCE)
+        (project/'src/main.goose').write_text(source)
         command('build')
-        for index in range(args.rounds):
+        index = 0
+        while True:
+            if index == args.warmup_rounds:
+                measured_start = time.monotonic()
+                measured_started_at = datetime.now(timezone.utc).isoformat()
+            measured = index >= args.warmup_rounds
+            if measured:
+                if args.duration_seconds:
+                    if time.monotonic()-measured_start >= args.duration_seconds:
+                        break
+                elif index-args.warmup_rounds >= args.rounds:
+                    break
             # A natural exit and a supervised service share the real build/run path.
             marker = root / f'once-{index}'
             result = command('run', '--', 'once', str(marker))
             if b'once\n' not in result.stdout or not marker.exists():
                 raise RuntimeError('natural command output/marker missing')
-            samples.append(dict(round=index, mode='natural', returncode=result.returncode))
+            samples.append(dict(round=index, measured=measured, mode='natural', returncode=result.returncode))
             marker = root / f'service-{index}'
             child_fd = None
             proc = subprocess.Popen([str(honk), 'run', '--', 'serve', str(marker)], cwd=project,
@@ -160,17 +224,22 @@ def main():
                 for path in locks:
                     lock_state(path, True)
                 # One longer hold tests repeated bounded steps without busy waiting.
-                hold = 2.0 if index == 0 else 0.03
-                time.sleep(hold)
+                hold = args.hold_seconds if args.hold_seconds is not None else (2.0 if index == 0 else 0.03)
+                prefix_out, prefix_err = drain_for(proc, hold)
+                current = dict(controller=resources(os.getpid()),
+                               honk=resources(proc.pid), service=resources(child))
                 for path in locks:
                     lock_state(path, True)
                 number = signal.SIGTERM if index % 2 == 0 else signal.SIGINT
                 started = time.monotonic()
                 proc.send_signal(number)
                 out, err = proc.communicate(timeout=10)
+                out, err = prefix_out + out, prefix_err + err
                 elapsed = time.monotonic() - started
                 if proc.returncode != 128 + number or b'service-ready\n' not in out:
                     raise RuntimeError(('cancellation mismatch', proc.returncode, out, err))
+                if args.pressure and (out.count(b'X') != 262144 or err != b'Y'*262144):
+                    raise RuntimeError('finite stdout/stderr pressure payload incomplete')
                 try:
                     signal.pidfd_send_signal(child_fd, 0)
                 except ProcessLookupError:
@@ -181,12 +250,25 @@ def main():
                     lock_state(path, False)
                 if b'AddressSanitizer' in err or b'runtime error:' in err:
                     raise RuntimeError(err)
-                samples.append(dict(round=index, mode='service', signal=number,
+                samples.append(dict(round=index, measured=measured, mode='service', signal=number,
                                     returncode=proc.returncode, held_seconds=hold,
                                     cancellation_return_seconds=elapsed,
-                                    child_gone=True, locks_released=True))
+                                    child_gone=True, locks_released=True,
+                                    resources=current, stdout_bytes=len(out), stderr_bytes=len(err)))
             finally:
                 cleanup(proc, child_fd)
+            settled = resources(os.getpid())
+            if settled['fds'] != before_fds:
+                raise RuntimeError('controller descriptor growth between rounds')
+            samples[-1]['controller_after_cleanup'] = settled
+            try:
+                os.waitpid(-1, os.WNOHANG)
+            except ChildProcessError:
+                pass
+            else:
+                raise RuntimeError('controller retained an unwaited child between rounds')
+            index += 1
+        measured_elapsed = time.monotonic()-measured_start
         command('clean')
     after_fds = len(list(Path('/proc/self/fd').iterdir()))
     if after_fds != before_fds:
@@ -207,9 +289,15 @@ def main():
                   executable_sha256={'honk': identities[str(honk)], 'goose': identities[str(goose)]},
                   harness_sha256=script_identity,
                   goose_version=subprocess.check_output([str(goose), 'version'], text=True, timeout=30).strip(),
-                  rounds=args.rounds, samples=samples, controller_fds=[before_fds, after_fds],
-                  fixture_sha256=hashlib.sha256(SOURCE.encode()).hexdigest(),
-                  scope='Controlled real compiled Goose service via Honk build/run; direct signals only. Short bounded soak, not universal reliability, terminal-launch classification or a memory benchmark.')
+                  rounds=index, warmup_rounds=args.warmup_rounds,
+                  requested_duration_seconds=args.duration_seconds,
+                  measured_elapsed_seconds=measured_elapsed,
+                  started_at=started_at, measured_started_at=measured_started_at,
+                  pressure=args.pressure, samples=samples, controller_fds=[before_fds, after_fds],
+                  platform=platform.platform(), python=platform.python_version(),
+                  controller_affinity=sorted(os.sched_getaffinity(0)),
+                  fixture_sha256=hashlib.sha256(source.encode()).hexdigest(),
+                  scope='Controlled real compiled Goose service via Honk build/run; direct signals only. Current procfs RSS/FD snapshots, fresh Honk/service each round; controller retains raw samples. Not universal reliability, continuous Honk uptime, terminal-launch classification, or proof of absence of leaks.')
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2)+'\n')
     print(f'Passed {len(samples)} checked runs; report {args.output}')
