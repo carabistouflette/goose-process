@@ -85,3 +85,8 @@ Honk subsequently promoted the reviewed integrations to public main at
 The [controlled real-service soak](../bench/SOAK.md) passed 24 checked runs from
 an isolated public checkout. No library runtime fix was justified; this bounded
 workload does not establish general service reliability or memory behavior.
+
+A later [sustained consumer soak](../bench/SUSTAINED.md) retained 901 measured
+seconds after warmup, including finite pressure on both streams. All 722
+executions passed. Current RSS/descriptor snapshots and their measurement
+limits are published with all raw samples; no runtime patch was warranted.

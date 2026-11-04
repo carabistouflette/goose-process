@@ -49,3 +49,44 @@ The fixture's finite sleep loop is a safety backstop. Measurements on a shared
 host are functional/resource observations, not isolated throughput benchmarks.
 Exact consumer, executable, compiler, fixture and harness identities, platform,
 CPU affinity, UTC timestamps, elapsed duration and all samples are retained.
+
+## Recorded result: 2026-11-04
+
+[All raw samples and identities](results/honk-sustained-2026-11-04.json) are retained.
+The frozen harness source was commit
+`b0497c4cba1f4f9bfa5b6b280ee3be07c99c888c`, with SHA-256
+`d283263f298e907681d50a589bbd091986f7b95dfd640b6cfa1b206be74589fd`.
+Consumer source was clean Honk
+`453aa53dc7b20622782423c64cc180097f653650`; executable/compiler/fixture hashes
+were verified before and after the run and are recorded in the JSON.
+
+The measured interval began at 18:32:22 UTC and completed 901.2075 seconds after
+10 warmup rounds. All 361 round pairs (722 executions) passed, including 351
+measured pairs (702 executions). Measured services received 176 SIGTERM and
+175 SIGINT cancellations. Each service delivered 262,144 bytes per stream.
+All service identities were gone after cancellation and all locks released.
+The controller retained no unwaited child after each round, and its settled FD
+count was 4 at every checkpoint. During holds, measured descriptor counts were
+controller 7, Honk 6 and service 3 throughout.
+
+Measured current RSS snapshots ranged from 24,176 to 25,556 KiB for the
+controller, 8,336 to 8,816 KiB for fresh Honk processes, and 2,444 to 2,664 KiB
+for fresh services. These observed ranges are not resource limits. Settled
+controller RSS medians for the first and last ten measured pairs were 24,178
+and 25,546 KiB respectively. The controller retains samples and Python allocator
+state; this increase is recorded without attributing it solely to either
+instrumentation or a leak. Fresh-process RSS comparisons cannot establish
+long-lived consumer memory stability.
+
+The host was shared Linux x86-64/glibc, with Python 3.14.9 and CPU0 affinity
+inherited by children. No exclusive-core or isolated performance claim is made.
+This was one sustained functional series, not multiple independent repeats.
+No production runtime defect was reproduced; no patch release or consumer repin
+is justified by this result.
+
+Two independent harness reviews preceded the run. The safety reviewer identified
+an expired numeric-PID sampling race; checks of the anchored pidfd now bracket
+resource reads. The measurement reviewer corrected the documented order of
+payload validation and cancellation. Pressure and duration/warmup preflights
+passed, as did `make check`. The optional sustained soak is local validation;
+it is not executed by the normal hosted CI workflow.
