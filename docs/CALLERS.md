@@ -113,3 +113,38 @@ Choose precedence explicitly: a latched parent cancellation may win after cleanu
 even if the child handled that signal and exited0. Do not mistake Error.None for
 exit0; use exit_code/signal or success for completed command outcomes. Never
 ignore unreaped_pid while applying a status mapping.
+
+## Reference caller regression
+
+[tests/caller.c](../tests/caller.c) is a scoped test application around the
+private native ABI, not a public C adapter to vendor. It demonstrates the caller
+boundary while production applications use the Goose Child API. `make native`
+and both sanitizer targets run three coordinated scenarios:
+
+- A direct SIGTERM is deliberately queued while the caller's startup mask is
+  held. A test readiness handshake makes registration-before-forwarding and
+  graceful cleanup deterministic; the project-style flock remains held.
+- A registered child receives one forwarded direct SIGINT, enters cleanup and
+  waits for a controller gate. A competing lock attempt fails until cleanup,
+  reaping and caller completion have finished. Parent cancellation status wins
+  even when the child handles the signal and exits 0.
+- Both native cancellation routes are denied so close really transfers an
+  unreaped PID. Repeated close does not transfer or signal again. A separate
+  recovery owner kills/waits while retaining the lock and default SIGCHLD;
+  two injected wait denials keep the scope alive until the controller permits
+  successful terminal reaping.
+
+The test's signal handlers only latch flags. Its child blocks the relevant
+signals before readiness and uses sigsuspend to avoid a lost-wakeup fixture
+race. All test-created children are reaped and descriptors checked for leaks.
+The fault wrappers are test-only, selected routes; no global library handler
+or recovery policy is installed.
+
+This test queues a direct signal before launching on purpose to exercise the
+handoff. An application may instead consume pending cancellation and avoid
+launching at all. It does not prove terminal launch-window duplicate suppression:
+a latched kernel-origin SIGINT alone cannot distinguish an event before child
+creation from one the child already received during start. There is no atomic
+onspawn callback in this API. Registered-child group checks remain observational;
+launch-window classification and concurrent group changes remain best effort.
+Honk's own terminal, status, lock and recovery integration tests remain required.

@@ -30,6 +30,15 @@ Separate lifecycle, security/benchmark and final publication reviews found no
 remaining library blocker in the examined changes. Source review and targeted
 probes are not exhaustive race analysis or a proof of correctness.
 
+The subsequent [reference caller regression](../tests/caller.c) adds three scoped
+application scenarios: direct startup cancellation, lock retention during graceful
+cleanup, and exceptional transfer with denied recovery waits. Both independent
+reviewers approved source SHA-256
+`670978b8adb1b36ba93afd22a0f9cd241b6344dfaeedcb93f0413212f1c36658`.
+Normal execution and GCC/Clang fortified ASan/UBSan passed. It is a private-ABI
+test, not a public C adapter or proof of Honk behavior; terminal launch timing
+and arbitrary signal storms remain outside these scenarios.
+
 [Standard-library results](../bench/compare/RESULTS.md) retain their successful-
 workload policy differences. [Shared-engine profiling](../bench/compare/SHARED.md)
 uses the same C kernel for both front ends, so shared defects remain shared;

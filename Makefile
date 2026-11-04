@@ -10,6 +10,7 @@ CFLAGS = -std=c11 -Wall -Wextra -Werror
 DEADLINE_WRAPS = -Wl,--wrap=clock_gettime -Wl,--wrap=poll -Wl,--wrap=__poll_chk -Wl,--wrap=posix_spawn
 LIFECYCLE_WRAPS = -Wl,--wrap=clock_gettime,--wrap=poll,--wrap=__poll_chk,--wrap=syscall,--wrap=kill
 EXTENDED_WRAPS = -Wl,--wrap=socketpair,--wrap=shutdown,--wrap=send
+CALLER_WRAPS = -Wl,--wrap=syscall,--wrap=kill,--wrap=waitpid
 
 .PHONY: setup format check test helpers native sanitize bench compare compare-check fuzz profile memcheck
 setup:
@@ -46,6 +47,8 @@ test: helpers
 	python3 tests/ownership.py $(abspath $(GOOSE))
 	$(MAKE) native
 native: helpers
+	$(CC) $(CFLAGS) -O2 tests/caller.c $(NATIVE_SOURCES) $(CALLER_WRAPS) -o .build/caller
+	python3 scripts/run.py .build/caller
 	$(CC) $(CFLAGS) -O2 tests/extended.c $(NATIVE_SOURCES) $(EXTENDED_WRAPS) -o .build/extended
 	python3 scripts/run.py .build/extended
 	$(CC) $(CFLAGS) -O2 tests/lifecycle.c $(NATIVE_SOURCES) $(LIFECYCLE_WRAPS) -o .build/lifecycle
@@ -63,6 +66,8 @@ native: helpers
 	$(CC) $(CFLAGS) -O2 -shared -fPIC tests/validation.c $(NATIVE_SOURCES) -Wl,--wrap=posix_spawn -Wl,--wrap=clock_gettime -o .build/validation.so
 	python3 tests/validation.py
 sanitize: helpers
+	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/caller.c $(NATIVE_SOURCES) $(CALLER_WRAPS) -o .build/caller-sanitize
+	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/caller-sanitize
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/extended.c $(NATIVE_SOURCES) $(EXTENDED_WRAPS) -o .build/extended-sanitize
 	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/extended-sanitize
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/lifecycle.c $(NATIVE_SOURCES) $(LIFECYCLE_WRAPS) -o .build/lifecycle-sanitize
