@@ -72,6 +72,9 @@ baselines, with their work included in timing. This harness makes no such claim.
 
 ## Shared-kernel diagnostic track
 
+[Recorded profiling results](SHARED.md) include checked samples and separate
+syscall summaries.
+
 ```sh
 python3 bench/compare/measure.py --shared-kernel --build-only
 python3 bench/compare/measure.py --shared-kernel --cpu 0 --rounds 9 --iterations 40

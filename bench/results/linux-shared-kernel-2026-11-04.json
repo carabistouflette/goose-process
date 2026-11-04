@@ -1,0 +1,1007 @@
+{
+  "timestamp": "2026-11-04T12:54:25.531690+00:00",
+  "cpu": "Intel(R) Core(TM) Ultra 7 258V",
+  "affinity_cpu": 0,
+  "platform": "Linux-7.2.11-arch1-1-x86_64-with-glibc2.44",
+  "libc": [
+    "glibc",
+    "2.44"
+  ],
+  "source_revision": "3a7e6f8f50101d4f8aac8386f58f4c5a4a1c86d3",
+  "source_dirty": false,
+  "versions": {
+    "Goose": "goose eadca40 (runtime 3025e5810379)",
+    "C": "gcc (GCC) 16.2.1 20260810\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+    "Rust": "rustc 1.101.0-nightly (822182db4 2026-10-13)\nbinary: rustc\ncommit-hash: 822182db4c4a1827256881d8c7aa685f0bcf2b11\ncommit-date: 2026-10-13\nhost: x86_64-unknown-linux-gnu\nrelease: 1.101.0-nightly\nLLVM version: 23.1.3",
+    "Python": "Python 3.14.9"
+  },
+  "build_flags": {
+    "C/Goose": [
+      "-O2"
+    ],
+    "Rust": [
+      "-C",
+      "opt-level=2"
+    ],
+    "native_C": [
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-O2",
+      "-fPIC"
+    ]
+  },
+  "iterations": 40,
+  "warmups_per_sample": 3,
+  "rounds": 9,
+  "shuffle_seed": 3025,
+  "unit": "nanoseconds per successful call, including output verification",
+  "aggregation": "Each sample is a batch mean; medians are medians of batch means, not individual-call latency medians.",
+  "track": "shared-native-kernel diagnostic",
+  "contract": "Both front ends call the identical native C engine with identical caps/deadlines/signal reset/FD isolation/socket input. Rust wrapper is diagnostic, not an independent Rust process implementation.",
+  "host_context": {
+    "load_average": [
+      3.33642578125,
+      4.0693359375,
+      5.013671875
+    ],
+    "environment_entries": 77,
+    "environment_bytes": 3225,
+    "scheduler_open_fds": 4,
+    "governor": "powersave"
+  },
+  "source_sha256": {
+    "process.goose": "45560bb7843592b988df1c4232f30c2d34f7b8dce9a019cbd96fd6229da0969f",
+    "process.build": "9243846f6cfdb63e4891a6f5c54420843c8f3aef571e0d77af5ce1d29518468b",
+    "GOOSE_REVISION": "64e14b181dfe96743211738fb0f1b1f7798ea940da2ca50ff122e6f028c24e15",
+    "native/internal.h": "b2c259a1cca4ad5dabd41fa979a4bfdaa6b143e356944d3b0dc57f824d2f901a",
+    "native/launch.c": "3ead2723d3da3c6d83e44fde7d37ad28eddbd6f299296f62c306ecf1f8be63a3",
+    "native/process.c": "6fdabdeb12be83c1ce0d259661dc66d61c0dc1c60220f5ca901d5bc5c5796e19",
+    "native/process.h": "cea1518e8bdf6a37710473f9f96d5e588adeafbace7b7393c1b3f5a39ebe8d38",
+    "bench/compare/README.md": "ffc9a38c7ad6475307c5ba6158dc579013f97d2da2eedb6cd96455a2a16128b4",
+    "bench/compare/RESULTS.md": "6fc8b206ae3887d8f456808c79b77c655729ded1ad30257ff263eb0f3c60e448",
+    "bench/compare/driver.go": "8fc24fa0f6932616eac7a7dbd1c266070249c81c383404b07b0d139a2e9145e7",
+    "bench/compare/driver.goose": "e932e1ce676b0b712ad7c95d1611beb3e81b8e4bb550c40a40e996f23c8cf0af",
+    "bench/compare/driver.py": "2fa355aef7809f8b515d692468c7eaae79f7d78b18a558405c2c7749427ad23a",
+    "bench/compare/driver.rs": "3f0d312f352681bb8b621d842ab3fc2151c9b96d83ac01230d4c5138e6fbdaae",
+    "bench/compare/fixture.c": "d5831a078721468c3976ee97997d8fbaff09b32dd864a7ba4a24f5cf9f278f47",
+    "bench/compare/measure.py": "0a5c063983d32dd27a7144005077d96364879c12ea36ce274121f84d81b26a5c",
+    "bench/compare/shared.rs": "5db8e14fa5b5b4d825887bd42da4f63fedc5e38b4e772c2f56df6af97ddc3c51"
+  },
+  "executable_sha256": {
+    ".build/compare-fixture": "6731f56ec0c146cb035124de4fc926e56a27ee06d70d64edcacb5649b8eaa9de",
+    ".build/compare-goose": "995a359753683e8ba2f0c6f9ebbb76c0ed65d1adddc0c18de0d2fc769a99e8cd",
+    ".build/compare-shared": "7a9931156ea27f5cc064d634ff39cafb55001276e34ade93cdf6480ef27e54cf"
+  },
+  "samples": {
+    "empty": {
+      "Goose": [
+        571424,
+        598214,
+        579925,
+        581308,
+        604313,
+        580980,
+        587293,
+        582842,
+        579897
+      ],
+      "Rust/shared-kernel": [
+        638030,
+        589840,
+        577514,
+        595684,
+        577949,
+        612856,
+        574917,
+        596886,
+        586591
+      ]
+    },
+    "args": {
+      "Goose": [
+        631108,
+        685525,
+        642843,
+        659179,
+        647095,
+        656513,
+        630126,
+        649338,
+        654374
+      ],
+      "Rust/shared-kernel": [
+        673544,
+        655906,
+        635333,
+        637579,
+        640172,
+        688662,
+        633410,
+        628014,
+        641638
+      ]
+    },
+    "streams": {
+      "Goose": [
+        695529,
+        685253,
+        684577,
+        669152,
+        706247,
+        710052,
+        674040,
+        678809,
+        671485
+      ],
+      "Rust/shared-kernel": [
+        705756,
+        695242,
+        654295,
+        680808,
+        657233,
+        640716,
+        686192,
+        654709,
+        718468
+      ]
+    },
+    "input": {
+      "Goose": [
+        1059176,
+        1043370,
+        972860,
+        967784,
+        975675,
+        974917,
+        1000075,
+        971052,
+        1004081
+      ],
+      "Rust/shared-kernel": [
+        1050611,
+        1004908,
+        988083,
+        976397,
+        998059,
+        978575,
+        989933,
+        974505,
+        1073529
+      ]
+    },
+    "environment": {
+      "Goose": [
+        535912,
+        534893,
+        542480,
+        535967,
+        534651,
+        520331,
+        540109,
+        536240,
+        539749
+      ],
+      "Rust/shared-kernel": [
+        567742,
+        548529,
+        530107,
+        531957,
+        542888,
+        605408,
+        560104,
+        535506,
+        534458
+      ]
+    },
+    "redirect": {
+      "Goose": [
+        686458,
+        629358,
+        645370,
+        633523,
+        624763,
+        685024,
+        645527,
+        646390,
+        634652
+      ],
+      "Rust/shared-kernel": [
+        668678,
+        650947,
+        619455,
+        627107,
+        634455,
+        642558,
+        646080,
+        622613,
+        666344
+      ]
+    }
+  },
+  "raw": [
+    {
+      "round": 0,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "1059176",
+      "ns_per_call": 1059176
+    },
+    {
+      "round": 0,
+      "mode": "empty",
+      "variant": "Rust/shared-kernel",
+      "stdout": "638030",
+      "ns_per_call": 638030
+    },
+    {
+      "round": 0,
+      "mode": "redirect",
+      "variant": "Rust/shared-kernel",
+      "stdout": "668678",
+      "ns_per_call": 668678
+    },
+    {
+      "round": 0,
+      "mode": "environment",
+      "variant": "Rust/shared-kernel",
+      "stdout": "567742",
+      "ns_per_call": 567742
+    },
+    {
+      "round": 0,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "631108",
+      "ns_per_call": 631108
+    },
+    {
+      "round": 0,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "686458",
+      "ns_per_call": 686458
+    },
+    {
+      "round": 0,
+      "mode": "streams",
+      "variant": "Rust/shared-kernel",
+      "stdout": "705756",
+      "ns_per_call": 705756
+    },
+    {
+      "round": 0,
+      "mode": "input",
+      "variant": "Rust/shared-kernel",
+      "stdout": "1050611",
+      "ns_per_call": 1050611
+    },
+    {
+      "round": 0,
+      "mode": "args",
+      "variant": "Rust/shared-kernel",
+      "stdout": "673544",
+      "ns_per_call": 673544
+    },
+    {
+      "round": 0,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "695529",
+      "ns_per_call": 695529
+    },
+    {
+      "round": 0,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "535912",
+      "ns_per_call": 535912
+    },
+    {
+      "round": 0,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "571424",
+      "ns_per_call": 571424
+    },
+    {
+      "round": 1,
+      "mode": "environment",
+      "variant": "Rust/shared-kernel",
+      "stdout": "548529",
+      "ns_per_call": 548529
+    },
+    {
+      "round": 1,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "629358",
+      "ns_per_call": 629358
+    },
+    {
+      "round": 1,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "598214",
+      "ns_per_call": 598214
+    },
+    {
+      "round": 1,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "685525",
+      "ns_per_call": 685525
+    },
+    {
+      "round": 1,
+      "mode": "streams",
+      "variant": "Rust/shared-kernel",
+      "stdout": "695242",
+      "ns_per_call": 695242
+    },
+    {
+      "round": 1,
+      "mode": "redirect",
+      "variant": "Rust/shared-kernel",
+      "stdout": "650947",
+      "ns_per_call": 650947
+    },
+    {
+      "round": 1,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "1043370",
+      "ns_per_call": 1043370
+    },
+    {
+      "round": 1,
+      "mode": "args",
+      "variant": "Rust/shared-kernel",
+      "stdout": "655906",
+      "ns_per_call": 655906
+    },
+    {
+      "round": 1,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "534893",
+      "ns_per_call": 534893
+    },
+    {
+      "round": 1,
+      "mode": "empty",
+      "variant": "Rust/shared-kernel",
+      "stdout": "589840",
+      "ns_per_call": 589840
+    },
+    {
+      "round": 1,
+      "mode": "input",
+      "variant": "Rust/shared-kernel",
+      "stdout": "1004908",
+      "ns_per_call": 1004908
+    },
+    {
+      "round": 1,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "685253",
+      "ns_per_call": 685253
+    },
+    {
+      "round": 2,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "645370",
+      "ns_per_call": 645370
+    },
+    {
+      "round": 2,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "542480",
+      "ns_per_call": 542480
+    },
+    {
+      "round": 2,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "684577",
+      "ns_per_call": 684577
+    },
+    {
+      "round": 2,
+      "mode": "input",
+      "variant": "Rust/shared-kernel",
+      "stdout": "988083",
+      "ns_per_call": 988083
+    },
+    {
+      "round": 2,
+      "mode": "redirect",
+      "variant": "Rust/shared-kernel",
+      "stdout": "619455",
+      "ns_per_call": 619455
+    },
+    {
+      "round": 2,
+      "mode": "environment",
+      "variant": "Rust/shared-kernel",
+      "stdout": "530107",
+      "ns_per_call": 530107
+    },
+    {
+      "round": 2,
+      "mode": "empty",
+      "variant": "Rust/shared-kernel",
+      "stdout": "577514",
+      "ns_per_call": 577514
+    },
+    {
+      "round": 2,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "579925",
+      "ns_per_call": 579925
+    },
+    {
+      "round": 2,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "642843",
+      "ns_per_call": 642843
+    },
+    {
+      "round": 2,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "972860",
+      "ns_per_call": 972860
+    },
+    {
+      "round": 2,
+      "mode": "streams",
+      "variant": "Rust/shared-kernel",
+      "stdout": "654295",
+      "ns_per_call": 654295
+    },
+    {
+      "round": 2,
+      "mode": "args",
+      "variant": "Rust/shared-kernel",
+      "stdout": "635333",
+      "ns_per_call": 635333
+    },
+    {
+      "round": 3,
+      "mode": "empty",
+      "variant": "Rust/shared-kernel",
+      "stdout": "595684",
+      "ns_per_call": 595684
+    },
+    {
+      "round": 3,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "581308",
+      "ns_per_call": 581308
+    },
+    {
+      "round": 3,
+      "mode": "redirect",
+      "variant": "Rust/shared-kernel",
+      "stdout": "627107",
+      "ns_per_call": 627107
+    },
+    {
+      "round": 3,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "659179",
+      "ns_per_call": 659179
+    },
+    {
+      "round": 3,
+      "mode": "input",
+      "variant": "Rust/shared-kernel",
+      "stdout": "976397",
+      "ns_per_call": 976397
+    },
+    {
+      "round": 3,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "669152",
+      "ns_per_call": 669152
+    },
+    {
+      "round": 3,
+      "mode": "streams",
+      "variant": "Rust/shared-kernel",
+      "stdout": "680808",
+      "ns_per_call": 680808
+    },
+    {
+      "round": 3,
+      "mode": "environment",
+      "variant": "Rust/shared-kernel",
+      "stdout": "531957",
+      "ns_per_call": 531957
+    },
+    {
+      "round": 3,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "535967",
+      "ns_per_call": 535967
+    },
+    {
+      "round": 3,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "967784",
+      "ns_per_call": 967784
+    },
+    {
+      "round": 3,
+      "mode": "args",
+      "variant": "Rust/shared-kernel",
+      "stdout": "637579",
+      "ns_per_call": 637579
+    },
+    {
+      "round": 3,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "633523",
+      "ns_per_call": 633523
+    },
+    {
+      "round": 4,
+      "mode": "empty",
+      "variant": "Rust/shared-kernel",
+      "stdout": "577949",
+      "ns_per_call": 577949
+    },
+    {
+      "round": 4,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "975675",
+      "ns_per_call": 975675
+    },
+    {
+      "round": 4,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "624763",
+      "ns_per_call": 624763
+    },
+    {
+      "round": 4,
+      "mode": "input",
+      "variant": "Rust/shared-kernel",
+      "stdout": "998059",
+      "ns_per_call": 998059
+    },
+    {
+      "round": 4,
+      "mode": "environment",
+      "variant": "Rust/shared-kernel",
+      "stdout": "542888",
+      "ns_per_call": 542888
+    },
+    {
+      "round": 4,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "706247",
+      "ns_per_call": 706247
+    },
+    {
+      "round": 4,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "604313",
+      "ns_per_call": 604313
+    },
+    {
+      "round": 4,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "534651",
+      "ns_per_call": 534651
+    },
+    {
+      "round": 4,
+      "mode": "redirect",
+      "variant": "Rust/shared-kernel",
+      "stdout": "634455",
+      "ns_per_call": 634455
+    },
+    {
+      "round": 4,
+      "mode": "args",
+      "variant": "Rust/shared-kernel",
+      "stdout": "640172",
+      "ns_per_call": 640172
+    },
+    {
+      "round": 4,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "647095",
+      "ns_per_call": 647095
+    },
+    {
+      "round": 4,
+      "mode": "streams",
+      "variant": "Rust/shared-kernel",
+      "stdout": "657233",
+      "ns_per_call": 657233
+    },
+    {
+      "round": 5,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "656513",
+      "ns_per_call": 656513
+    },
+    {
+      "round": 5,
+      "mode": "args",
+      "variant": "Rust/shared-kernel",
+      "stdout": "688662",
+      "ns_per_call": 688662
+    },
+    {
+      "round": 5,
+      "mode": "empty",
+      "variant": "Rust/shared-kernel",
+      "stdout": "612856",
+      "ns_per_call": 612856
+    },
+    {
+      "round": 5,
+      "mode": "environment",
+      "variant": "Rust/shared-kernel",
+      "stdout": "605408",
+      "ns_per_call": 605408
+    },
+    {
+      "round": 5,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "710052",
+      "ns_per_call": 710052
+    },
+    {
+      "round": 5,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "685024",
+      "ns_per_call": 685024
+    },
+    {
+      "round": 5,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "974917",
+      "ns_per_call": 974917
+    },
+    {
+      "round": 5,
+      "mode": "input",
+      "variant": "Rust/shared-kernel",
+      "stdout": "978575",
+      "ns_per_call": 978575
+    },
+    {
+      "round": 5,
+      "mode": "redirect",
+      "variant": "Rust/shared-kernel",
+      "stdout": "642558",
+      "ns_per_call": 642558
+    },
+    {
+      "round": 5,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "580980",
+      "ns_per_call": 580980
+    },
+    {
+      "round": 5,
+      "mode": "streams",
+      "variant": "Rust/shared-kernel",
+      "stdout": "640716",
+      "ns_per_call": 640716
+    },
+    {
+      "round": 5,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "520331",
+      "ns_per_call": 520331
+    },
+    {
+      "round": 6,
+      "mode": "empty",
+      "variant": "Rust/shared-kernel",
+      "stdout": "574917",
+      "ns_per_call": 574917
+    },
+    {
+      "round": 6,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "587293",
+      "ns_per_call": 587293
+    },
+    {
+      "round": 6,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "645527",
+      "ns_per_call": 645527
+    },
+    {
+      "round": 6,
+      "mode": "input",
+      "variant": "Rust/shared-kernel",
+      "stdout": "989933",
+      "ns_per_call": 989933
+    },
+    {
+      "round": 6,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "540109",
+      "ns_per_call": 540109
+    },
+    {
+      "round": 6,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "630126",
+      "ns_per_call": 630126
+    },
+    {
+      "round": 6,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "674040",
+      "ns_per_call": 674040
+    },
+    {
+      "round": 6,
+      "mode": "streams",
+      "variant": "Rust/shared-kernel",
+      "stdout": "686192",
+      "ns_per_call": 686192
+    },
+    {
+      "round": 6,
+      "mode": "redirect",
+      "variant": "Rust/shared-kernel",
+      "stdout": "646080",
+      "ns_per_call": 646080
+    },
+    {
+      "round": 6,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "1000075",
+      "ns_per_call": 1000075
+    },
+    {
+      "round": 6,
+      "mode": "environment",
+      "variant": "Rust/shared-kernel",
+      "stdout": "560104",
+      "ns_per_call": 560104
+    },
+    {
+      "round": 6,
+      "mode": "args",
+      "variant": "Rust/shared-kernel",
+      "stdout": "633410",
+      "ns_per_call": 633410
+    },
+    {
+      "round": 7,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "649338",
+      "ns_per_call": 649338
+    },
+    {
+      "round": 7,
+      "mode": "streams",
+      "variant": "Rust/shared-kernel",
+      "stdout": "654709",
+      "ns_per_call": 654709
+    },
+    {
+      "round": 7,
+      "mode": "empty",
+      "variant": "Rust/shared-kernel",
+      "stdout": "596886",
+      "ns_per_call": 596886
+    },
+    {
+      "round": 7,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "971052",
+      "ns_per_call": 971052
+    },
+    {
+      "round": 7,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "582842",
+      "ns_per_call": 582842
+    },
+    {
+      "round": 7,
+      "mode": "environment",
+      "variant": "Rust/shared-kernel",
+      "stdout": "535506",
+      "ns_per_call": 535506
+    },
+    {
+      "round": 7,
+      "mode": "redirect",
+      "variant": "Rust/shared-kernel",
+      "stdout": "622613",
+      "ns_per_call": 622613
+    },
+    {
+      "round": 7,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "678809",
+      "ns_per_call": 678809
+    },
+    {
+      "round": 7,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "536240",
+      "ns_per_call": 536240
+    },
+    {
+      "round": 7,
+      "mode": "input",
+      "variant": "Rust/shared-kernel",
+      "stdout": "974505",
+      "ns_per_call": 974505
+    },
+    {
+      "round": 7,
+      "mode": "args",
+      "variant": "Rust/shared-kernel",
+      "stdout": "628014",
+      "ns_per_call": 628014
+    },
+    {
+      "round": 7,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "646390",
+      "ns_per_call": 646390
+    },
+    {
+      "round": 8,
+      "mode": "empty",
+      "variant": "Goose",
+      "stdout": "579897",
+      "ns_per_call": 579897
+    },
+    {
+      "round": 8,
+      "mode": "input",
+      "variant": "Goose",
+      "stdout": "1004081",
+      "ns_per_call": 1004081
+    },
+    {
+      "round": 8,
+      "mode": "empty",
+      "variant": "Rust/shared-kernel",
+      "stdout": "586591",
+      "ns_per_call": 586591
+    },
+    {
+      "round": 8,
+      "mode": "environment",
+      "variant": "Goose",
+      "stdout": "539749",
+      "ns_per_call": 539749
+    },
+    {
+      "round": 8,
+      "mode": "input",
+      "variant": "Rust/shared-kernel",
+      "stdout": "1073529",
+      "ns_per_call": 1073529
+    },
+    {
+      "round": 8,
+      "mode": "streams",
+      "variant": "Rust/shared-kernel",
+      "stdout": "718468",
+      "ns_per_call": 718468
+    },
+    {
+      "round": 8,
+      "mode": "redirect",
+      "variant": "Rust/shared-kernel",
+      "stdout": "666344",
+      "ns_per_call": 666344
+    },
+    {
+      "round": 8,
+      "mode": "streams",
+      "variant": "Goose",
+      "stdout": "671485",
+      "ns_per_call": 671485
+    },
+    {
+      "round": 8,
+      "mode": "redirect",
+      "variant": "Goose",
+      "stdout": "634652",
+      "ns_per_call": 634652
+    },
+    {
+      "round": 8,
+      "mode": "args",
+      "variant": "Rust/shared-kernel",
+      "stdout": "641638",
+      "ns_per_call": 641638
+    },
+    {
+      "round": 8,
+      "mode": "args",
+      "variant": "Goose",
+      "stdout": "654374",
+      "ns_per_call": 654374
+    },
+    {
+      "round": 8,
+      "mode": "environment",
+      "variant": "Rust/shared-kernel",
+      "stdout": "534458",
+      "ns_per_call": 534458
+    }
+  ],
+  "medians": {
+    "empty": {
+      "Goose": 581308,
+      "Rust/shared-kernel": 589840
+    },
+    "args": {
+      "Goose": 649338,
+      "Rust/shared-kernel": 640172
+    },
+    "streams": {
+      "Goose": 684577,
+      "Rust/shared-kernel": 680808
+    },
+    "input": {
+      "Goose": 975675,
+      "Rust/shared-kernel": 989933
+    },
+    "environment": {
+      "Goose": 535967,
+      "Rust/shared-kernel": 542888
+    },
+    "redirect": {
+      "Goose": 645370,
+      "Rust/shared-kernel": 642558
+    }
+  }
+}
