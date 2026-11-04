@@ -248,8 +248,9 @@ int main(int argc, char **argv) {
     struct sigaction old, ignored = {0}; ignored.sa_handler = SIG_IGN;
     assert(sigaction(SIGCHLD, &ignored, &old) == 0);
     assert(run("exit", NULL, 0, 2000, 1) == 3 && meta[0] == EINVAL);
-    ignored.sa_handler = SIG_DFL; ignored.sa_flags = SA_NOCLDWAIT;
-    assert(sigaction(SIGCHLD, &ignored, NULL) == 0);
+    struct sigaction no_wait = {.sa_handler = SIG_DFL, .sa_flags = SA_NOCLDWAIT};
+    assert(sigemptyset(&no_wait.sa_mask) == 0);
+    assert(sigaction(SIGCHLD, &no_wait, NULL) == 0);
     assert(run("exit", NULL, 0, 2000, 1) == 3 && meta[0] == EINVAL && meta[5] == 0);
     assert(sigaction(SIGCHLD, &old, NULL) == 0);
     assert(run("exit", NULL, 0, 2000, 1) == 0 && meta[1] == 0);

@@ -180,12 +180,13 @@ static void check_call(const char *helper, enum Hook hook, int nth, int error,
 }
 
 static void preparation_faults(const char *helper) {
-    int before = descriptors(), sources[3], flags[3];
+    int before = descriptors(), sources[3], flags[3], status_flags[3];
     for (int i = 0; i < 3; ++i) {
         sources[i] = __real_open("/dev/null", O_RDWR | O_CLOEXEC);
         assert(sources[i] >= 3);
         flags[i] = __real_fcntl(sources[i], F_GETFD);
-        assert(flags[i] >= 0);
+        status_flags[i] = __real_fcntl(sources[i], F_GETFL);
+        assert(flags[i] >= 0 && status_flags[i] >= 0);
     }
     int with_sources = descriptors();
     uint8_t change[] = "GOOSE_PROCESS_TEST=present\0";
@@ -208,8 +209,10 @@ static void preparation_faults(const char *helper) {
         require(gp_id(state) == -1 && gp_can_start(state), "failed owner reusable");
         require(gp_close(state, meta) == 3 && values[5] == 0, "failed owner closes without transfer");
         require(descriptors() == with_sources, "partial preparation descriptors restored");
-        for (int i = 0; i < 3; ++i)
+        for (int i = 0; i < 3; ++i) {
             require(__real_fcntl(sources[i], F_GETFD) == flags[i], "borrowed source survives unchanged");
+            require(__real_fcntl(sources[i], F_GETFL) == status_flags[i], "borrowed status flags unchanged");
+        }
         int status;
         require(waitpid(-1, &status, WNOHANG) == -1 && errno == ECHILD, "preparation has no child");
     }

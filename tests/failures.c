@@ -77,7 +77,7 @@ static void recoverable_operations(void) {
     int before = descriptors();
     int64_t storage[24] = {0}, values[6], done = -1;
     gp_metadata state = words(storage, 24), meta = words(values, 6);
-    failure = 0;
+    failure = 0; cancellation = 0;
     assert(start(state, meta, false) == 0);
     observed_pid = (pid_t)gp_id(state); assert(observed_pid > 0);
     wait_denials = 1;
@@ -88,6 +88,7 @@ static void recoverable_operations(void) {
     signal_faults = 2; signal_attempts = 0;
     assert(gp_signal(state, SIGTERM, meta) == 3 && values[0] == EPERM);
     assert(signal_faults == 0 && signal_attempts == 2 && values[5] == 0);
+    assert(cancellation == 0); /* send_signal must not fall back to numeric kill. */
     assert(gp_id(state) == observed_pid && !gp_can_start(state));
     assert(gp_signal(state, 0, meta) == 0 && values[0] == 0);
     assert(gp_signal(state, SIGTERM, meta) == 0);
