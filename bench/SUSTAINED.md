@@ -57,8 +57,9 @@ The frozen harness source was commit
 `b0497c4cba1f4f9bfa5b6b280ee3be07c99c888c`, with SHA-256
 `d283263f298e907681d50a589bbd091986f7b95dfd640b6cfa1b206be74589fd`.
 Consumer source was clean Honk
-`453aa53dc7b20622782423c64cc180097f653650`; executable/compiler/fixture hashes
-were verified before and after the run and are recorded in the JSON.
+`453aa53dc7b20622782423c64cc180097f653650`. Executable, compiler and harness
+hashes were verified before and after the run. Those identities and the
+generated fixture hash are recorded in the JSON.
 
 The measured interval began at 18:32:22 UTC and completed 901.2075 seconds after
 10 warmup rounds. All 361 round pairs (722 executions) passed, including 351
