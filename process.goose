@@ -10,10 +10,11 @@ struct Options {
     output_limit: i64         = 65536,
 }
 struct Status {
-    error:     Error = Error.None,
-    os_error:  i64   = 0,
-    exit_code: i64   = -1,
-    signal:    i64   = 0,
+    error:        Error = Error.None,
+    os_error:     i64   = 0,
+    exit_code:    i64   = -1,
+    signal:       i64   = 0,
+    unreaped_pid: i64   = 0,
 }
 const MAX_ARGUMENTS = 256;
 const MAX_ARGUMENT_BYTES = 65536;
@@ -54,7 +55,7 @@ fn run(args: const (const u8[:])[:], options: Options, out: u8[>..]&, err: u8[>.
     var packed: u8[>..] = [];
     for arg in args { packed.append(arg); packed.push(0); }
     if options.capture { out.resize(options.output_limit, 0); err.resize(options.output_limit, 0); }
-    var meta: i64[5] = [0, -1, 0, 0, 0];
+    var meta: i64[6] = [0, -1, 0, 0, 0, 0];
     let code = native_run(packed, options.cwd, options.timeout_ms,
                           if options.capture { 1 } else { 0 }, out[..], err[..], meta[..]);
     out.resize(meta[3]); err.resize(meta[4]);
@@ -64,5 +65,5 @@ fn run(args: const (const u8[:])[:], options: Options, out: u8[>..]&, err: u8[>.
                 else if code == 3 { Error.SystemError }
                 else if code == 4 { Error.TimedOut }
                 else { Error.OutputLimit };
-    return Status { error: error, os_error: meta[0], exit_code: meta[1], signal: meta[2] };
+    return Status { error: error, os_error: meta[0], exit_code: meta[1], signal: meta[2], unreaped_pid: meta[5] };
 }

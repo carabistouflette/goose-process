@@ -59,7 +59,7 @@ static int64_t milliseconds(void) {
 }
 
 static bool overlaps(gp_output a, gp_output b) {
-    if (!a.len || !b.len) return false;
+    if (a.len <= 0 || b.len <= 0) return false;
     uintptr_t x = (uintptr_t)a.data, y = (uintptr_t)b.data;
     return x <= y ? y - x < (uint64_t)a.len : x - y < (uint64_t)b.len;
 }
@@ -82,9 +82,13 @@ static int drain(int *fd, gp_output target, int64_t *length) {
 
 int64_t gp_run(gp_input packed, gp_input cwd, int64_t timeout_ms,
                int64_t capture, gp_output out, gp_output err, gp_metadata meta) {
-    if (meta.len != 5 || !meta.data) return GP_INVALID;
+    if (meta.len != 6 || !meta.data) return GP_INVALID;
+    gp_output metadata = {(uint8_t *)meta.data, 6 * (int64_t)sizeof(int64_t)};
+    if (overlaps(metadata, out) || overlaps(metadata, err) ||
+        overlaps(metadata, (gp_output){(uint8_t *)packed.data, packed.len}) ||
+        overlaps(metadata, (gp_output){(uint8_t *)cwd.data, cwd.len})) return GP_INVALID;
     meta.data[0] = 0; meta.data[1] = -1; meta.data[2] = 0;
-    meta.data[3] = 0; meta.data[4] = 0;
+    meta.data[3] = 0; meta.data[4] = 0; meta.data[5] = 0;
     if (!packed.data || packed.len < 2 || packed.len > GP_ARG_BYTES ||
         packed.data[0] != '/' || packed.data[packed.len - 1] != 0 ||
         cwd.len < 0 || cwd.len > GP_PATH || (cwd.len && !cwd.data) ||
@@ -116,8 +120,9 @@ int64_t gp_run(gp_input packed, gp_input cwd, int64_t timeout_ms,
     int result = GP_SYSTEM, saved = 0;
     int pipes[2][2] = {{-1, -1}, {-1, -1}}, nullfd = -1, pidfd = -1;
     pid_t pid = -1;
-    bool reaped = false, actions_ready = false;
+    bool reaped = false, actions_ready = false, attributes_ready = false;
     posix_spawn_file_actions_t actions;
+    posix_spawnattr_t attributes;
     int64_t began = milliseconds();
     if (began < 0) goto system_error;
     int64_t deadline = began + timeout_ms;
@@ -133,6 +138,13 @@ int64_t gp_run(gp_input packed, gp_input cwd, int64_t timeout_ms,
     if (saved) goto cleanup;
     actions_ready = true;
 #define ACTION(call) do { saved = (call); if (saved) goto cleanup; } while (0)
+    ACTION(posix_spawnattr_init(&attributes));
+    attributes_ready = true;
+    sigset_t empty_mask, defaults;
+    sigemptyset(&empty_mask); sigfillset(&defaults);
+    ACTION(posix_spawnattr_setsigmask(&attributes, &empty_mask));
+    ACTION(posix_spawnattr_setsigdefault(&attributes, &defaults));
+    ACTION(posix_spawnattr_setflags(&attributes, POSIX_SPAWN_SETSIGMASK | POSIX_SPAWN_SETSIGDEF));
     ACTION(posix_spawn_file_actions_adddup2(&actions, nullfd, STDIN_FILENO));
     if (capture) {
         ACTION(posix_spawn_file_actions_adddup2(&actions, pipes[0][1], STDOUT_FILENO));
@@ -141,7 +153,7 @@ int64_t gp_run(gp_input packed, gp_input cwd, int64_t timeout_ms,
     if (cwd.len) ACTION(posix_spawn_file_actions_addchdir_np(&actions, dir));
     ACTION(posix_spawn_file_actions_addclosefrom_np(&actions, 3));
 #undef ACTION
-    saved = posix_spawn(&pid, argv[0], &actions, NULL, argv, environ);
+    saved = posix_spawn(&pid, argv[0], &actions, &attributes, argv, environ);
     if (saved) { pid = -1; result = GP_LAUNCH; goto cleanup; }
     close_fd(&nullfd);
     close_fd(&pipes[0][1]); close_fd(&pipes[1][1]);
@@ -189,18 +201,35 @@ system_error:
     result = GP_SYSTEM;
 cleanup:
     if (actions_ready) posix_spawn_file_actions_destroy(&actions);
+    if (attributes_ready) posix_spawnattr_destroy(&attributes);
     for (int i = 0; i < 2; ++i) { close_fd(&pipes[i][0]); close_fd(&pipes[i][1]); }
     close_fd(&nullfd);
     if (pid > 0 && !reaped) {
         /* Never signal a reaped PID. No process-global signal state is changed. */
-        if (pidfd >= 0) syscall(SYS_pidfd_send_signal, pidfd, SIGKILL, NULL, 0);
-        else kill(pid, SIGKILL); /* Host must not reap our child; see API contract. */
+        int sent = -1;
+        if (pidfd >= 0) {
+            do { sent = (int)syscall(SYS_pidfd_send_signal, pidfd, SIGKILL, NULL, 0); }
+            while (sent < 0 && errno == EINTR);
+        }
+        /* Some sandboxes permit pidfds but not pidfd_send_signal. The host must
+           not reap our child, so its PID remains reserved for this fallback. */
+        if (sent < 0 && (pidfd < 0 || errno != ESRCH)) {
+            do { sent = kill(pid, SIGKILL); } while (sent < 0 && errno == EINTR);
+        }
+        bool denied = sent < 0 && errno != ESRCH;
+        if (denied) {
+            saved = errno; result = GP_SYSTEM;
+        }
         int status;
         pid_t waited;
-        do { waited = waitpid(pid, &status, 0); } while (waited < 0 && errno == EINTR);
+        do { waited = waitpid(pid, &status, denied ? WNOHANG : 0); }
+        while (waited < 0 && errno == EINTR);
         if (waited == pid) {
             if (WIFEXITED(status)) meta.data[1] = WEXITSTATUS(status);
             else if (WIFSIGNALED(status)) meta.data[2] = WTERMSIG(status);
+        } else if (waited == 0) {
+            /* Cancellation was denied: explicitly transfer this child to caller. */
+            meta.data[5] = pid;
         } else if (!saved) { saved = errno; result = GP_SYSTEM; }
     }
     close_fd(&pidfd);

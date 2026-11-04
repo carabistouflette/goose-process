@@ -67,5 +67,30 @@ fn main() {
     out.append("old"); err.append("old");
     status = process::run([helper[..]], options, out, err);
     assert(status.error == process::Error.InvalidInput && out.len == 0 && err.len == 0);
+    options = process::Options { .. };
+    status = process::run(["/bin/true"], options, out, out);
+    assert(status.error == process::Error.InvalidInput && out.len == 0);
+    var many: (const u8[:])[>..] = [];
+    many.push("/bin/true");
+    for i in 255 { many.push(""); }
+    status = process::run(many, options, out, err);
+    assert(process::success(status));
+    many.push("");
+    status = process::run(many, options, out, err);
+    assert(status.error == process::Error.InvalidInput);
+    var long_text: u8[>..] = [];
+    long_text.resize(16384, 'x');
+    let long_view: const u8[:] = long_text[..];
+    status = process::run(["/bin/true", long_view], options, out, err);
+    assert(process::success(status));
+    for limit in [-1, 1048577] {
+        options.output_limit = limit;
+        status = process::run(["/bin/true"], options, out, err);
+        assert(status.error == process::Error.InvalidInput);
+    }
+    options.output_limit = 65536;
+    options.cwd = "bad\x00directory";
+    status = process::run(["/bin/true"], options, out, err);
+    assert(status.error == process::Error.InvalidInput);
     print("process API tests passed");
 }

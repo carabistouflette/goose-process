@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
         pause_ms(argc > 2 ? atol(argv[2]) : 1000);
     } else if (!strcmp(argv[1], "descendant")) {
         pid_t pid = fork(); if (pid < 0) return 95;
-        if (pid == 0) { pause_ms(300); _exit(0); }
+        if (pid == 0) { pause_ms(2000); _exit(0); }
     } else if (!strcmp(argv[1], "cwd")) {
         char path[4096]; if (!getcwd(path, sizeof path)) return 96;
         emit(1, path, strlen(path));
