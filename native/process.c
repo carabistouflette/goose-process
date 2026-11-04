@@ -167,9 +167,12 @@ int64_t gp_run(gp_input packed, gp_input cwd, int64_t timeout_ms,
     /* Kernel >=5.3: poll child completion without a periodic wait/sleep tax. */
     pidfd = (int)syscall(SYS_pidfd_open, pid, 0);
     if (pidfd < 0) goto system_error;
+    bool child_ready = false;
     for (;;) {
         int status;
-        if (!reaped) {
+        /* Pipe readability is independent of child exit. Avoid a wait syscall
+           on every capture chunk; pidfd readiness tells us when to reap. */
+        if (!reaped && child_ready) {
             pid_t waited = waitpid(pid, &status, WNOHANG);
             if (waited == pid && terminal_status(status, meta)) {
                 reaped = true;
@@ -192,6 +195,7 @@ int64_t gp_run(gp_input packed, gp_input cwd, int64_t timeout_ms,
         for (int i = 0; i < 3; ++i) {
             if (fds[i].revents & POLLNVAL) { errno = EBADF; goto system_error; }
         }
+        child_ready = (fds[2].revents & (POLLIN | POLLHUP | POLLERR)) != 0;
         for (int i = 0; i < 2; ++i) {
             if (fds[i].revents & (POLLIN | POLLHUP | POLLERR)) {
                 int drained = drain(&pipes[i][0], i ? err : out, &meta.data[3 + i]);
