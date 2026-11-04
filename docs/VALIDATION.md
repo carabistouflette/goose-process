@@ -77,3 +77,11 @@ independently verified against the immutable profile checkpoint. These measure
 whole implementations on a shared host; baseline/source and RSS limitations
 remain explicit in Honk's report. They do not establish universal speed or memory
 superiority. Library tests alone do not establish arbitrary application correctness.
+
+## Post-release caller main validation
+
+Honk subsequently promoted the reviewed integrations to public main at
+`453aa53dc7b20622782423c64cc180097f653650`, with green GCC/Clang CI.
+The [controlled real-service soak](../bench/SOAK.md) passed 24 checked runs from
+an isolated public checkout. No library runtime fix was justified; this bounded
+workload does not establish general service reliability or memory behavior.

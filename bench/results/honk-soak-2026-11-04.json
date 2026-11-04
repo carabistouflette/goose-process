@@ -1,0 +1,199 @@
+{
+  "timestamp": "2026-11-04T17:24:02.492625+00:00",
+  "consumer_revision": "453aa53dc7b20622782423c64cc180097f653650",
+  "executable_sha256": {
+    "honk": "313c3d9b50dc693ad6ff7ba67d9629a863c4c7c48a075c7c001479b8ca25a604",
+    "goose": "9d37f42abee55079a179cda33b2c28c2879789135b37333c78654bb6ed536f2a"
+  },
+  "harness_sha256": "ffe3e4ddfc7d416a162b2bb0f9d651491dd03741d5493e538ac2b4439dd3c1e3",
+  "goose_version": "goose eadca40 (runtime 3025e5810379)",
+  "rounds": 12,
+  "samples": [
+    {
+      "round": 0,
+      "mode": "natural",
+      "returncode": 0
+    },
+    {
+      "round": 0,
+      "mode": "service",
+      "signal": 15,
+      "returncode": 143,
+      "held_seconds": 2.0,
+      "cancellation_return_seconds": 0.02050662797410041,
+      "child_gone": true,
+      "locks_released": true
+    },
+    {
+      "round": 1,
+      "mode": "natural",
+      "returncode": 0
+    },
+    {
+      "round": 1,
+      "mode": "service",
+      "signal": 2,
+      "returncode": 130,
+      "held_seconds": 0.03,
+      "cancellation_return_seconds": 0.010529459046665579,
+      "child_gone": true,
+      "locks_released": true
+    },
+    {
+      "round": 2,
+      "mode": "natural",
+      "returncode": 0
+    },
+    {
+      "round": 2,
+      "mode": "service",
+      "signal": 15,
+      "returncode": 143,
+      "held_seconds": 0.03,
+      "cancellation_return_seconds": 0.008833007013890892,
+      "child_gone": true,
+      "locks_released": true
+    },
+    {
+      "round": 3,
+      "mode": "natural",
+      "returncode": 0
+    },
+    {
+      "round": 3,
+      "mode": "service",
+      "signal": 2,
+      "returncode": 130,
+      "held_seconds": 0.03,
+      "cancellation_return_seconds": 0.00901343597797677,
+      "child_gone": true,
+      "locks_released": true
+    },
+    {
+      "round": 4,
+      "mode": "natural",
+      "returncode": 0
+    },
+    {
+      "round": 4,
+      "mode": "service",
+      "signal": 15,
+      "returncode": 143,
+      "held_seconds": 0.03,
+      "cancellation_return_seconds": 0.00972184503916651,
+      "child_gone": true,
+      "locks_released": true
+    },
+    {
+      "round": 5,
+      "mode": "natural",
+      "returncode": 0
+    },
+    {
+      "round": 5,
+      "mode": "service",
+      "signal": 2,
+      "returncode": 130,
+      "held_seconds": 0.03,
+      "cancellation_return_seconds": 0.012091535027138889,
+      "child_gone": true,
+      "locks_released": true
+    },
+    {
+      "round": 6,
+      "mode": "natural",
+      "returncode": 0
+    },
+    {
+      "round": 6,
+      "mode": "service",
+      "signal": 15,
+      "returncode": 143,
+      "held_seconds": 0.03,
+      "cancellation_return_seconds": 0.011011819005943835,
+      "child_gone": true,
+      "locks_released": true
+    },
+    {
+      "round": 7,
+      "mode": "natural",
+      "returncode": 0
+    },
+    {
+      "round": 7,
+      "mode": "service",
+      "signal": 2,
+      "returncode": 130,
+      "held_seconds": 0.03,
+      "cancellation_return_seconds": 0.011130950995720923,
+      "child_gone": true,
+      "locks_released": true
+    },
+    {
+      "round": 8,
+      "mode": "natural",
+      "returncode": 0
+    },
+    {
+      "round": 8,
+      "mode": "service",
+      "signal": 15,
+      "returncode": 143,
+      "held_seconds": 0.03,
+      "cancellation_return_seconds": 0.012556227040477097,
+      "child_gone": true,
+      "locks_released": true
+    },
+    {
+      "round": 9,
+      "mode": "natural",
+      "returncode": 0
+    },
+    {
+      "round": 9,
+      "mode": "service",
+      "signal": 2,
+      "returncode": 130,
+      "held_seconds": 0.03,
+      "cancellation_return_seconds": 0.012121037987526506,
+      "child_gone": true,
+      "locks_released": true
+    },
+    {
+      "round": 10,
+      "mode": "natural",
+      "returncode": 0
+    },
+    {
+      "round": 10,
+      "mode": "service",
+      "signal": 15,
+      "returncode": 143,
+      "held_seconds": 0.03,
+      "cancellation_return_seconds": 0.010667659982573241,
+      "child_gone": true,
+      "locks_released": true
+    },
+    {
+      "round": 11,
+      "mode": "natural",
+      "returncode": 0
+    },
+    {
+      "round": 11,
+      "mode": "service",
+      "signal": 2,
+      "returncode": 130,
+      "held_seconds": 0.03,
+      "cancellation_return_seconds": 0.009785117988940328,
+      "child_gone": true,
+      "locks_released": true
+    }
+  ],
+  "controller_fds": [
+    4,
+    4
+  ],
+  "fixture_sha256": "2cad54fe67c0603f7e105371a2f6e956eed7c51a9790670e37ec75dbee9f854e",
+  "scope": "Controlled real compiled Goose service via Honk build/run; direct signals only. Short bounded soak, not universal reliability, terminal-launch classification or a memory benchmark."
+}
