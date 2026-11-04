@@ -27,6 +27,8 @@ static char executable[PATH_MAX];
 static bool synthetic_step, deny_signals;
 static int clock_calls, poll_calls, poll_timeouts[4], denied_pidfd, denied_kill;
 static int signal_calls;
+static bool observe_unbounded_wait;
+static int unbounded_polls;
 static int64_t clock_base;
 
 int __real_clock_gettime(clockid_t clock, struct timespec *value);
@@ -50,6 +52,7 @@ int __wrap_clock_gettime(clockid_t clock, struct timespec *value) {
 }
 
 int __wrap_poll(struct pollfd *fds, nfds_t count, int timeout) {
+    if (observe_unbounded_wait) { assert(timeout == -1); ++unbounded_polls; }
     if (!synthetic_step) return __real_poll(fds, count, timeout);
     if (poll_calls < 4) poll_timeouts[poll_calls] = timeout;
     ++poll_calls;
@@ -58,7 +61,7 @@ int __wrap_poll(struct pollfd *fds, nfds_t count, int timeout) {
 }
 
 int __wrap___poll_chk(struct pollfd *fds, nfds_t count, int timeout, size_t bytes) {
-    if (!synthetic_step) return __real___poll_chk(fds, count, timeout, bytes);
+    if (!synthetic_step && !observe_unbounded_wait) return __real___poll_chk(fds, count, timeout, bytes);
     return __wrap_poll(fds, count, timeout);
 }
 
@@ -124,12 +127,19 @@ static void assert_reaped(pid_t pid) {
     assert(waitpid(pid, &status, WNOHANG) == -1 && errno == ECHILD);
 }
 
-static void interrupted_step(void) {
+static void interrupted_step(bool no_deadline) {
     int before = descriptors();
-    fixture f = fresh(); assert(start(&f, "hold") == OK);
+    fixture f = fresh();
+    if (no_deadline) f.config[0] = 0;
+    assert(start(&f, "hold") == OK);
     pid_t pid = (pid_t)gp_id(state(&f));
     struct timespec now; assert(__real_clock_gettime(CLOCK_MONOTONIC, &now) == 0);
     clock_base = (int64_t)now.tv_sec * 1000000000 + now.tv_nsec;
+    if (no_deadline) {
+        /* A supervised owner stays active beyond the maximum finite budget. */
+        assert(clock_base <= INT64_MAX - INT64_C(172800000000000));
+        clock_base += INT64_C(172800000000000);
+    }
     clock_calls = 0; poll_calls = 0; synthetic_step = true;
     int64_t done = -1;
     int result = collect(&f, 10, true, &done);
@@ -140,6 +150,21 @@ static void interrupted_step(void) {
     assert(clock_calls == 4 && poll_calls == 2);
     assert(poll_timeouts[0] == 10 && poll_timeouts[1] == 4);
     assert(descriptors() == before);
+}
+
+static void no_deadline_capture_limit(void) {
+    int before = descriptors(); fixture f = fresh();
+    f.config[0] = 0; f.config[9] = 1; f.config[10] = 1;
+    assert(start(&f, "capture") == OK);
+    pid_t pid = (pid_t)gp_id(state(&f));
+    int64_t done = -1;
+    observe_unbounded_wait = true; unbounded_polls = 0;
+    int result = collect(&f, 0, false, &done);
+    observe_unbounded_wait = false;
+    assert(result == 5 && done == 1 && unbounded_polls > 0);
+    assert(f.meta[3] == 1 && f.meta[4] <= 1 && f.meta[5] == 0 && f.out[0] == 'o');
+    assert_reaped(pid);
+    assert(gp_id(state(&f)) == -1 && descriptors() == before);
 }
 
 static void retained_capture_and_reuse(void) {
@@ -262,11 +287,12 @@ int main(int argc, char **argv) {
     alarm(30);
     ssize_t size = readlink("/proc/self/exe", executable, sizeof executable - 1);
     assert(size > 0 && size < (ssize_t)sizeof executable - 1); executable[size] = 0;
-    interrupted_step();
+    interrupted_step(false); interrupted_step(true);
+    no_deadline_capture_limit();
     retained_capture_and_reuse();
     ownership_transfer_once();
     refused_aliases_preserved();
     int status; assert(waitpid(-1, &status, WNOHANG) == -1 && errno == ECHILD);
-    puts("4 child lifecycle regression groups passed");
+    puts("5 child lifecycle regression groups passed");
     return 0;
 }

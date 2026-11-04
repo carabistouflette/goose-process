@@ -163,7 +163,7 @@ int gp_command_spawn(const gp_command *command, const gp_config *config,
     do {
         int64_t now = gp_clock_ns();
         if (now < 0) { *error = errno; return GP_SYSTEM; }
-        if (now >= deadline) return GP_TIMEOUT;
+        if (deadline && now >= deadline) return GP_TIMEOUT;
         char candidate[GP_PATH + 1];
         const char *path = command->argv[0];
         if (command->search) {

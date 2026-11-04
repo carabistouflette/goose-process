@@ -9,9 +9,12 @@ the application and are not global library hooks.
 
 Use a local `Child` and explicit options. For a CLI preserving ordinary terminal
 behavior, select `Input.Inherit`, independent stdout Capture/Inherit, and stderr
-Inherit. Set capture bounds and a deliberate deadline rather than inheriting the
-30-second default. A 24-hour deadline is the supported maximum; selecting it
-still changes an application that previously had no finite deadline.
+Inherit. Set capture bounds and a deliberate timeout policy rather than inheriting
+the 30-second default. Finite budgets are at most 24 hours. Explicitly select
+timeout_ms=0 for a supervised Child when preserving long-lived server behavior;
+this disables the overall deadline while step slices remain bounded. Synchronous
+run still requires a finite positive deadline. Without an overall deadline, the
+application must continue pumping, forwarding signals and arranging cleanup.
 
 An application signal guard can save/normalize SIGCHLD and latch SIGINT/SIGTERM
 metadata. Its handler must only record `sig_atomic_t` flags, not call Goose or

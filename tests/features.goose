@@ -63,5 +63,19 @@ fn main() {
     let invalid, invalid_done = process::step(child, -1);
     assert(invalid.error == process::Error.InvalidInput && !invalid_done);
     assert(process::stdout(child) == input);
+    result = process::run(["/bin/true"], process::Options { timeout_ms: 0 }, out, err);
+    assert(result.error == process::Error.InvalidInput && out.len == 0 && err.len == 0);
+    result = process::start(["/bin/sleep", "60"], process::Options { timeout_ms: 0 }, child);
+    assert(result.error == process::Error.None && process::id(child) > 0);
+    let running, completed = process::step(child, 0);
+    assert(running.error == process::Error.None && !completed);
+    assert(process::terminate(child).error == process::Error.None);
+    result = process::wait(child);
+    assert(result.error == process::Error.None && result.signal == 15);
+    result = process::start(["/bin/cat"], process::Options {
+        timeout_ms: 0, stdin: process::Input.Bytes, input: "supervised",
+    }, child);
+    assert(result.error == process::Error.None);
+    assert(process::success(process::wait(child)) && process::stdout(child) == "supervised");
     print("extended process API tests passed");
 }

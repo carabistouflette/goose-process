@@ -176,7 +176,7 @@ int64_t gp_start(gp_input packed, gp_input cwd, gp_input sets, gp_input removes,
     empty_meta(meta);
     if (!gp_can_start(storage)) return GP_STATE;
     gp_config config; memcpy(&config, settings.data, sizeof config);
-    if (config.timeout_ms < 1 || config.timeout_ms > 86400000 ||
+    if (config.timeout_ms < 0 || config.timeout_ms > 86400000 ||
         !route(config.out_mode, false) || !route(config.err_mode, true) ||
         config.in_mode < GP_IN_NULL || config.in_mode > GP_IN_FD ||
         !source_fd(config.in_mode, config.in_fd, GP_IN_FD) ||
@@ -221,7 +221,7 @@ int64_t gp_start(gp_input packed, gp_input cwd, gp_input sets, gp_input removes,
     if (began < 0) goto system_error;
     int64_t budget = config.timeout_ms * 1000000;
     if (began > INT64_MAX - budget) { errno = EOVERFLOW; goto system_error; }
-    value.deadline = began + budget;
+    value.deadline = config.timeout_ms ? began + budget : 0;
     struct sigaction disposition;
     if (sigaction(SIGCHLD, NULL, &disposition) < 0) goto system_error;
     if (disposition.sa_handler == SIG_IGN || (disposition.sa_flags & SA_NOCLDWAIT)) {
@@ -364,9 +364,9 @@ static void pump(child *value, gp_input input, gp_output out, gp_output err,
         }
         int64_t now = gp_clock_ns();
         if (now < 0) goto system_error;
-        if (now >= value->deadline) { value->result = GP_TIMEOUT; finish(value); return; }
+        if (value->deadline && now >= value->deadline) { value->result = GP_TIMEOUT; finish(value); return; }
         if (one_step && polled && now >= slice_deadline) return;
-        int64_t remaining = value->deadline - now;
+        int64_t remaining = value->deadline ? value->deadline - now : INT64_MAX;
         if (one_step && slice_deadline - now < remaining)
             remaining = slice_deadline > now ? slice_deadline - now : 0;
         int64_t wait_ms = remaining / 1000000 + (remaining % 1000000 != 0);
@@ -375,7 +375,8 @@ static void pump(child *value, gp_input input, gp_output out, gp_output err,
             {(int)value->pidfd, POLLIN, 0}, {(int)value->in_fd, POLLOUT, 0}
         };
         polled = true;
-        int ready = poll(fds, 4, wait_ms > INT_MAX ? INT_MAX : (int)wait_ms);
+        int timeout = !one_step && !value->deadline ? -1 : wait_ms > INT_MAX ? INT_MAX : (int)wait_ms;
+        int ready = poll(fds, 4, timeout);
         if (ready < 0) { if (errno == EINTR) continue; goto system_error; }
         for (int i = 0; i < 4; ++i)
             if (fds[i].revents & POLLNVAL) { errno = EBADF; goto system_error; }
@@ -403,7 +404,7 @@ static void pump(child *value, gp_input input, gp_output out, gp_output err,
         if (value->reaped && value->out_fd < 0 && value->err_fd < 0) { finish(value); return; }
         now = gp_clock_ns();
         if (now < 0) goto system_error;
-        if (now >= value->deadline) { value->result = GP_TIMEOUT; finish(value); }
+        if (value->deadline && now >= value->deadline) { value->result = GP_TIMEOUT; finish(value); }
         return;
     }
 system_error:
@@ -494,6 +495,7 @@ int64_t gp_execute(gp_input packed, gp_input cwd, gp_input sets, gp_input remove
         overlaps((gp_output){(uint8_t *)input.data, input.len}, out) ||
         overlaps((gp_output){(uint8_t *)input.data, input.len}, err)) return GP_INVALID;
     gp_config config; memcpy(&config, settings.data, sizeof config);
+    if (config.timeout_ms < 1) return GP_INVALID;
     if ((config.out_mode == GP_OUT_CAPTURE && out.len < config.out_limit) ||
         (config.err_mode == GP_OUT_CAPTURE && err.len < config.err_limit)) return GP_INVALID;
     int64_t state[GP_CHILD_WORDS] = {0};

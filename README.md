@@ -8,6 +8,8 @@ independent stdio routing, finite binary stdin, and cancellation deadlines.
 Child handles support polling, signals and explicit cleanup. Absolute executables
 are the default; PATH search is opt-in. No implicit shell. Native process operations
 use a small C kernel; Goose owns validation, input and returned output.
+Execution has a finite deadline by default. Supervised Child handles can explicitly
+disable the overall deadline for long-lived services while retaining IO bounds.
 
 [API contract](docs/API.md) · [Benchmarks](bench/README.md) · [Comparisons](bench/compare/README.md) ·
 [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)

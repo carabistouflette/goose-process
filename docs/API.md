@@ -12,7 +12,7 @@ There is no shell parsing or shell fallback for malformed executables.
 | --- | --- | --- |
 | `cwd` | `""` | Inherit cwd; otherwise select child cwd |
 | `capture` | `true` | Resolve `Output.Default` to Capture, or Inherit when false |
-| `timeout_ms` | `30000` | Positive monotonic cancellation budget |
+| `timeout_ms` | `30000` | Monotonic cancellation budget; only start/Child accepts explicit 0 for no overall deadline |
 | `output_limit` | `65536` | Default maximum retained bytes per captured stream |
 | `stdout`, `stderr` | `Output.Default` | Independently select output routing |
 | `stdin` | `Input.Null` | Select stdin routing |
@@ -128,7 +128,14 @@ a zombie. An immediate observational query such as getpgid may still fail with
 ESRCH. Do not store the numeric PID across wait/step/try_wait or use it to signal;
 send_signal checks owner state and uses a pidfd instead.
 
-The process deadline starts after argument/environment construction, before FD
+Synchronous run always requires a finite positive deadline. For a supervised
+Child, explicitly selecting timeout_ms=0 disables only the overall deadline;
+capture/input bounds, step slice deadlines, signaling and cleanup are unchanged.
+The application must still pump or finish that owner. wait on such an owner can
+block indefinitely, including when descendants keep capture pipes open. Defaults
+remain finite; there is no background watchdog.
+
+A finite process deadline starts after argument/environment construction, before FD
 setup/spawn, and covers spawn/search and subsequent IO. It retains nanosecond
 precision internally; poll rounds positive remaining time up to milliseconds.
 On timeout, output overflow or post-launch system error, cleanup requests SIGKILL
@@ -158,7 +165,7 @@ cause TimedOut after the direct child exits; cleanup closes the remaining pipes.
 | MAX_PATH_BYTES | 4,095 each for executable and cwd |
 | MAX_OUTPUT_BYTES | 1,048,576 per capture |
 | MAX_INPUT_BYTES | 1,048,576 finite input |
-| MAX_TIMEOUT_MS | 86,400,000 (24 hours); process minimum 1 |
+| MAX_TIMEOUT_MS | 86,400,000 (24 hours) for finite budgets; run minimum 1; explicit start-only 0 disables overall deadline |
 | MAX_ENVIRONMENT_CHANGES | 256 total sets/removals |
 | MAX_ENVIRONMENT_BYTES | 1,048,576 explicit change bytes including separators/NULs |
 | MAX_ENVIRONMENT_KEY | 256 bytes per explicit key |

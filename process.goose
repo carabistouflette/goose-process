@@ -97,8 +97,9 @@ fn settings(options: Options) -> i64[11] {
 }
 fn valid_fd(mode: bool, fd: i64) -> bool { return if mode { fd >= 0 && fd <= 2147483647 } else { fd == -1 }; }
 fn pack(args: const (const u8[:])[:], options: Options,
-        packed: u8[>..]&, sets: u8[>..]&, removes: u8[>..]&) -> bool {
-    if args.len == 0 || args.len > MAX_ARGUMENTS || options.timeout_ms < 1 ||
+        packed: u8[>..]&, sets: u8[>..]&, removes: u8[>..]&, allow_unbounded: bool = false) -> bool {
+    if args.len == 0 || args.len > MAX_ARGUMENTS || options.timeout_ms < 0 ||
+        (options.timeout_ms == 0 && !allow_unbounded) ||
         options.timeout_ms > MAX_TIMEOUT_MS || !valid_text(options.cwd, MAX_PATH_BYTES) ||
         options.environment.len > MAX_ENVIRONMENT_CHANGES || options.stdout == Output.Stdout ||
         !valid_fd(options.stdin == Input.Fd, options.stdin_fd) ||
@@ -161,7 +162,7 @@ fn run(args: const (const u8[:])[:], options: Options, out: u8[>..]&, err: u8[>.
 fn start(args: const (const u8[:])[:], options: Options, child: Child&) -> Status {
     if native_can_start(child._native[..]) == 0 { return Status { error: Error.InvalidState }; }
     var packed: u8[>..] = []; var sets: u8[>..] = []; var removes: u8[>..] = [];
-    if !pack(args, options, packed, sets, removes) { return Status { error: Error.InvalidInput }; }
+    if !pack(args, options, packed, sets, removes, true) { return Status { error: Error.InvalidInput }; }
     let config = settings(options);
     var directory: u8[>..] = []; directory.append(options.cwd);
     var input:     u8[>..] = []; input.append(options.input);

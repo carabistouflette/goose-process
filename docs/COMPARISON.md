@@ -16,7 +16,7 @@ is authoritative; the baseline tables remain a dated assessment of b97176d.
 | Bounded capture and deadlines | per-stream caps; direct-child cancellation/reaping | limits, deterministic deadlines, cancellation failures |
 
 This covers the agreed workflows, not every method or platform in the three
-standard libraries. Differences include fixed limits, mandatory finite deadlines,
+standard libraries. Differences include fixed limits, finite deadlines by default,
 socket rather than FIFO finite stdin, explicit Child cleanup, and no pipeline
 builder, process-group policy, credentials, arbitrary extra-FD allowlist, PTYs,
 Windows or macOS support. Fd routing permits caller-owned live stdio streams.
