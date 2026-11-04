@@ -88,7 +88,13 @@ static void child_mode(const char *mode) {
         }
         _exit(0);
     }
-    if (!strcmp(mode, "--fifo")) {
+    if (!strcmp(mode, "--duplex")) {
+        uint8_t block[16384]; memset(block, 'p', sizeof block);
+        for (int i = 0; i < 16; ++i) {
+            emit(STDOUT_FILENO, block, sizeof block);
+            emit(STDERR_FILENO, block, sizeof block);
+        }
+    } else if (!strcmp(mode, "--fifo")) {
         struct stat status;
         if (fstat(STDIN_FILENO, &status) < 0 || !S_ISFIFO(status.st_mode)) _exit(91);
     } else if (strcmp(mode, "--echo")) _exit(92);
@@ -141,6 +147,15 @@ static void input_and_faults(void) {
         assert(descriptors() == before);
     }
     fault = 0;
+    /* Both outputs exceed pipe capacity before the child reads finite input. */
+    config[ERR_LIMIT] = GP_OUTPUT;
+    completed(run("--duplex", bytes(NULL, 0), bytes(NULL, 0),
+                  bytes(input_bytes, sizeof input_bytes / 2), config, meta), meta);
+    assert(meta[3] == GP_OUTPUT / 4 + GP_INPUT / 2 && meta[4] == GP_OUTPUT / 4);
+    for (int64_t i = 0; i < GP_OUTPUT / 4; ++i)
+        assert(output_bytes[i] == 'p' && error_bytes[i] == 'p');
+    assert(!memcmp(output_bytes + GP_OUTPUT / 4, input_bytes, sizeof input_bytes / 2));
+    config[ERR_LIMIT] = 64;
     struct sigaction disposition_before, disposition_after;
     sigset_t mask_before, mask_after, pending_before, pending_after;
     assert(sigaction(SIGPIPE, NULL, &disposition_before) == 0);
