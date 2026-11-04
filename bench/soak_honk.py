@@ -226,8 +226,12 @@ def main():
                 # One longer hold tests repeated bounded steps without busy waiting.
                 hold = args.hold_seconds if args.hold_seconds is not None else (2.0 if index == 0 else 0.03)
                 prefix_out, prefix_err = drain_for(proc, hold)
+                # Honk can reap an unexpectedly exited service during the hold.
+                # Reject snapshots if that anchored identity dies around procfs reads.
+                signal.pidfd_send_signal(child_fd, 0)
                 current = dict(controller=resources(os.getpid()),
                                honk=resources(proc.pid), service=resources(child))
+                signal.pidfd_send_signal(child_fd, 0)
                 for path in locks:
                     lock_state(path, True)
                 number = signal.SIGTERM if index % 2 == 0 else signal.SIGINT
@@ -268,6 +272,9 @@ def main():
             else:
                 raise RuntimeError('controller retained an unwaited child between rounds')
             index += 1
+            if index % 20 == 0:
+                elapsed = time.monotonic()-measured_start if measured_start is not None else 0
+                print(f'Completed {index} rounds; measured elapsed {elapsed:.1f}s', flush=True)
         measured_elapsed = time.monotonic()-measured_start
         command('clean')
     after_fds = len(list(Path('/proc/self/fd').iterdir()))

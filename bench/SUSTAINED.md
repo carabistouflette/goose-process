@@ -7,8 +7,8 @@ compiler; it does not modify the consumer or goose-process runtime.
 
 Each round runs one natural exit and one service through real Honk build/run.
 The service writes 256 KiB to each independent stream. The controller drains
-both streams during a two-second hold, checks complete payload delivery, then
-alternates direct SIGTERM and SIGINT. Each service's locks must remain held
+both streams during a two-second hold, then alternates direct SIGTERM and SIGINT
+and checks complete payload delivery. Each service's locks must remain held
 before cancellation and become available after cleanup. A session-validated
 pidfd verifies the service identity is gone. The controller checks its settled
 FD count and absence of unwaited children after every round.
@@ -36,6 +36,12 @@ processes each round, so comparisons across rounds do not establish long-lived
 Honk memory stability. The controller retains all raw samples in memory; its
 RSS includes instrumentation and sample-list growth. No universal no-leak claim
 or memory regression threshold is inferred from RSS.
+
+The hold-phase drainer caps each stream at 1 MiB. The existing command and final
+cancellation `communicate()` calls collect the finite trusted fixture's output;
+they do not provide a byte cap for arbitrary or adversarial programs. The
+service's pidfd is checked immediately before and after resource snapshots so
+an unexpected early exit fails the run instead of attributing reused PID data.
 
 Only direct signals are tested. Arbitrary descendants, terminal launch-window
 classification, signal storms and continuous server uptime are outside scope.
