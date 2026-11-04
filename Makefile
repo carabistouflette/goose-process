@@ -11,7 +11,7 @@ DEADLINE_WRAPS = -Wl,--wrap=clock_gettime -Wl,--wrap=poll -Wl,--wrap=__poll_chk 
 LIFECYCLE_WRAPS = -Wl,--wrap=clock_gettime,--wrap=poll,--wrap=__poll_chk,--wrap=syscall,--wrap=kill
 EXTENDED_WRAPS = -Wl,--wrap=socketpair,--wrap=shutdown,--wrap=send
 
-.PHONY: setup format check test helpers native sanitize bench fuzz profile memcheck
+.PHONY: setup format check test helpers native sanitize bench compare compare-check fuzz profile memcheck
 setup:
 	./scripts/setup-goose.sh
 format:
@@ -80,6 +80,10 @@ bench: helpers
 	mkdir -p .build
 	$(GOOSE) build bench/bench.goose --cc $(BENCH_CC) -O2 -o .build/bench
 	python3 bench/measure.py --goose $(abspath $(GOOSE)) --cc $(BENCH_CC) --iterations $(BENCH_ITERATIONS)
+compare-check:
+	python3 bench/compare/measure.py --goose $(abspath $(GOOSE)) --cc $(BENCH_CC) --build-only
+compare:
+	python3 bench/compare/measure.py --goose $(abspath $(GOOSE)) --cc $(BENCH_CC)
 fuzz:
 	mkdir -p .build
 	python3 scripts/fuzz-seeds.py

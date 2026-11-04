@@ -9,7 +9,7 @@ Child handles support polling, signals and explicit cleanup. Absolute executable
 are the default; PATH search is opt-in. No implicit shell. Native process operations
 use a small C kernel; Goose owns validation, input and returned output.
 
-[API contract](docs/API.md) · [Benchmarks](bench/README.md) ·
+[API contract](docs/API.md) · [Benchmarks](bench/README.md) · [Comparisons](bench/compare/README.md) ·
 [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
 ## Quickstart
@@ -75,6 +75,8 @@ make format check test
 make sanitize SANITIZER_CC=gcc
 make sanitize SANITIZER_CC=clang
 make bench BENCH_ITERATIONS=100
+make compare-check # optional; requires Rust and Go as well
+make compare
 make fuzz FUZZ_RUNS=10000
 make memcheck # optional; requires Valgrind
 ```

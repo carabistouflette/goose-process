@@ -18,3 +18,7 @@ Linux kernel and glibc. Tests/benchmarks additionally invoke host tools such as
 the C compiler, Python, `/bin/true` and `/bin/sleep`; profiling uses `strace`.
 Those dependencies retain their respective licenses and are not redistributed
 by this repository.
+
+The optional comparison harness also uses the host Rust compiler, Go toolchain
+and their standard libraries. No Rust crates, Go modules or Python packages are
+downloaded or vendored; the original comparison drivers carry Apache-2.0 notices.

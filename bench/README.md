@@ -1,5 +1,8 @@
 # Process benchmark
 
+For the checked Rust/Go/Python successful-workload comparison, see
+[the comparative harness and its contract differences](compare/README.md).
+
 `make bench BENCH_ITERATIONS=100` builds an optimized native Goose harness with
 GCC by default (`BENCH_CC=clang` selects Clang), warms reusable buffers once per
 mode, and records seven samples in ignored `.build/bench.json`.

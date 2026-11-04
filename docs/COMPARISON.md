@@ -1,4 +1,32 @@
-# Subprocess comparison and proposed acceptance criteria
+# Subprocess comparison and acceptance scope
+
+## Implemented Linux target
+
+The feature branch following the baseline assessment below implements the user's
+selected **common Linux process features**. The [current API contract](API.md)
+is authoritative; the baseline tables remain a dated assessment of b97176d.
+
+| Workflow | Current Goose interface | Regression coverage |
+| --- | --- | --- |
+| Explicit argv/cwd and opt-in executable lookup | run/start; effective child PATH; no shell fallback | API, independent argv oracle, extended native tests |
+| Per-child environment | inherit, clear, override, remove, empty value | extended native tests; validation fuzzing |
+| Independent binary stdio | capture, inherit, null, borrowed FD; stderr merge | extended native and closed-stdio fault tests |
+| Finite stdin | up to 1 MiB; concurrent feed/drain; one-way socket transport | binary roundtrip, early closure, SIGPIPE/fault tests |
+| Child control | start, step, try_wait, wait, signal, terminate, kill, close | lifecycle tests; compile-time owner/view checks |
+| Bounded capture and deadlines | per-stream caps; direct-child cancellation/reaping | limits, deterministic deadlines, cancellation failures |
+
+This covers the agreed workflows, not every method or platform in the three
+standard libraries. Differences include fixed limits, mandatory finite deadlines,
+socket rather than FIFO finite stdin, explicit Child cleanup, and no pipeline
+builder, process-group policy, credentials, arbitrary extra-FD allowlist, PTYs,
+Windows or macOS support. Fd routing permits caller-owned live stdio streams.
+
+The [comparison harness](../bench/compare/README.md) measures the native API track
+with identical successful fixture bytes/status. It does not claim equal safety
+contracts: baseline capture APIs omit Goose's enforced caps/deadline and some
+descriptor/signal policies. Measured results must retain these qualifications.
+
+## Historical baseline assessment
 
 Research date: **2026-11-04**. This is a source-based capability assessment, not a benchmark result or a promise of implementation. Goose does **not** currently provide universal parity with Rust, Go, or Python. No speedup has been established here.
 
