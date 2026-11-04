@@ -90,3 +90,8 @@ A later [sustained consumer soak](../bench/SUSTAINED.md) retained 901 measured
 seconds after warmup, including finite pressure on both streams. All 722
 executions passed. Current RSS/descriptor snapshots and their measurement
 limits are published with all raw samples; no runtime patch was warranted.
+
+The [exceptional-path audit](EXCEPTIONAL-PATHS.md) maps existing error/ownership
+contracts to their regressions and documents the added denial, failed-start
+transfer, partial-preparation and conditional kernel E2BIG coverage. It separates
+real resource limits from injected errors and leaves runtime code unchanged.
