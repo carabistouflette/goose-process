@@ -1,8 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.1.0 — 2026-11-04
 
-First experimental release candidate. The API may change before 1.0.
+First experimental release. The API may change before 1.0.
 
 - Literal byte arguments, explicit cwd, child-environment PATH lookup by opt-in,
   and per-child inherit/clear/set/remove environment policy.
@@ -25,5 +25,8 @@ pipe/terminal/file semantics. The library is not a sandbox or process-tree
 supervisor. See [the API](docs/API.md) and [caller contracts](docs/CALLERS.md)
 for limits and host duties, and [validation evidence](docs/VALIDATION.md).
 
-A 0.1.0 tag is gated on the coordinated Honk migration and its caller-level
-signal/lock/recovery validation. No release is claimed by this candidate entry.
+Validated with the published Honk process-consumer checkpoint
+[`db81d8f`](https://github.com/carabistouflette/honk/commit/db81d8fe552b233231ff8ff29af9e75761484cd6),
+including an independent public clone, focused signal/lock/recovery cases and
+frozen self-check/package. Its feature-branch CI is green; promotion to Honk main
+is separate and is not claimed here. See the validation record for exact scope.

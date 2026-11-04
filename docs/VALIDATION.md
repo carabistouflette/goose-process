@@ -45,6 +45,35 @@ uses the same C kernel for both front ends, so shared defects remain shared;
 it does not independently prove the engine safe or rank Rust std::process.
 No reliable wrapper bottleneck was established in that session.
 
-The 0.1.0 release tag remains gated on Honk's real-caller signal forwarding,
-terminal duplicate suppression, lock retention and transferred-child recovery
-tests. Library-level validation does not establish those application properties.
+## Real caller acceptance for 0.1.0
+
+Honk's published process-consumer implementation is
+[`db81d8fe552b233231ff8ff29af9e75761484cd6`](https://github.com/carabistouflette/honk/commit/db81d8fe552b233231ff8ff29af9e75761484cd6),
+using unmodified goose-process `191a9423197e850e699eff500620a5c7d111aa54`.
+Its [validation/profile checkpoint](https://github.com/carabistouflette/honk/blob/a36ca656da0467783c89a6f491e0b1206a60c05d/docs/PROCESS-CONSUMER-2026-11-04.md)
+and [exact-checkpoint GCC/Clang CI](https://github.com/carabistouflette/honk/actions/runs/41846517978)
+are public. This is a feature-branch acceptance checkpoint; promotion to Honk
+main is held for a separate integration and is not represented as complete here.
+
+The owner ran normal/security, GCC/Clang sanitizer, portable and static checks.
+Existing CLI cases cover direct and registered terminal signals and lock cleanup;
+four new process methods cover exact stderr, inherited stdin, capture/argument
+bounds, pre-start no-launch cancellation, post-start pidfd forwarding and actual
+exceptional transfer/recovery under denied waits. The native fault compiler has
+distinct content-addressed paths for source, compiler and instrumentation, avoiding
+normal-versus-sanitized native cache reuse. The unconditional stale guard also
+rejects under Python optimization. Launch-window terminal timing remains best effort.
+
+Independent verification used a fresh public HTTPS clone at exact `db81d8f`,
+the pinned Goose compiler and an isolated Honk cache. Vendor checks/build, all
+four focused methods, frozen self-check and frozen packaging passed. The tracked
+tree remained clean; the exported archive contained the exact seven library
+source/build/header/license files plus unchanged manifest/lock, with no generated
+state. Separate Standards/Spec reviews found no production mismatch; the small
+test-cache validation findings were fixed before publication.
+
+All 54 paired caller samples, summaries and 34 recorded source identities were
+independently verified against the immutable profile checkpoint. These measure
+whole implementations on a shared host; baseline/source and RSS limitations
+remain explicit in Honk's report. They do not establish universal speed or memory
+superiority. Library tests alone do not establish arbitrary application correctness.

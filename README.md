@@ -1,7 +1,8 @@
 # goose-process
 
 A small subprocess library for Goose. Apache-2.0.
-Experimental API; no release yet. Requires Linux kernel 5.3+ and glibc 2.34+.
+Experimental release 0.1.0; the API may change before 1.0.
+Requires Linux kernel 5.3+ and glibc 2.34+.
 
 Runs argument arrays with bounded captures, per-child environment and cwd,
 independent stdio routing, finite binary stdin, and cancellation deadlines.
