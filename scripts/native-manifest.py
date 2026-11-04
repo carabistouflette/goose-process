@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Fingerprint native sources so Goose's local package cache rebuilds them."""
 # SPDX-License-Identifier: Apache-2.0
+# Adapted from goose-json tooling for goose-process native-source fingerprinting.
 import argparse
 import hashlib
 from pathlib import Path

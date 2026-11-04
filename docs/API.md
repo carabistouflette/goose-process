@@ -59,6 +59,9 @@ cwd as well as executable failures. `InvalidInput` spawns nothing. Diagnostics
 are enum/errno values and never include argument or environment content.
 
 The cancellation deadline starts during native preparation, before spawning.
+It retains nanosecond precision internally; positive remaining time is rounded
+up to milliseconds for `poll`, so integer rounding does not shorten the budget.
+Preparation that exhausts the budget returns `TimedOut` before launching a child.
 Both streams are drained concurrently with bounded work between deadline
 checks. A pidfd makes child completion pollable without periodic sleeps. On
 timeout, overflow or post-launch system error, the runner requests `SIGKILL`

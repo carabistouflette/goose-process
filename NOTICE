@@ -1,0 +1,11 @@
+goose-process
+Copyright 2026 goose-process contributors
+
+Setup tooling includes portions adapted from goose-log.
+Copyright 2026 goose-log contributors.
+
+Native-source fingerprint tooling includes portions adapted from goose-json.
+Copyright 2026 goose-json contributors.
+
+Licensed under the Apache License, Version 2.0.
+See LICENSE for the full license text and THIRD_PARTY.md for dependency notes.

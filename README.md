@@ -6,8 +6,30 @@ Experimental API; no release yet. Requires Linux kernel 5.3+ and glibc 2.34+.
 Runs explicit absolute executable paths with an argument array, optional working
 directory, separate bounded stdout/stderr captures, and a cancellation deadline.
 No implicit shell or PATH search. Native process operations use a small C kernel;
-Goose owns validation and returned output. See `CONTRIBUTING.md` for development
-and commit standards.
+Goose owns validation and returned output.
+
+[API contract](docs/API.md) · [Benchmarks](bench/README.md) ·
+[Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+
+## Quickstart
+
+On Linux, install Git, CMake 3.27+, Make, a C/C++20 compiler and libc development
+headers. Python 3.11+ is required for the checks and tests.
+
+```sh
+git clone https://github.com/carabistouflette/goose-process.git
+cd goose-process
+make setup
+make check test
+.toolchain/goose/build/goose run examples/command.goose
+```
+
+The example prints `hello from Goose`. Setup builds the exact compiler recorded
+in [GOOSE_REVISION](GOOSE_REVISION), with optional graphics/audio disabled.
+Clang and its sanitizer/libFuzzer runtimes are needed for the optional Clang
+sanitizer and fuzz targets below.
+
+## Usage
 
 ```goose
 import process from "../goose-process";
@@ -24,8 +46,10 @@ fn main() {
 }
 ```
 
-Declare the package in the application's root source. This checkout has no
-published remote yet. Dynamic argument arrays should use `(const u8[:])[>..]`;
+Declare the package in the application's root source. The example above uses a
+sibling checkout. Git imports can use `carabistouflette/goose-process@main`;
+replace `main` with a reviewed full commit hash for reproducible applications.
+Dynamic argument arrays should use `(const u8[:])[>..]`;
 when mixing an owned string with literals, bind its view as `const u8[:]` so
 array inference preserves read-only element types.
 
@@ -69,3 +93,4 @@ The [benchmark](bench/README.md) records local end-to-end measurements and raw
 samples; there is no universal throughput claim.
 
 [Apache-2.0](LICENSE). Copyright 2026 goose-process contributors.
+See [third-party and tooling notices](THIRD_PARTY.md).

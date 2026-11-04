@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Adapted from goose-log setup tooling for goose-process's pinned compiler.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 revision=$(cat GOOSE_REVISION)
