@@ -1,0 +1,59 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+#define _POSIX_C_SOURCE 200809L
+#include <errno.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
+static void emit(int fd, const void *data, size_t length) {
+    const char *p = data;
+    while (length) {
+        ssize_t n = write(fd, p, length);
+        if (n < 0 && errno == EINTR) continue;
+        if (n <= 0) _exit(90);
+        p += n; length -= (size_t)n;
+    }
+}
+static void pause_ms(long ms) {
+    struct timespec t = {ms / 1000, (ms % 1000) * 1000000};
+    while (nanosleep(&t, &t) && errno == EINTR) {}
+}
+int main(int argc, char **argv) {
+    if (argc < 2) return 91;
+    if (!strcmp(argv[1], "args")) {
+        for (int i = 2; i < argc; ++i) emit(1, argv[i], strlen(argv[i]) + 1);
+    } else if (!strcmp(argv[1], "bytes")) {
+        unsigned char b[256]; for (int i = 0; i < 256; ++i) b[i] = (unsigned char)i;
+        emit(1, b, sizeof b); emit(2, b, sizeof b);
+    } else if (!strcmp(argv[1], "exit")) {
+        return argc > 2 ? atoi(argv[2]) : 0;
+    } else if (!strcmp(argv[1], "signal")) {
+        raise(SIGTERM); return 92;
+    } else if (!strcmp(argv[1], "stdin")) {
+        char c; return read(0, &c, 1) == 0 ? 0 : 93;
+    } else if (!strcmp(argv[1], "fd")) {
+        return fcntl(199, F_GETFD) == -1 && errno == EBADF ? 0 : 94;
+    } else if (!strcmp(argv[1], "sleep")) {
+        pause_ms(argc > 2 ? atol(argv[2]) : 1000);
+    } else if (!strcmp(argv[1], "descendant")) {
+        pid_t pid = fork(); if (pid < 0) return 95;
+        if (pid == 0) { pause_ms(300); _exit(0); }
+    } else if (!strcmp(argv[1], "cwd")) {
+        char path[4096]; if (!getcwd(path, sizeof path)) return 96;
+        emit(1, path, strlen(path));
+    } else if (!strcmp(argv[1], "streams")) {
+        long n = argc > 2 ? atol(argv[2]) : 0;
+        char block[4096]; memset(block, 'x', sizeof block);
+        while (n > 0) {
+            size_t take = n < (long)sizeof block ? (size_t)n : sizeof block;
+            emit(1, block, take); emit(2, block, take); n -= (long)take;
+        }
+    } else if (!strcmp(argv[1], "flood")) {
+        char block[4096]; memset(block, 'x', sizeof block);
+        for (;;) { emit(1, block, sizeof block); emit(2, block, sizeof block); }
+    } else return 97;
+    return 0;
+}
