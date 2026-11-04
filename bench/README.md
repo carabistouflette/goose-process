@@ -34,3 +34,30 @@ capturing 1 MiB per stream. This fixture excludes Goose buffer initialization
 and does not time the public API. Pidfd readiness gates child waits, avoiding
 one wait syscall per capture iteration. Keep tracing results separate from
 untraced timing samples: tracing changes scheduling and execution cost.
+
+## Recorded local results
+
+Recorded on 2026-11-04 from clean source
+[`9fd737c08f491ff842725c16189073891c8cfff7`](https://github.com/carabistouflette/goose-process/commit/9fd737c08f491ff842725c16189073891c8cfff7).
+Hardware: Intel(R) Core(TM) Ultra 7 258V. Platform: Linux-7.2.11-arch1-1-x86_64-with-glibc2.44.
+Compiler: gcc (GCC) 16.2.1 20260810; flags `-O2`. Goose: `goose eadca40 (runtime 3025e5810379)`.
+Seven samples, 100 calls per sample and one warmup per fixture.
+
+These measurements came from a shared workstation with concurrent build
+activity, without CPU pinning or frequency control. Scheduling noise is visible
+in the ranges. They establish a reproducible local workload, not a speed ranking
+or an optimization speedup. Units are **microseconds per call**.
+
+| Fixture | Median | Sample range |
+| --- | ---: | ---: |
+| `capture` | 1634.0 | 1240.7–2397.7 |
+| `inherit` | 1276.0 | 992.2–1645.3 |
+| `maxcap-empty` | 1871.8 | 1488.4–3208.5 |
+| `streams-64k` | 1584.8 | 1110.1–2941.4 |
+| `streams-1m` | 2984.7 | 2557.5–4408.0 |
+| `large-argv` | 2002.9 | 812.7–2720.0 |
+
+[Raw samples and complete provenance](results/linux-gcc-2026-11-04.json) include
+all fixture results, compiler/runtime versions, source fingerprint, clean-tree
+state, executable hash and execution order. Reproduce with `make setup` followed
+by `make bench BENCH_ITERATIONS=100 BENCH_CC=gcc`; measurements will vary by host.

@@ -32,7 +32,7 @@ sanitizer and fuzz targets below.
 ## Usage
 
 ```goose
-import process from "../goose-process";
+import process from "carabistouflette/goose-process@9fd737c08f491ff842725c16189073891c8cfff7";
 import std;
 
 fn main() {
@@ -46,9 +46,9 @@ fn main() {
 }
 ```
 
-Declare the package in the application's root source. The example above uses a
-sibling checkout. Git imports can use `carabistouflette/goose-process@main`;
-replace `main` with a reviewed full commit hash for reproducible applications.
+Save the example as `main.goose` and run it with the pinned compiler. Declare
+the package in the application's root source. The example pins a reviewed
+library commit; use a full commit hash for reproducible application imports.
 Dynamic argument arrays should use `(const u8[:])[>..]`;
 when mixing an owned string with literals, bind its view as `const u8[:]` so
 array inference preserves read-only element types.
