@@ -6,7 +6,7 @@ BENCH_CC ?= gcc
 FUZZ_CC ?= clang
 FUZZ_RUNS ?= 10000
 CFLAGS = -std=c11 -Wall -Wextra -Werror
-DEADLINE_WRAPS = -Wl,--wrap=clock_gettime -Wl,--wrap=poll -Wl,--wrap=posix_spawn
+DEADLINE_WRAPS = -Wl,--wrap=clock_gettime -Wl,--wrap=poll -Wl,--wrap=__poll_chk -Wl,--wrap=posix_spawn
 
 .PHONY: setup format check test helpers native sanitize bench fuzz profile
 setup:

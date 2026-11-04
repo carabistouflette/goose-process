@@ -48,6 +48,11 @@ int __wrap_open(const char *path, int flags, ...) {
     require(!(flags & O_CREAT), "unexpected creating open");
     return fail(OPEN) ? -1 : __real_open(path, flags);
 }
+int __real___open_2(const char *path, int flags);
+int __wrap___open_2(const char *path, int flags) {
+    require(!(flags & O_CREAT), "unexpected creating open");
+    return fail(OPEN) ? -1 : __real___open_2(path, flags);
+}
 int __real_pipe2(int fds[2], int flags);
 int __wrap_pipe2(int fds[2], int flags) {
     return fail(PIPE) ? -1 : __real_pipe2(fds, flags);
@@ -75,9 +80,19 @@ int __real_poll(struct pollfd *fds, nfds_t count, int timeout);
 int __wrap_poll(struct pollfd *fds, nfds_t count, int timeout) {
     return fail(POLL) ? -1 : __real_poll(fds, count, timeout);
 }
+/* Fortified builds can call these aliases instead of poll/read. Keep the same
+   injection points while retaining libc's bounds checks on successful calls. */
+int __real___poll_chk(struct pollfd *fds, nfds_t count, int timeout, size_t bytes);
+int __wrap___poll_chk(struct pollfd *fds, nfds_t count, int timeout, size_t bytes) {
+    return fail(POLL) ? -1 : __real___poll_chk(fds, count, timeout, bytes);
+}
 ssize_t __real_read(int fd, void *buffer, size_t length);
 ssize_t __wrap_read(int fd, void *buffer, size_t length) {
     return fail(READ) ? -1 : __real_read(fd, buffer, length);
+}
+ssize_t __real___read_chk(int fd, void *buffer, size_t length, size_t bytes);
+ssize_t __wrap___read_chk(int fd, void *buffer, size_t length, size_t bytes) {
+    return fail(READ) ? -1 : __real___read_chk(fd, buffer, length, bytes);
 }
 
 /* These APIs return error numbers directly; deliberately poison errno to make
@@ -133,6 +148,12 @@ static void check_call(const char *helper, enum Hook hook, int nth, int error,
     int result = (int)gp_run((gp_input){packed, (int64_t)length}, (gp_input){(const uint8_t *)"/tmp", 4},
         2000, 1, (gp_output){out + 16, 256}, (gp_output){err + 16, 256}, (gp_metadata){meta + 1, 6});
     enabled = false;
+    if (injected != (hook != NONE)) {
+        dprintf(diagnostics, "injection diagnostics: seen=%d injected=%d result=%d "
+                "os_error=%lld exit=%lld signal=%lld out=%lld err=%lld unreaped=%lld\n",
+                seen, injected, result, (long long)meta[1], (long long)meta[2],
+                (long long)meta[3], (long long)meta[4], (long long)meta[5], (long long)meta[6]);
+    }
     require(injected == (hook != NONE), "selected failure was exercised");
     require(meta[0] == 123 && meta[7] == 456, "metadata canaries");
     require(meta[4] >= 0 && meta[4] <= 256 && meta[5] >= 0 && meta[5] <= 256, "capture lengths");

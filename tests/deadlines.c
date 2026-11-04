@@ -28,6 +28,8 @@ static int clock_calls, poll_calls, spawn_calls;
 static pid_t spawned_pid;
 
 int __real_clock_gettime(clockid_t clock, struct timespec *value);
+int __real_poll(struct pollfd *fds, nfds_t count, int timeout);
+int __real___poll_chk(struct pollfd *fds, nfds_t count, int timeout, size_t bytes);
 int __real_posix_spawn(pid_t *pid, const char *path,
     const posix_spawn_file_actions_t *actions, const posix_spawnattr_t *attributes,
     char *const argv[], char *const environment[]);
@@ -42,6 +44,7 @@ int __wrap_clock_gettime(clockid_t clock, struct timespec *value) {
 }
 
 int __wrap_poll(struct pollfd *fds, nfds_t count, int timeout) {
+    if (!current) return __real_poll(fds, count, timeout);
     assert(current && fds && count == 3);
     assert(timeout == current->poll_timeout);
     ++poll_calls;
@@ -49,6 +52,11 @@ int __wrap_poll(struct pollfd *fds, nfds_t count, int timeout) {
     if (current->timeout_after_poll) return 0;
     errno = EIO;
     return -1;
+}
+
+int __wrap___poll_chk(struct pollfd *fds, nfds_t count, int timeout, size_t bytes) {
+    if (!current) return __real___poll_chk(fds, count, timeout, bytes);
+    return __wrap_poll(fds, count, timeout);
 }
 
 int __wrap_posix_spawn(pid_t *pid, const char *path,

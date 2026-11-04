@@ -84,6 +84,8 @@ input/output ownership rejection; binary and adversarial argument oracles;
 simultaneous stream saturation, exact limits and cancellation; signal defaults;
 closed standard descriptors; descriptor/zombie leaks; concurrent callers; and
 injected syscall failures. GCC and Clang ASan/UBSan instrument the native kernel.
+CI also enables glibc fortification for the sanitizer matrix; fault injection
+covers both ordinary and fortified libc entry points.
 Protected pages check exact input/output boundaries, resource-limit tests check
 descriptor exhaustion, and signal storms exercise interrupted cancellation.
 Traced-child stop notifications have real and deterministic injected regressions.

@@ -1,11 +1,14 @@
 -Wl,--wrap=malloc
 -Wl,--wrap=open
+-Wl,--wrap=__open_2
 -Wl,--wrap=pipe2
 -Wl,--wrap=fcntl
 -Wl,--wrap=close
 -Wl,--wrap=clock_gettime
 -Wl,--wrap=poll
+-Wl,--wrap=__poll_chk
 -Wl,--wrap=read
+-Wl,--wrap=__read_chk
 -Wl,--wrap=posix_spawn_file_actions_init
 -Wl,--wrap=posix_spawnattr_init
 -Wl,--wrap=posix_spawnattr_setsigmask

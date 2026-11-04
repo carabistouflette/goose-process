@@ -21,9 +21,14 @@ jobs:
       - run: make check test
         env:
           CC: ${{ matrix.cc }}
-      - run: make sanitize
+      - run: make sanitize CFLAGS="-std=c11 -Wall -Wextra -Werror -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3"
         env:
           SANITIZER_CC: ${{ matrix.cc }}
+      - name: Diagnose sanitizer hook failures
+        if: ${{ failure() }}
+        run: |
+          gcc --version
+          nm .build/syscalls-sanitize | rg 'poll|read|wrap' || true
       - run: make bench BENCH_ITERATIONS=5
         env:
           BENCH_CC: ${{ matrix.cc }}
