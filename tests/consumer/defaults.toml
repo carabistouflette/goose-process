@@ -1,0 +1,4 @@
+# Explicit test-tool defaults; no implicit discovery or environment binding.
+timeout_ms = 30000
+output_limit = 65536
+expect_exit = 0

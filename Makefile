@@ -100,3 +100,9 @@ profile: helpers
 memcheck: helpers
 	$(CC) $(CFLAGS) -O1 -g bench/profile.c $(NATIVE_SOURCES) -o .build/memcheck
 	python3 scripts/run.py valgrind --tool=memcheck --error-exitcode=99 --track-origins=yes --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=definite,indirect,possible --child-silent-after-fork=yes --log-file=.build/memcheck.log .build/memcheck $(abspath .build/helper)
+
+.PHONY: checker-setup checker-consumer
+checker-setup:
+	python3 scripts/checker_consumer.py --goose "$(GOOSE)" --cc "$(CC)" --setup
+checker-consumer:
+	python3 scripts/checker_consumer.py --goose "$(GOOSE)" --cc "$(CC)"
