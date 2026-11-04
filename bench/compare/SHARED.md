@@ -37,7 +37,7 @@ The Rust fixture wrapper is not a supported library API.
 
 A separate `strace -c` parent-only profile of empty/streams/input (three warmups
 plus 10 checked calls) found 13 waits and 13 pidfd opens in each driver/fixture,
-26 output pipe creations for each, and 104 input sends plus13 socket pairs for
+26 output pipe creations for each, and 104 input sends plus 13 socket pairs for
 the input fixture. Empty-child selected syscall counts were identical. Stream
 read/poll counts varied with scheduling. Tracing included driver startup and
 changes scheduling, so its elapsed costs are not timing results.

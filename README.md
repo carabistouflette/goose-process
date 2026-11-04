@@ -14,6 +14,10 @@ disable the overall deadline for long-lived services while retaining IO bounds.
 [API contract](docs/API.md) · [Benchmarks](bench/README.md) · [Comparisons](bench/compare/README.md) ·
 [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
+[Caller integration](docs/CALLERS.md) covers signals, lock retention and exceptional
+child ownership. [Changelog](CHANGELOG.md) records release readiness.
+[Validation evidence](docs/VALIDATION.md) separates library checks from caller tests.
+
 ## Quickstart
 
 On Linux, install Git, CMake 3.27+, Make, a C/C++20 compiler and libc development
@@ -35,7 +39,7 @@ sanitizer and fuzz targets below.
 ## Usage
 
 ```goose
-import process from "carabistouflette/goose-process@12c509e49ec0b1a83c2621db4dea0d7f2001645d";
+import process from "carabistouflette/goose-process@160d23bbac93146f1d0926563e33dd26b5aecfd8";
 import std;
 
 fn main() {
