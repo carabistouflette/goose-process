@@ -26,6 +26,7 @@ typedef struct {
 static char executable[PATH_MAX];
 static bool synthetic_step, deny_signals;
 static int clock_calls, poll_calls, poll_timeouts[4], denied_pidfd, denied_kill;
+static int signal_calls;
 static int64_t clock_base;
 
 int __real_clock_gettime(clockid_t clock, struct timespec *value);
@@ -69,6 +70,7 @@ long __wrap_syscall(long number, ...) {
         result = __real_syscall(number, pid, flags);
     } else {
         assert(number == SYS_pidfd_send_signal);
+        ++signal_calls;
         int fd = va_arg(args, int), signal = va_arg(args, int);
         void *info = va_arg(args, void *); int flags = va_arg(args, int);
         if (deny_signals) { ++denied_pidfd; errno = EPERM; result = -1; }
@@ -156,9 +158,11 @@ static void retained_capture_and_reuse(void) {
     assert(result == 0 && observed.si_pid == pid);
     int64_t done = -1;
     assert(gp_try_wait(state(&f), meta(&f), &done) == OK && done == 1);
+    assert(gp_id(state(&f)) == -1);
     assert(f.meta[1] == 0 && f.meta[3] == 0 && f.meta[4] == 0);
     for (size_t i = 0; i < sizeof f.out; ++i) assert(f.out[i] == 0xa5 && f.err[i] == 0x5a);
-    assert(gp_signal(state(&f), SIGTERM, meta(&f)) == STATE);
+    int before_signal = signal_calls;
+    assert(gp_signal(state(&f), SIGTERM, meta(&f)) == STATE && signal_calls == before_signal);
     assert(collect(&f, 0, false, &done) == OK && done == 1);
     assert(f.meta[1] == 0 && f.meta[3] == 5 && f.meta[4] == 5);
     assert(memcmp(f.out, stdout_bytes, sizeof stdout_bytes) == 0);

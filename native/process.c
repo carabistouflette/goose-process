@@ -101,7 +101,7 @@ int64_t gp_can_start(gp_metadata storage) {
 }
 int64_t gp_id(gp_metadata storage) {
     child value;
-    return load(storage, &value) && value.phase == 1 ? value.pid : -1;
+    return load(storage, &value) && value.phase == 1 && !value.reaped ? value.pid : -1;
 }
 static bool record_status(child *value, int status) {
     if (WIFEXITED(status)) { value->exit_code = WEXITSTATUS(status); return true; }

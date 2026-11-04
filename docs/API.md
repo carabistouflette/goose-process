@@ -88,6 +88,9 @@ spawns nothing. Diagnostics never contain argument/environment contents.
 
 ## Child lifecycle and cancellation
 
+See [application signal guards and exceptional ownership](CALLERS.md) for a
+caller integration algorithm and links to the maintained lifecycle tests.
+
 Declare `var child = process::Child { .. };` as a local or global owner.
 `Child` is a compiler-enforced noncopyable root; unannotated aliases borrow it.
 It cannot be stored by value in arrays/other structs or sent to another thread.
@@ -104,7 +107,7 @@ watchdog**: always finish an active child with wait, repeated step, or close.
 | `send_signal(child, signal)` | Signal unreaped direct child by pidfd; zero tests signal permission/existence |
 | `terminate(child)`, `kill(child)` | Send SIGTERM or SIGKILL; still call wait/step/close |
 | `close(child)` | Discard remaining IO, cancel/reap active child; idempotent |
-| `id(child)` | Observational PID while owner active; -1 otherwise; never use it to signal a recycled PID |
+| `id(child)` | Unreaped direct-child PID, or -1 after reaping/completion; use send_signal for signaling |
 | `stdout(child)`, `stderr(child)` | Read-only views of collected prefixes; consume/copy before a mutating operation |
 
 A step timeout ranges from 0 to 24 hours; zero polls once without waiting.
@@ -117,6 +120,13 @@ wait may be repeated. An unsuccessful start may replace previous captures;
 rejection of an already-active owner leaves it unchanged. An owner can be reused
 after completion/close. Views cannot outlive
 operations that resize captures; the Goose checker enforces this lifetime rule.
+
+After reaping, id returns -1 even when descendant-held captures still need
+draining. With no external reaper and no intervening operation on the owner,
+a positive id remains reserved until the library reaps it: natural exit leaves
+a zombie. An immediate observational query such as getpgid may still fail with
+ESRCH. Do not store the numeric PID across wait/step/try_wait or use it to signal;
+send_signal checks owner state and uses a pidfd instead.
 
 The process deadline starts after argument/environment construction, before FD
 setup/spawn, and covers spawn/search and subsequent IO. It retains nanosecond
