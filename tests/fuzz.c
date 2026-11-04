@@ -15,7 +15,7 @@ int __wrap_posix_spawn(pid_t *pid, const char *path,
 }
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-    if (size < 5 || size > 65557) return 0;
+    if (size < 5 || size > 1048704) return 0;
     size_t cwd_length = data[4] % 17;
     if (cwd_length > size - 5) return 0;
     int64_t cap = data[0] < 128 ? data[0] : -1;
@@ -27,6 +27,24 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         (gp_input){data + 5, (int64_t)cwd_length}, data[2] & 1 ? 1000 : -1,
         data[3] & 3, (gp_output){out, cap}, (gp_output){err, cap},
         (gp_metadata){meta, data[1] % 8});
+    assert(result == 1 || result == 2 || result == 3);
+    assert(meta[5] == 0);
+    for (size_t i = 0; i < sizeof out; ++i) assert(out[i] == 0xa5 && err[i] == 0x5a);
+    if (size < 9) return 0;
+    size_t lengths[4] = {data[4] % 17, data[5] % 33, data[6] % 33, data[7] % 33};
+    size_t offset = 9;
+    gp_input fields[4];
+    for (size_t i = 0; i < 4; ++i) {
+        if (lengths[i] > size - offset) return 0;
+        fields[i] = (gp_input){data + offset, (int64_t)lengths[i]};
+        offset += lengths[i];
+    }
+    int64_t config[11] = {data[2] & 1 ? 1000 : -1,
+        1 + data[3] % 6, 1 + data[8] % 6, data[8] % 5,
+        -1, -1, -1, (data[3] >> 3) & 1, (data[3] >> 4) & 1, cap, cap};
+    result = (int)gp_execute((gp_input){data + offset, (int64_t)(size - offset)},
+        fields[0], fields[1], fields[2], fields[3], (gp_metadata){config, 11},
+        (gp_output){out, cap}, (gp_output){err, cap}, (gp_metadata){meta, 6});
     assert(result == 1 || result == 2 || result == 3);
     assert(meta[5] == 0);
     for (size_t i = 0; i < sizeof out; ++i) assert(out[i] == 0xa5 && err[i] == 0x5a);

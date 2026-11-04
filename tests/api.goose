@@ -77,7 +77,7 @@ fn main() {
     assert(status.error == process::Error.InvalidInput && out.len == 0);
     var many: (const u8[:])[>..] = [];
     many.push("/bin/true");
-    for i in 255 { many.push(""); }
+    for i in 4095 { many.push(""); }
     status = process::run(many, options, out, err);
     assert(process::success(status));
     many.push("");

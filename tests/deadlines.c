@@ -45,7 +45,7 @@ int __wrap_clock_gettime(clockid_t clock, struct timespec *value) {
 
 int __wrap_poll(struct pollfd *fds, nfds_t count, int timeout) {
     if (!current) return __real_poll(fds, count, timeout);
-    assert(current && fds && count == 3);
+    assert(current && fds && count == 4);
     assert(timeout == current->poll_timeout);
     ++poll_calls;
     if (current->interrupt_first_poll && poll_calls == 1) { errno = EINTR; return -1; }

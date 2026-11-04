@@ -193,7 +193,7 @@ static void matrix(const char *helper) {
     }
     /* Promotion releases the low slot, so both successive pipes reuse it. */
     int holes = !!(stdio_mask & 1) + !!(stdio_mask & 2) + !!(stdio_mask & 4);
-    int promotions = holes ? 1 + 2 * (holes < 2 ? holes : 2) : 0;
+    int promotions = holes ? 2 + 2 * (holes < 2 ? holes : 2) : 0;
     for (int nth = 1; nth <= promotions; ++nth)
         check_call(helper, DUP_FD, nth, EMFILE, true, false);
     check_call(helper, POLL, 1, EINTR, false, true);

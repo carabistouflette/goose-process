@@ -1,12 +1,13 @@
 # goose-process
 
-A small synchronous subprocess library for Goose. Apache-2.0.
+A small subprocess library for Goose. Apache-2.0.
 Experimental API; no release yet. Requires Linux kernel 5.3+ and glibc 2.34+.
 
-Runs explicit absolute executable paths with an argument array, optional working
-directory, separate bounded stdout/stderr captures, and a cancellation deadline.
-No implicit shell or PATH search. Native process operations use a small C kernel;
-Goose owns validation and returned output.
+Runs argument arrays with bounded captures, per-child environment and cwd,
+independent stdio routing, finite binary stdin, and cancellation deadlines.
+Child handles support polling, signals and explicit cleanup. Absolute executables
+are the default; PATH search is opt-in. No implicit shell. Native process operations
+use a small C kernel; Goose owns validation, input and returned output.
 
 [API contract](docs/API.md) · [Benchmarks](bench/README.md) ·
 [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
@@ -58,10 +59,13 @@ array inference preserves read-only element types.
 exit code or call `success` to check whether the program succeeded. Launch errors
 are distinct from child exits 126/127. Partial output survives timeout/overflow.
 
-See [the API contract](docs/API.md) for limits, signals, inherited environment,
+See [the API contract](docs/API.md) for limits, signals, per-child environment,
 descriptor handling, and exceptional cancellation failure. This is a process
-runner, not a sandbox or a process-tree supervisor. The first version excludes
-PATH lookup, environment overrides, stdin streaming, pipelines and Windows.
+runner, not a sandbox or a process-tree supervisor. Finite stdin uses a one-way
+socket byte stream; use FD routing for programs requiring a real pipe or live
+output. Active child handles require wait/step/close; there is no automatic cleanup.
+Pipelines, PTYs, credential switching and Windows are outside the current scope.
+See [the Rust/Go/Python feature comparison](docs/COMPARISON.md).
 
 ## Development
 
@@ -81,7 +85,7 @@ goose-json; other revisions are not guaranteed. An existing matching compiler
 can be supplied with `make GOOSE=/absolute/path/to/goose ...`.
 
 Validation covers Goose in-process, native and debug execution; compile-time
-input/output ownership rejection; binary and adversarial argument oracles;
+resource ownership and capture-view lifetime rejection; binary and adversarial argument oracles;
 simultaneous stream saturation, exact limits and cancellation; signal defaults;
 closed standard descriptors; descriptor/zombie leaks; concurrent callers; and
 injected syscall failures. GCC and Clang ASan/UBSan instrument the native kernel.

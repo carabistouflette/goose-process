@@ -13,35 +13,35 @@ class Slice(c.Structure):
     _fields_ = [('data', c.c_void_p), ('length', c.c_int64)]
 
 def valid(packed, cwd, timeout, cap, capture):
-    if not (2 <= len(packed) <= 65536 and packed.startswith(b'/') and packed.endswith(b'\0')):
+    if not (2 <= len(packed) <= 1048576 and packed.startswith(b'/') and packed.endswith(b'\0')):
         return False
     if len(cwd) > 4095 or b'\0' in cwd or not 1 <= timeout <= 86400000:
         return False
     if not 0 <= cap <= 1048576 or capture not in (0, 1):
         return False
     arguments = packed[:-1].split(b'\0')
-    return (len(arguments) <= 256 and len(arguments[0]) <= 4095
-            and all(len(argument) <= 16384 for argument in arguments))
+    return (len(arguments) <= 4096 and len(arguments[0]) <= 4095
+            and all(len(argument) <= 131071 for argument in arguments))
 
 def fixtures():
     def case(args, cwd=b'', timeout=1000, cap=1, capture=1):
         return b'\0'.join(args) + b'\0', cwd, timeout, cap, capture
     for size in [0, 1, 2, 4094, 4095, 4096]:
         yield case([b'/' + b'x' * (size - 1)] if size else [b''])
-    for size in [0, 1, 16383, 16384, 16385]:
+    for size in [0, 1, 131070, 131071, 131072]:
         yield case([b'/x', b'x' * size])
-    for count in [1, 255, 256, 257]:
+    for count in [1, 4095, 4096, 4097]:
         yield case([b'/x'] + [b''] * (count - 1))
     for size in [4094, 4095, 4096]:
         yield case([b'/x'], b'x' * size)
-    for size in [0, 1, 65535, 65536, 65537]:
+    for size in [0, 1, 1048575, 1048576, 1048577]:
         if size < 3:
             yield b'/'[:size], b'', 1000, 1, 1
             continue
         args = [b'/x']
         remaining = size - 3
         while remaining > 0:
-            take = min(16385, remaining)
+            take = min(131072, remaining)
             args.append(b'x' * (take - 1))
             remaining -= take
         yield case(args)
@@ -53,7 +53,7 @@ def fixtures():
         yield case([b'/x'], capture=capture)
     rng = random.Random(91107)
     for _ in range(2500):
-        count = rng.choice([0, 1, 2, 255, 256, 257])
+        count = rng.choice([0, 1, 2, 4095, 4096, 4097])
         args = [b'/x'] if count else []
         remaining = 65537 - 3
         for _ in range(max(count - 1, 0)):

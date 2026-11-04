@@ -2,7 +2,7 @@
 
 Keep the API small and explicit. Preserve argument boundaries, bounded work,
 ownership, descriptor isolation, and child cleanup. Do not add implicit shells,
-PATH searches, process-global signal handlers, or platform-specific application
+PATH searches without explicit opt-in, process-global signal handlers, or platform-specific application
 policy. Linux/glibc is the initial platform; unsupported platforms must fail
 clearly rather than silently weaken the contract.
 

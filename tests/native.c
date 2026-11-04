@@ -97,15 +97,15 @@ static void malformed(void) {
     good[0] = 'x'; assert(gp_run(input, cwd, 1000, 1, a, b, m) == 1);
     good[0] = '/'; good[sizeof good - 2] = 'x';
     assert(gp_run(input, cwd, 1000, 1, a, b, m) == 1);
-    uint8_t packed[65537]; memset(packed, 'a', sizeof packed); packed[0] = '/';
+    static uint8_t packed[1048577]; memset(packed, 'a', sizeof packed); packed[0] = '/';
     packed[sizeof packed - 1] = 0;
     assert(gp_run((gp_input){packed, sizeof packed}, cwd, 1000, 1, a, b, m) == 1);
     packed[4096] = 0;
     assert(gp_run((gp_input){packed, 4097}, cwd, 1000, 1, a, b, m) == 1);
-    memset(packed, 0, 258); packed[0] = '/';
-    assert(gp_run((gp_input){packed, 258}, cwd, 1000, 1, a, b, m) == 1);
-    memset(packed, 'a', 20000); packed[0] = '/'; packed[1] = 0; packed[19999] = 0;
-    assert(gp_run((gp_input){packed, 20000}, cwd, 1000, 1, a, b, m) == 1);
+    memset(packed, 0, 4098); packed[0] = '/';
+    assert(gp_run((gp_input){packed, 4098}, cwd, 1000, 1, a, b, m) == 1);
+    memset(packed, 'a', 131075); packed[0] = '/'; packed[1] = 0; packed[131074] = 0;
+    assert(gp_run((gp_input){packed, 131075}, cwd, 1000, 1, a, b, m) == 1);
 }
 static void *parallel(void *unused) {
     (void)unused;

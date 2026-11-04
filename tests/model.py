@@ -55,7 +55,7 @@ def main():
     for _ in range(200):
         fixtures.append([bytes(rng.randrange(1, 256) for _ in range(rng.randrange(100)))
                          for _ in range(rng.randrange(15))])
-    fixtures += [[b'x' * 16384], [b''] * 254,
+    fixtures += [[b'x' * 16384], [b''] * 4094,
                  [b'x' * 16384] * 3 + [b'x' * 10000]]
     for fields in fixtures:
         args = [helper, b'args', *fields]
@@ -73,8 +73,8 @@ def main():
             if length <= cap: assert len(err) == length
         result, meta, out, err = run([helper, b'stderr', str(cap + 1).encode()], cap)
         assert result == 5 and out == b'' and err == b'e' * cap
-    for args in [[helper, b'args', b'x' * 16385], [helper, b'args', *([b''] * 255)],
-                 [helper, b'args', *([b'x' * 16384] * 4)], [b'true'], [b'']]:
+    for args in [[helper, b'args', b'x' * 131072], [helper, b'args', *([b''] * 4095)],
+                 [helper, b'args', *([b'x' * 131071] * 9)], [b'true'], [b'']]:
         assert run(args)[0] == 1
     with tempfile.TemporaryDirectory(prefix='goose-process-') as directory:
         path = Path(directory) / 'not-a-program'
