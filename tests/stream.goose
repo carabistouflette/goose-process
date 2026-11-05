@@ -71,6 +71,51 @@ fn main() {
         total_out += n; done = complete; result = current;
     }
     assert(process::success(result) && total_out == input.len);
+    result = process::start([helper, "streams", "257"], process::Options {
+        stdout: process::Output.Stream, stderr: process::Output.Stdout, output_limit: 0,
+    }, child);
+    assert(result.error == process::Error.None);
+    total_out = 0; done = false;
+    while !done {
+        let current, complete, n, m = process::stream_step(child, out[..], err[..0], 20);
+        assert(current.error == process::Error.None && m == 0);
+        for i in n {
+            let expected: u8 = if total_out + i < 257 { 'x' } else { 'y' };
+            assert(out[i] == expected);
+        }
+        total_out += n; done = complete; result = current;
+    }
+    assert(process::success(result) && total_out == 514);
+    result = process::start([helper, "streams", "256"], process::Options {
+        stdout: process::Output.Stream, stderr: process::Output.Capture, stderr_limit: 255,
+    }, child);
+    assert(result.error == process::Error.None);
+    done = false; total_out = 0;
+    while !done {
+        let current, complete, n, m = process::stream_step(child, out[..], err[..0], 20);
+        for byte in out[..n] { assert(byte == 'x'); }
+        total_out += n; done = complete; result = current;
+    }
+    assert(result.error == process::Error.OutputLimit && total_out == 256 && process::stderr(child).len == 255);
+    // Reaping is observationally distinct from pipe completion.
+    result = process::start([helper, "bytes"], process::Options {
+        stdout: process::Output.Stream, stderr: process::Output.Null,
+    }, child);
+    assert(result.error == process::Error.None);
+    var reaped = false;
+    while !reaped {
+        let current, complete = process::try_wait(child);
+        assert(current.error == process::Error.None);
+        reaped = complete;
+    }
+    assert(process::id(child) == -1);
+    total_out = 0; done = false;
+    while !done {
+        let current, complete, n, m = process::stream_step(child, out[..], err[..0], 20);
+        for i in n { assert(out[i] == (total_out + i) as u8); }
+        total_out += n; done = complete; result = current;
+    }
+    assert(process::success(result) && total_out == 256);
     // A capture-only reuse restores legacy wait and capture behavior.
     result = process::start(["/bin/echo", "reuse"], process::Options { .. }, child);
     assert(result.error == process::Error.None && process::success(process::wait(child)));
