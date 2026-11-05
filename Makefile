@@ -73,6 +73,7 @@ test: helpers
 	python3 tests/ownership.py $(abspath $(GOOSE))
 	python3 tests/stream_soak_controller.py
 	python3 tests/duplex_soak_controller.py
+	python3 tests/duplex_pair_controller.py
 	python3 bench/duplex_soak.py --goose "$(GOOSE)" --cc "$(CC)" --seconds 1 --smoke --output .build/duplex-soak-smoke.json
 	python3 bench/stream_soak.py --goose "$(GOOSE)" --cc "$(CC)" --seconds 1 --smoke --output .build/stream-soak-smoke.json
 	$(MAKE) native
