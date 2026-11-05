@@ -28,7 +28,7 @@ static int descriptors(void) {
 int main(int argc, char **argv) {
     if (argc == 2 && !strcmp(argv[1], "held")) {
         pid_t descendant = fork(); assert(descendant >= 0);
-        if (!descendant) { usleep(200000); _exit(0); }
+        if (!descendant) { sleep(2); _exit(0); }
         return 0;
     }
     if (argc == 2 && !strcmp(argv[1], "prefix")) {
@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
     }
     memcpy(packed + length + 1, "held", 5); command.len = length + 6;
     int64_t state[24] = {0}, meta[6], done = 0;
-    int64_t config[11] = {50, 6, 3, 0, -1, -1, -1, 0, 0, 0, 0};
+    int64_t config[11] = {1000, 6, 3, 0, -1, -1, -1, 0, 0, 0, 0, 0};
     assert(gp_start(command, empty(), empty(), empty(), 0, words(config, 11), words(state, 24), words(meta, 6)) == 0);
     uint8_t byte; int result;
     do {
