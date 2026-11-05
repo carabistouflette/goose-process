@@ -1,5 +1,9 @@
 # Process benchmark
 
+The [two-stage pipeline route study](PIPELINES.md) retains a separate checked
+comparison of convenience copies and owned borrowed captures, including methods,
+raw samples and limits. It measures complete API routes through the same engine.
+
 For the resident streaming resource/latency soak and separate instrumented
 profiles, see [the sustained streaming evidence](STREAM-SOAK.md). It retains the
 full measured run and failed profiler attempts without a general speed claim.
