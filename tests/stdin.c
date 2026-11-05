@@ -9,6 +9,7 @@
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
 #include <time.h>
@@ -76,6 +77,18 @@ int main(void) {
     assert(gp_io_step(words(state, 24), empty(), none, none, 0, words(meta, 6), words(progress, 3)) == 0);
     inspect_idle = false;
     assert(idle_polls == 1 && !progress[0] && progress[1] == 0 && progress[2]);
+    int64_t unchanged[24]; memcpy(unchanged, state, sizeof state);
+    progress[0] = 91; progress[1] = 92; progress[2] = 93;
+    /* Outer alias rejection cannot overwrite its own result/input span. */
+    assert(gp_io_step(words(state, 24), (gp_input){(uint8_t *)progress, sizeof progress}, none, none,
+                       0, words(meta, 6), words(progress, 3)) == 1);
+    assert(progress[0] == 91 && progress[1] == 92 && progress[2] == 93);
+    assert(!memcmp(unchanged, state, sizeof state));
+    /* Inner rejection reports zero progress, without pumping or losing owner. */
+    assert(gp_io_step(words(state, 24), empty(), none, none, -1,
+                       words(meta, 6), words(progress, 3)) == 1);
+    assert(!progress[0] && !progress[1] && !progress[2]);
+    assert(!memcmp(unchanged, state, sizeof state) && gp_id(words(state, 24)) == pid);
     /* Result aliases must reject before any bytes or state are consumed. */
     uint8_t input[] = {'a', 0, 255};
     assert(gp_io_step(words(state, 24), empty(), none, none, 0,
@@ -134,6 +147,24 @@ int main(void) {
         assert(gp_io_step(words(state, 24), empty(), none, none, 20, words(meta, 6), words(progress, 3)) == 0);
     } while (!progress[0]);
     assert(meta[1] == 0 && !progress[2]);
+    /* Wrong-mode owners reject before reaping or changing their native state. */
+    config[1] = 3; config[4] = -1; config[3] = 0;
+    assert(gp_start((gp_input){command, sizeof command - 1}, empty(), empty(), empty(), 0,
+                    words(config, 11), words(state, 24), words(meta, 6)) == 0);
+    memcpy(unchanged, state, sizeof state);
+    progress[0] = 91; progress[1] = 92; progress[2] = 93;
+    assert(gp_io_step(words(state, 24), empty(), none, none, 0, words(meta, 6), words(progress, 3)) == 6);
+    assert(!progress[0] && !progress[1] && !progress[2] && !memcmp(unchanged, state, sizeof state));
+    assert(gp_close(words(state, 24), words(meta, 6)) == 0 && meta[5] == 0);
+    /* A completed launch error retains its classification and closed endpoint. */
+    static const uint8_t missing[] = "/proc/self/goose-process-missing\0";
+    config[3] = 4;
+    assert(gp_start((gp_input){missing, sizeof missing - 1}, empty(), empty(), empty(), 0,
+                    words(config, 11), words(state, 24), words(meta, 6)) == 2);
+    assert(meta[0] == ENOENT && meta[5] == 0);
+    assert(gp_io_step(words(state, 24), empty(), none, none, 0, words(meta, 6), words(progress, 3)) == 2);
+    assert(progress[0] && !progress[1] && !progress[2] && meta[0] == ENOENT && meta[5] == 0);
+    assert(gp_close(words(state, 24), words(meta, 6)) == 2 && meta[5] == 0);
     assert(descriptors() == before);
     puts("streaming stdin accepted-byte, idle-poll and cleanup fault tests passed");
     return 0;
