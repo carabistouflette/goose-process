@@ -17,8 +17,8 @@ for defaults, limits and cleanup rules. Streaming and pipelines are not in v0.1.
 | Bounded live output | explicit Stream routes and caller buffers via stream_step; mixed capture | binary order, backpressure, merged output, input, reaping-before-drain and cleanup faults |
 | Two-stage pipelines | noncopyable Pipeline, shared positive deadline, finite input, three captures and per-stage outcomes | pipe saturation, early consumer closure, partial launches, dual cleanup transfers and descendant-held capture |
 
-This covers the agreed workflows, not every method or platform in the three
-standard libraries. Differences include fixed limits, finite deadlines by default,
+These interfaces cover the listed Linux workflows. They do not implement every
+method or platform in the three standard libraries. Differences include fixed limits, finite deadlines by default,
 socket rather than FIFO finite stdin, explicit Child/Pipeline cleanup, exactly two
 pipeline stages with restricted routing, and no process-group policy, credentials, arbitrary extra-FD allowlist, PTYs,
 Windows or macOS support. Fd routing permits caller-owned live stdio streams.
