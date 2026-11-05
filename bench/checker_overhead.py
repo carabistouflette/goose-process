@@ -49,7 +49,7 @@ def measure(a):
     goose,cc=consumer.executable(a.goose),consumer.executable(a.cc)
     consumer.clean_source(consumer.SOURCE,consumer.REVISION)
     if consumer.git('status','--porcelain'):
-        p.error('commit the measurement source before running')
+        raise ValueError('commit the measurement source before running')
     # Preparation is outside timing, and rebuilds the checker with a normal CC
     # identity instead of trusting a possibly overwritten sanitizer executable.
     consumer.setup(goose,cc)

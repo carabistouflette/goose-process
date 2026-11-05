@@ -8,11 +8,14 @@ import subprocess
 import sys
 import tempfile
 import time
+from types import SimpleNamespace
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / 'scripts'))
 import checker_consumer as consumer
+sys.path.insert(0, str(ROOT / 'bench'))
+import checker_overhead as measurement
 
 
 def require_reaped(pid):
@@ -74,11 +77,20 @@ def main():
         arguments, options = calls[0]
         if 'SANITIZE=0' not in arguments or any(name in options['env'] for name in inherited if name != 'SANITIZE'):
             raise AssertionError('nested build inherited instrumentation or Make controls')
+        with patch.object(consumer, 'clean_source'), patch.object(consumer, 'git', return_value='?? dirty'), \
+                patch.object(consumer, 'setup', side_effect=AssertionError('dirty measurement reached setup')):
+            try:
+                measurement.measure(SimpleNamespace(goose=sys.executable, cc=sys.executable))
+            except ValueError as error:
+                if 'commit the measurement source' not in str(error):
+                    raise
+            else:
+                raise AssertionError('measurement accepted dirty source')
     finally:
         consumer.adopted_cleanup()
     if len(list(Path('/proc/self/fd').iterdir())) != before:
         raise AssertionError('controller descriptor growth')
-    print('Controller fd-failure, build-tree timeout and normal-build provenance probes passed')
+    print('Controller fd-failure, build-tree timeout, build provenance and dirty-source probes passed')
 
 
 if __name__ == '__main__':
