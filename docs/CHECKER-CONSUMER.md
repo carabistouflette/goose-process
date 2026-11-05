@@ -1,7 +1,8 @@
 # Using goose-check on the library regressions
 
 The optional developer workflow uses the public command checker to validate this
-library's actual optimized/debug API and feature tests plus the command example.
+library's actual optimized/debug API and feature tests plus the command, compiler,
+worker and two-stage compiler-pipeline examples.
 It adds exact stdout/exit fixtures, binary argument/stdin cases, and explicit
 mismatch, output-limit and launched-timeout rejection controls.
 
