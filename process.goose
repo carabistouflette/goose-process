@@ -52,6 +52,24 @@ root struct Child {
     _stream_err:   bool    = false,
     _stream_input: bool    = false,
 }
+struct PipelineStatus {
+    error:           Error  = Error.None,
+    os_error:        i64    = 0,
+    first:           Status = Status { .. },
+    second:          Status = Status { .. },
+    first_launched:  bool   = false,
+    second_launched: bool   = false,
+}
+root struct Pipeline {
+    _native:          i64[55] = [0; 55],
+    _input:           u8[>..] = [],
+    _stdout:          u8[>..] = [],
+    _first_stderr:    u8[>..] = [],
+    _second_stderr:   u8[>..] = [],
+    _out_size:        i64     = 0,
+    _first_err_size:  i64     = 0,
+    _second_err_size: i64     = 0,
+}
 const MAX_ARGUMENTS = 4096;
 const MAX_ARGUMENT_BYTES = 1048576;
 const MAX_ARGUMENT_LENGTH = 131071;
@@ -79,6 +97,14 @@ extern fn native_signal(state: i64[:], signal: i64, meta: i64[:]) -> i64 = "gp_s
 extern fn native_close(state: i64[:], meta: i64[:]) -> i64 = "gp_close";
 extern fn native_can_start(state: i64[:]) -> i64 = "gp_can_start";
 extern fn native_id(state: i64[:]) -> i64 = "gp_id";
+extern fn native_pipeline_start(first_packed: const u8[:], first_cwd: const u8[:],
+    first_sets:  const u8[:], first_removes: const u8[:], second_packed: const u8[:], second_cwd: const u8[:],
+    second_sets: const u8[:], second_removes: const u8[:], input_size: i64,
+    first_settings: const i64[:], second_settings: const i64[:], state: i64[:], meta: i64[:]) -> i64 = "gp_pipeline_start";
+extern fn native_pipeline_wait(state: i64[:], input: const u8[:], out: u8[:], first_err: u8[:],
+    second_err: u8[:], slice_ms: i64, one_step: i64, meta: i64[:], done: i64&) -> i64 = "gp_pipeline_wait";
+extern fn native_pipeline_close(state: i64[:], meta: i64[:]) -> i64 = "gp_pipeline_close";
+extern fn native_pipeline_can_start(state: i64[:]) -> i64 = "gp_pipeline_can_start";
 
 fn success(status: Status) -> bool { return status.error == Error.None && status.exit_code == 0; }
 fn valid_text(text: const u8[:], limit: i64) -> bool {
@@ -282,3 +308,97 @@ fn close(child: Child&) -> Status {
 fn id(child: Child&) -> i64 { return native_id(child._native[..]); }
 fn stdout(child: Child&) -> const u8[:] { return child._stdout[..child._out_size]; }
 fn stderr(child: Child&) -> const u8[:] { return child._stderr[..child._err_size]; }
+
+fn pipeline_success(result: PipelineStatus) -> bool {
+    return result.error == Error.None && result.first_launched && result.second_launched &&
+        success(result.first) && success(result.second);
+}
+fn pipeline_status(code: i64, meta: const i64[:]) -> PipelineStatus {
+    let basic: i64[6] = [meta[0], -1, 0, 0, 0, 0];
+    let overall = status(code, basic[..]);
+    return PipelineStatus { error: overall.error, os_error: overall.os_error,
+        first: status(meta[1], meta[3..9]), second: status(meta[2], meta[9..15]),
+        first_launched: meta[15] != 0, second_launched: meta[16] != 0 };
+}
+fn pipeline_options(first: Options, second: Options) -> bool {
+    return first.timeout_ms == second.timeout_ms && first.capture && second.capture &&
+        first.stdout == Output.Default && first.stdout_limit == -1 && first.stdout_fd == -1 &&
+        (first.stdin == Input.Null || first.stdin == Input.Bytes) &&
+        (first.stderr == Output.Default || first.stderr == Output.Capture) &&
+        second.stdin == Input.Null && second.input.len == 0 && second.stdin_fd == -1 &&
+        (second.stdout == Output.Default || second.stdout == Output.Capture) &&
+        (second.stderr == Output.Default || second.stderr == Output.Capture);
+}
+fn start_pipeline(first_args: const (const u8[:])[:], first_options: Options,
+    second_args: const (const u8[:])[:], second_options: Options, owner: Pipeline&) -> PipelineStatus {
+    if native_pipeline_can_start(owner._native[..]) == 0 { return PipelineStatus { error: Error.InvalidState }; }
+    var first_packed:  u8[>..] = []; var first_sets: u8[>..] = []; var first_removes: u8[>..] = [];
+    var second_packed: u8[>..] = []; var second_sets: u8[>..] = []; var second_removes: u8[>..] = [];
+    if !pipeline_options(first_options, second_options) ||
+        !pack(first_args, first_options, first_packed, first_sets, first_removes) ||
+        !pack(second_args, second_options, second_packed, second_sets, second_removes) {
+        return PipelineStatus { error: Error.InvalidInput };
+    }
+    // Finish staging before replacing buffers that may back caller views.
+    var first_directory:  u8[>..] = []; first_directory.append(first_options.cwd);
+    var second_directory: u8[>..] = []; second_directory.append(second_options.cwd);
+    var input:            u8[>..] = []; input.append(first_options.input);
+    let first_config = settings(first_options); let second_config = settings(second_options);
+    let first_out_limit, first_err_limit = limits(first_options);
+    let out_limit, second_err_limit = limits(second_options);
+    owner._input.clear(); owner._input.append(input);
+    owner._stdout.clear(); owner._stdout.resize(out_limit, 0);
+    owner._first_stderr.clear(); owner._first_stderr.resize(first_err_limit, 0);
+    owner._second_stderr.clear(); owner._second_stderr.resize(second_err_limit, 0);
+    owner._out_size = 0; owner._first_err_size = 0; owner._second_err_size = 0;
+    var meta: i64[17] = [0; 17]; meta[4] = -1; meta[10] = -1;
+    let code = native_pipeline_start(first_packed[..], first_directory[..], first_sets[..], first_removes[..],
+        second_packed[..], second_directory[..], second_sets[..], second_removes[..], owner._input.len,
+        first_config[..], second_config[..], owner._native[..], meta[..]);
+    return pipeline_status(code, meta[..]);
+}
+fn collect_pipeline(owner: Pipeline&, slice_ms: i64, one_step: bool) -> PipelineStatus, bool {
+    if slice_ms < 0 || slice_ms > MAX_TIMEOUT_MS { return PipelineStatus { error: Error.InvalidInput }, false; }
+    var meta: i64[17] = [0; 17]; meta[4] = -1; meta[10] = -1; var done: i64 = 0;
+    let code = native_pipeline_wait(owner._native[..], owner._input[..], owner._stdout[..],
+        owner._first_stderr[..], owner._second_stderr[..], slice_ms, if one_step { 1 } else { 0 }, meta[..], done);
+    if code == 1 || code == 6 { return pipeline_status(code, meta[..]), false; }
+    owner._out_size = meta[12]; owner._first_err_size = meta[7]; owner._second_err_size = meta[13];
+    if done != 0 {
+        owner._stdout.resize(owner._out_size); owner._first_stderr.resize(owner._first_err_size);
+        owner._second_stderr.resize(owner._second_err_size); owner._input.clear();
+    }
+    return pipeline_status(code, meta[..]), done != 0;
+}
+fn pipeline_step(owner: Pipeline&, timeout_ms: i64 = 0) -> PipelineStatus, bool {
+    return collect_pipeline(owner, timeout_ms, true);
+}
+fn wait_pipeline(owner: Pipeline&) -> PipelineStatus {
+    let result, done = collect_pipeline(owner, 0, false); return result;
+}
+fn close_pipeline(owner: Pipeline&) -> PipelineStatus {
+    var meta: i64[17] = [0; 17]; meta[4] = -1; meta[10] = -1;
+    let code = native_pipeline_close(owner._native[..], meta[..]);
+    if code != 1 && code != 6 {
+        owner._out_size = meta[12]; owner._first_err_size = meta[7]; owner._second_err_size = meta[13];
+        owner._stdout.resize(owner._out_size); owner._first_stderr.resize(owner._first_err_size);
+        owner._second_stderr.resize(owner._second_err_size); owner._input.clear();
+    }
+    return pipeline_status(code, meta[..]);
+}
+fn pipeline_stdout(owner: Pipeline&) -> const u8[:] { return owner._stdout[..owner._out_size]; }
+fn pipeline_first_stderr(owner: Pipeline&) -> const u8[:] { return owner._first_stderr[..owner._first_err_size]; }
+fn pipeline_second_stderr(owner: Pipeline&) -> const u8[:] { return owner._second_stderr[..owner._second_err_size]; }
+fn run_pipeline(first_args: const (const u8[:])[:], first_options: Options,
+    second_args: const (const u8[:])[:], second_options: Options,
+    out: u8[>..]&, first_err: u8[>..]&, second_err: u8[>..]&) -> PipelineStatus {
+    var owner = Pipeline { .. };
+    let launched = start_pipeline(first_args, first_options, second_args, second_options, owner);
+    let result = if launched.error == Error.None { wait_pipeline(owner) } else { launched };
+    // Arguments/input are already staged before replacing caller buffers.
+    // Owner accessors avoid this bounded convenience copy for large captures.
+    out.clear(); out.append(owner._stdout[..owner._out_size]);
+    first_err.clear(); first_err.append(owner._first_stderr[..owner._first_err_size]);
+    second_err.clear(); second_err.append(owner._second_stderr[..owner._second_err_size]);
+    return result;
+}

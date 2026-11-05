@@ -49,6 +49,9 @@ Managed captures hold at most 3 MiB payload, plus finite input; interstage bytes
 are not accumulated in userspace and may exceed the finite input/capture limits.
 The kernel pipe supplies bounded backpressure. No launch is transactional:
 downstream may execute side effects before an upstream launch subsequently fails.
+The synchronous convenience function copies the three retained prefixes into
+caller buffers, temporarily adding up to 3 MiB output payload. Use the owner
+accessors to inspect captures without that convenience copy.
 
 ## Ownership, scheduling and cancellation
 
