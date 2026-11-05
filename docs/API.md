@@ -23,7 +23,7 @@ There is no shell parsing or shell fallback for malformed executables.
 | `environment` | empty | Slice of `EnvOverride { key, value, remove }` |
 | `search_path` | `false` | Explicitly enable PATH search and relative executables |
 
-`Output` supports Default, Capture, Inherit, Null, Fd, and **stderr-only** Stdout.
+`Output` supports Default, Capture, Inherit, Null, Fd, Stream, and **stderr-only** Stdout.
 Stdout merges stderr into the child's already-routed stdout. A merged capture
 uses only the stdout limit and returns an empty stderr buffer. Separate captures
 have no combined ordering. Null discards output through `/dev/null`.
@@ -96,7 +96,8 @@ Declare `var child = process::Child { .. };` as a local or global owner.
 It cannot be stored by value in arrays/other structs or sent to another thread.
 Its underscore fields and the native ABI are implementation details, not public
 API. Do not modify them directly. There is **no automatic destructor or background
-watchdog**: always finish an active child with wait, repeated step, or close.
+watchdog**: always finish an active child with wait, repeated step, repeated
+stream_step for streamed output, or close.
 
 | Function | Contract |
 | --- | --- |
@@ -196,3 +197,47 @@ failure follows runtime policy; native allocation failures return SystemError/EN
 Native callers must provide valid pointer/length pairs; validation cannot make
 arbitrary C pointers safe. The library is not an environment sanitizer or sandbox
 and does not constrain a command's own interpretation of scripts/options.
+
+## Bounded live output
+
+Select `Output.Stream` explicitly in `start`, then call
+`stream_step(child, out: u8[:], err: u8[:], timeout_ms = 0)` repeatedly. The return
+values are `(Status, done, stdout_count, stderr_count)`. Counts describe only the
+Stream bytes written into the corresponding caller buffer during this call.
+Consume those prefixes before reusing the buffers. No payload or caller pointer
+is retained by Stream between calls; `stdout(child)` and `stderr(child)` remain
+capture-only accessors. Existing Capture defaults, limits and results do not change.
+
+Each caller span is at most 1 MiB. A step reads at most 16 KiB from each managed
+output and sends at most 16 KiB of finite stdin per poll iteration. Stream has no
+cumulative byte limit: caller buffers and kernel pipes bound storage, while the
+caller chooses any total-output/time policy. Existing capture allocations may
+retain reusable capacity when a Child is reused. Limit options remain validated
+but apply only to Capture. Finite copied stdin is still limited to 1 MiB.
+
+Empty spans apply backpressure: that stream is not polled or read; other streams,
+input and child control can progress. No extra-byte overflow probe is performed
+for Stream. A full span may leave EOF unread until the next nonempty call.
+Zero counts **do not mean EOF**. `done` means direct-child reaping and EOF on all
+managed output pipes, or terminal cancellation/error cleanup. `try_wait` may reap
+the child before its pending output is drained. Descendant-held pipes still need
+an overall deadline or explicit close; there is no process-tree supervision.
+
+Mixed Stream/Capture, inherited, null and FD routes are supported independently.
+Pass an empty caller span for every non-Stream route. `stderr: Output.Stdout`
+merges into stdout's route and returns zero stderr Stream bytes. Byte order is
+preserved within a stream, with no ordering promise between separate streams.
+On timeout, capture overflow or system failure, consume any returned Stream
+prefixes before handling the error; cleanup may discard unread bytes. `close`
+explicitly discards remaining I/O and retains the existing exceptional ownership
+transfer contract.
+
+`run` rejects Stream before launching. Use `stream_step` rather than legacy
+`wait`/`step` for a streamed Child; those legacy Goose operations return
+InvalidState without pumping. Signaling, status observation, close and owner reuse
+remain available. Repeated terminal `stream_step` returns the final status and
+zero Stream counts. Invalid spans, aliases or slice timeouts consume no bytes.
+Slice budgets remain 0..24h, monotonic, without promising scheduler latency.
+There is no background I/O: a slow caller intentionally backpressures the child,
+and overall deadlines are enforced only while executing a library operation.
+Application processing/writing errors must still reach close/exceptional cleanup.

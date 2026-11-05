@@ -14,6 +14,7 @@ is authoritative; the baseline tables remain a dated assessment of b97176d.
 | Finite stdin | up to 1 MiB; concurrent feed/drain; one-way socket transport | binary roundtrip, early closure, SIGPIPE/fault tests |
 | Child control | start, step, try_wait, wait, signal, terminate, kill, close | lifecycle tests; compile-time owner/view checks |
 | Bounded capture and deadlines | per-stream caps; direct-child cancellation/reaping | limits, deterministic deadlines, cancellation failures |
+| Bounded live output | explicit Stream routes and caller buffers via stream_step; mixed capture | binary order, backpressure, merged output, input, reaping-before-drain and cleanup faults |
 
 This covers the agreed workflows, not every method or platform in the three
 standard libraries. Differences include fixed limits, finite deadlines by default,

@@ -71,6 +71,8 @@ descriptor handling, and exceptional cancellation failure. This is a process
 runner, not a sandbox or a process-tree supervisor. Finite stdin uses a one-way
 socket byte stream; use FD routing for programs requiring a real pipe or live
 output. Active child handles require wait/step/close; there is no automatic cleanup.
+Explicit `Output.Stream` with `stream_step` supports bounded caller-buffer live
+processing, including mixed capture. See the [streaming contract](docs/API.md#bounded-live-output).
 Pipelines, PTYs, credential switching and Windows are outside the current scope.
 See [the Rust/Go/Python feature comparison](docs/COMPARISON.md).
 

@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <sys/prctl.h>
 #include <unistd.h>
 
 static bool fail_read;
@@ -25,6 +26,11 @@ static int descriptors(void) {
     assert(closedir(directory) == 0); return count;
 }
 int main(int argc, char **argv) {
+    if (argc == 2 && !strcmp(argv[1], "held")) {
+        pid_t descendant = fork(); assert(descendant >= 0);
+        if (!descendant) { usleep(200000); _exit(0); }
+        return 0;
+    }
     if (argc == 2 && !strcmp(argv[1], "prefix")) {
         assert(write(1, "abc", 3) == 3); usleep(20000);
         assert(write(1, "z", 1) == 1); sleep(10); return 0;
@@ -35,6 +41,7 @@ int main(int argc, char **argv) {
     memcpy(packed + length + 1, "prefix", 7);
     gp_input command = {packed, length + 8};
     int before = descriptors();
+    assert(prctl(PR_SET_CHILD_SUBREAPER, 1) == 0);
     for (int fault = 0; fault < 2; ++fault) {
         int64_t state[24] = {0}, meta[6], done = 0;
         int64_t config[11] = {1000, 6, 3, 0, -1, -1, -1, 0, 0, 0, 0};
@@ -60,6 +67,20 @@ int main(int argc, char **argv) {
         assert(done && meta[3] == 0);
         assert(gp_close(words(state, 24), words(meta, 6)) == result && meta[5] == 0);
     }
+    memcpy(packed + length + 1, "held", 5); command.len = length + 6;
+    int64_t state[24] = {0}, meta[6], done = 0;
+    int64_t config[11] = {50, 6, 3, 0, -1, -1, -1, 0, 0, 0, 0};
+    assert(gp_start(command, empty(), empty(), empty(), 0, words(config, 11), words(state, 24), words(meta, 6)) == 0);
+    uint8_t byte; int result;
+    do {
+        result = (int)gp_stream_step(words(state, 24), empty(), (gp_output){&byte, 1},
+                                    (gp_output){NULL, 0}, 20, words(meta, 6), &done);
+    } while (!done);
+    assert(result == 4 && meta[1] == 0 && meta[5] == 0);
+    /* Only after the library has reaped its direct child, reap our adopted
+       fixture. No numeric descendant signaling or process-tree claim. */
+    assert(waitpid(-1, NULL, 0) > 0);
+    errno = 0; assert(waitpid(-1, NULL, WNOHANG) == -1 && errno == ECHILD);
     assert(descriptors() == before);
     puts("streaming native fault and ownership tests passed");
     return 0;
