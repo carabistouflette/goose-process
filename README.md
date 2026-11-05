@@ -22,7 +22,7 @@ make setup
 The example prints `hello from Goose`. Setup builds the exact compiler recorded
 in [GOOSE_REVISION](GOOSE_REVISION), with optional graphics/audio disabled.
 Clang and its sanitizer/libFuzzer runtimes are needed for the optional Clang
-sanitizer and fuzz targets below.
+sanitizer and fuzz targets in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Use it in a program
 

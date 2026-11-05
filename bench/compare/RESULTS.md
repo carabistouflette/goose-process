@@ -47,8 +47,7 @@ pipes for the baselines; Rust additionally starts/joins a writer thread for each
 input call. Capture allocation/reuse strategies differ. The complete differences
 and scope are in [the harness documentation](README.md).
 
-This historical result supported a competitive successful-workload implementation
-with bounded defaults. It does not justify removing safety checks or adding
+This session measured successful workloads with the bounded defaults above. It does not justify removing safety checks or adding
 complexity to chase differences smaller than host variability. For a stronger
 claim, independently validate matched safety-contract adapters, collect repeated
 sessions on the deployment hardware, and measure failure/overflow cleanup as a
