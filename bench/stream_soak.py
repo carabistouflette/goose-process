@@ -74,6 +74,13 @@ class Session:
         self.proc.stdin.write(text.encode('ascii') + b'\n')
         self.proc.stdin.flush()
 
+    def retain_trailing(self, output, errors):
+        for target, data, cap in [(self.raw, output, 8388608), (self.errors, errors, 1048576)]:
+            remaining = max(0, cap - len(target))
+            target.extend(data[:remaining])
+            if len(data) > remaining:
+                raise RuntimeError('trailing consumer output exceeded retention cap')
+
     def close(self):
         self.selector.close()
         try:
@@ -83,7 +90,8 @@ class Session:
                     os.killpg(self.proc.pid, signal.SIGKILL)
                 except ProcessLookupError:
                     pass
-                self.proc.communicate(timeout=10)
+                output, errors = self.proc.communicate(timeout=10)
+                self.retain_trailing(output, errors)
         finally:
             for stream in [self.proc.stdin, self.proc.stdout, self.proc.stderr]:
                 stream.close()
@@ -167,6 +175,7 @@ def measure(args):
             raise RuntimeError('consumer stop acknowledgment differs')
         # Protocol is complete; no future group signaling uses the leader PID.
         extra_out, extra_err = session.proc.communicate(timeout=10)
+        session.retain_trailing(extra_out, extra_err)
         if extra_out or extra_err or session.errors or session.proc.returncode != 0:
             raise RuntimeError('consumer reported unexpected output or status')
         if identities != {name: digest(path) for name, path in inputs.items()}:
@@ -175,7 +184,7 @@ def measure(args):
             raise RuntimeError('measurement source changed')
         report['status'] = 'complete'
     except BaseException as error:
-        report.update(status='failed', error_kind=type(error).__name__)
+        report.update(status='failed', error_kind=type(error).__name__, error=str(error))
         raise
     finally:
         try:

@@ -55,6 +55,7 @@ fn main() {
         var already_reaped = false; var signal_code: i64 = -1; var signal_errno: i64 = 0;
         if kind == 3 {
             if index % 12 == 3 {
+                sleep_ms(2); // Exercise already-reaped observations as well as immediate races.
                 let observed, reaped = process::try_wait(child);
                 assert(observed.error == process::Error.None); already_reaped = reaped;
             }

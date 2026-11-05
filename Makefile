@@ -28,6 +28,7 @@ check:
 	$(GOOSE) check tests/stream.goose
 	$(GOOSE) check bench/bench.goose
 	$(GOOSE) check bench/stream.goose
+	$(GOOSE) check bench/stream_soak.goose
 helpers:
 	mkdir -p .build
 	$(CC) $(CFLAGS) -O2 tests/helper.c -o .build/helper.new
