@@ -33,6 +33,15 @@ Independent contract, native security/lifecycle, and acceptance/provenance
 reviews found no actionable defects in their reviewed streaming scope. Local
 and hosted execution results are recorded separately; a review is not a test run.
 
+Final local validation passed normal interpreter/release/debug tests, GCC and
+Clang ASan/UBSan suites (including the held-pipe fixture), Clang static analysis,
+the existing 10,000-run intercepted-spawn fuzz check, and pinned-checker probes
+and consumer execution. A fresh local clone of `0fe1703` with spaces in its path
+and a fresh `GOOSE_HOME` passed setup and consumer execution using the pinned
+existing compiler; this does not claim a new compiler bootstrap or anonymous
+public-source execution. Subsequent added backpressure/no-deadline tests passed
+interpreter, optimized and debug execution. Hosted CI remains a separate gate.
+
 ## Reproducible healthy-output timing
 
 Commit source first, then run:
@@ -49,6 +58,11 @@ contain six cells, with one warmup and five timed calls per cell: 54 warmups and
 public-call timer. Timers include launch, reading/reaping and byte validation.
 Capture buffers and streamed Child are reused; a fresh-process measurement would
 have different allocation/startup costs.
+
+Later commits added consumer/tests/documentation and corrected an oversized
+initializer in the new held-pipe test fixture. They did not change runtime source,
+the measured driver or its helper. The timing preparation did not compile that
+fixture; its final corrected version passed the validation above.
 
 Each successful command emits identical bytes/status: 64 KiB or 1 MiB **on each**
 of stdout and stderr. Capture enforces a total cap; Stream has no total cap.
