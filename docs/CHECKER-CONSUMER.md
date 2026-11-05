@@ -94,3 +94,28 @@ compiler. Host load averages and exact versions are in the raw record. Affinity
 does not provide isolation: this was a shared host, with no exclusive-core claim,
 independent repeat, long-duration timing, memory evidence or generalization to
 other hosts/workloads.
+
+## Validation evidence
+
+The branch passed `make format check test`, GCC and Clang ASan/UBSan suites,
+and the existing intercepted-spawn 10,000-run fuzz check. Setup-integrity probes
+reject modified, hidden-index, wrong-revision, symlink and nested sources. Real
+controller probes inject pidfd allocation failure for two children and time out
+a forked build tree; both prove reaping rather than merely observing return codes.
+Separate probes check normal-build settings and rejection of dirty measurement
+source before preparation.
+
+A fresh local clone of `f28a35f` passed setup, probes and the complete consumer
+workflow with spaces in its checkout path and a fresh `GOOSE_HOME`, reusing the
+exact pinned existing compiler binary. This is not an anonymous-clone or cold
+compiler-bootstrap claim. The first cold setup exposed Git's detached automatic
+maintenance helper as an adopted zombie; fetch now uses `--no-auto-maintenance`.
+The successful rerun retained the strict no-adopted-build-children assertion.
+
+Independent design, lifecycle/security, measurement and final data reviews were
+performed. Concrete tooling findings were corrected: allocation failure bypassing
+cleanup, build-tree timeout cleanup, inherited build instrumentation, and the
+dirty-source error path. The measured source predates only the dirty-source
+error-path and fetch-maintenance fixes; neither affected the clean, already-fetched
+measurement path. No library runtime source changed. Hosted CI is reported
+separately by the pull request, not inferred from local results.
