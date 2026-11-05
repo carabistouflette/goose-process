@@ -1,0 +1,39 @@
+{
+  "status": "failed",
+  "timestamp": "2026-11-05T08:09:30.629560+00:00",
+  "source_revision": "51b5226a3c080e34dd4192b7e3e823eff745dc57",
+  "soak_sha256": "fcd443c05871098077bf3845712f0d5c31e557ab3a93c985f2c1322e4342a9e5",
+  "driver_sha256": "abfc94addc90c5f2561164a0001eb0eebe010c5af3b845e13ac3776956106356",
+  "helper_sha256": "36c050248d25d823d608d5e83c00c10023baa268d51f79863d61c6ac48d6147d",
+  "profile_script_sha256": "2164f114cc06321491d8fc4a2e82d375e71eef426c908db004c273271fedbc88",
+  "versions": {
+    "strace": "strace -- version 7.3",
+    "valgrind": "valgrind-3.25.1"
+  },
+  "scope": "Two separate 12-case resident public-API profiles, not timing evidence. Parent-only strace (no -f); child executable work excluded. Memcheck sees native heap/access errors but does not fully account for Goose mmap-backed ownership/storage. No absence-of-bugs, peak-memory, throughput or equal-policy comparison claim. Published text replaces only the checkout prefix with <source>; original local logs retain raw hashes.",
+  "runs": [
+    {
+      "tool": "strace",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "ready\ncase 0 0 113159396 813 3145728 3145728 0 0 0 -1 0\ncase 1 1 17833620 278 1048576 0 0 0 0 -1 0\ncase 2 2 2760797 16 69632 65536 -1 15 0 -1 0\ncase 3 3 3757541 3 256 256 0 0 1 6 0\ncase 4 4 1946438 2 0 0 0 0 0 -1 0\ncase 5 5 1522935 5 256 0 0 0 0 -1 0\ncase 6 0 109808864 817 3145728 3145728 0 0 0 -1 0\ncase 7 1 13503765 252 1048576 0 0 0 0 -1 0\ncase 8 2 2445950 19 69632 65536 -1 15 0 -1 0\ncase 9 3 1409615 6 256 256 0 0 0 0 0\ncase 10 4 1725714 2 0 0 0 0 0 -1 0\ncase 11 5 1242290 3 256 0 0 0 0 -1 0\nstopped 12\n",
+      "stderr": "",
+      "log": "% time     seconds  usecs/call     calls    errors syscall\n------ ----------- ----------- --------- --------- ------------------\n 38.16    0.008343         695        12           wait4\n 36.71    0.008027           2      3742           read\n 19.50    0.004263           1      2216           poll\n  3.47    0.000759           5       128           sendto\n  1.19    0.000261           3        80           close\n  0.39    0.000085           3        24           pipe2\n  0.33    0.000073           6        12           pidfd_open\n  0.17    0.000038           9         4           socketpair\n  0.08    0.000017           5         3           pidfd_send_signal\n------ ----------- ----------- --------- --------- ------------------\n100.00    0.021866           3      6221           total\n",
+      "raw_log_sha256": "522e388401a9eed94680a1a9c2aad5cc440e96e6f826881c3055eca4eee73092",
+      "log_sha256": "522e388401a9eed94680a1a9c2aad5cc440e96e6f826881c3055eca4eee73092"
+    },
+    {
+      "tool": "valgrind",
+      "passed": false,
+      "returncode": 1,
+      "stdout": "ready\ncase 0 0 425191819 819 3145728 3145728 0 0 0 -1 0\ncase 1 1 91206650 265 1048576 0 0 0 0 -1 0\n",
+      "stderr": "goose runtime error: assert failed (<source>/bench/stream_soak.goose:87)\n",
+      "log": "==1712109== Memcheck, a memory error detector\n==1712109== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.\n==1712109== Using Valgrind-3.25.1 and LibVEX; rerun with -h for copyright info\n==1712109== Command: <source>/.build/stream-soak/driver\n==1712109== Parent PID: 1712051\n==1712109== \n==1712109== Warning: set address range perms: large range [0x59cf7000, 0xd9df7000) (defined)\n==1712109== Warning: set address range perms: large range [0xd9df7000, 0x159ef7000) (defined)\n==1712109== Warning: set address range perms: large range [0x159ef7000, 0x1d9ff7000) (defined)\n==1712109== Warning: set address range perms: large range [0x1d9ff7000, 0x25a0f7000) (defined)\n==1712109== Warning: set address range perms: large range [0x25a0f7000, 0x2da1f7000) (defined)\n==1712109== Warning: set address range perms: large range [0x2da1f7000, 0x35a2f7000) (defined)\n==1712109== Warning: set address range perms: large range [0x35a2f7000, 0x3da3f7000) (defined)\n==1712109== Warning: set address range perms: large range [0x3da3f7000, 0x45a4f7000) (defined)\n==1712109== Warning: set address range perms: large range [0x45a4f7000, 0x4da5f7000) (defined)\n==1712109== Warning: set address range perms: large range [0x4da5f7000, 0x55a6f7000) (defined)\n==1712109== Warning: set address range perms: large range [0x55a6f7000, 0x5da7f7000) (defined)\n==1712109== Warning: set address range perms: large range [0x5da7f7000, 0x65a8f7000) (defined)\n==1712109== Warning: set address range perms: large range [0x65a8f7000, 0x6da9f7000) (defined)\n==1712109== Warning: set address range perms: large range [0x6da9f7000, 0x75aaf7000) (defined)\n--1712109-- WARNING: unhandled amd64-linux syscall: 424\n--1712109-- You may be able to write your own handler.\n--1712109-- Read the file README_MISSING_SYSCALL_OR_IOCTL.\n--1712109-- Nevertheless we consider this a bug.  Please report\n--1712109-- it at http://valgrind.org/support/bug_reports.html.\n==1712109== \n==1712109== HEAP SUMMARY:\n==1712109==     in use at exit: 66,200 bytes in 3 blocks\n==1712109==   total heap usage: 18 allocs, 15 frees, 73,549 bytes allocated\n==1712109== \n==1712109== 104 bytes in 1 blocks are still reachable in loss record 1 of 3\n==1712109==    at 0x48A4D13: calloc (vg_replace_malloc.c:1675)\n==1712109==    by 0x4003758: main (in <source>/.build/stream-soak/driver)\n==1712109== \n==1712109== 560 bytes in 1 blocks are still reachable in loss record 2 of 3\n==1712109==    at 0x48A4D13: calloc (vg_replace_malloc.c:1675)\n==1712109==    by 0x400E1E4: gs_rt_start_3025e5810379 (in <source>/.build/stream-soak/driver)\n==1712109==    by 0x4003749: main (in <source>/.build/stream-soak/driver)\n==1712109== \n==1712109== 65,536 bytes in 1 blocks are still reachable in loss record 3 of 3\n==1712109==    at 0x489D8A8: malloc (vg_replace_malloc.c:446)\n==1712109==    by 0x40083B2: gs_native_stack_init (in <source>/.build/stream-soak/driver)\n==1712109==    by 0x400E204: gs_rt_start_3025e5810379 (in <source>/.build/stream-soak/driver)\n==1712109==    by 0x4003749: main (in <source>/.build/stream-soak/driver)\n==1712109== \n==1712109== LEAK SUMMARY:\n==1712109==    definitely lost: 0 bytes in 0 blocks\n==1712109==    indirectly lost: 0 bytes in 0 blocks\n==1712109==      possibly lost: 0 bytes in 0 blocks\n==1712109==    still reachable: 66,200 bytes in 3 blocks\n==1712109==         suppressed: 0 bytes in 0 blocks\n==1712109== \n==1712109== For lists of detected and suppressed errors, rerun with: -s\n==1712109== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)\n",
+      "raw_log_sha256": "812e2354d617d162a5a836ec7b71d3778c35b903a7ab2ddb3d21987d941539ea",
+      "log_sha256": "38339551db2dfb32b7d4dae84da62990e0d989453a3f978d2e9ff4500b65d869"
+    }
+  ],
+  "error_kind": "RuntimeError",
+  "error": "instrumented driver failed its fixed protocol",
+  "finished_at": "2026-11-05T08:10:49.476506+00:00"
+}
