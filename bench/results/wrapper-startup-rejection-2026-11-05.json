@@ -1,0 +1,14 @@
+{
+  "status": "failed",
+  "timestamp": "2026-11-05T12:41:19.687781+00:00",
+  "samples": [],
+  "source_revision": "473b2597a6526491e713f3ee17a5edd3f2a7da19",
+  "error_kind": "FileNotFoundError",
+  "error": "[Errno 2] No such file or directory: '.build/no-such-measurement.json'",
+  "finished_at": "2026-11-05T12:41:19.700839+00:00",
+  "load_finish": [
+    7.25146484375,
+    5.73388671875,
+    4.2275390625
+  ]
+}
