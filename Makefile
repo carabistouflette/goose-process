@@ -109,5 +109,6 @@ checker-consumer:
 .PHONY: checker-source-test checker-overhead
 checker-source-test:
 	python3 tests/checker_setup.py
+	python3 tests/checker_controller.py
 checker-overhead:
 	python3 bench/checker_overhead.py --goose "$(GOOSE)" --cc "$(CC)"

@@ -37,6 +37,15 @@ def main():
     a=p.parse_args()
     if not 1<=a.rounds<=100 or not 1<=a.iterations<=1000:
         p.error('rounds must be1..100 and iterations1..1000')
+    consumer.controller_scope()
+    try:
+        measure(a)
+    finally:
+        if consumer.adopted_cleanup():
+            raise RuntimeError('measurement preparation left adopted children')
+
+
+def measure(a):
     goose,cc=consumer.executable(a.goose),consumer.executable(a.cc)
     consumer.clean_source(consumer.SOURCE,consumer.REVISION)
     if consumer.git('status','--porcelain'):
@@ -62,10 +71,12 @@ def main():
         goose_version=text_command(goose,'version'),cc_version=text_command(cc,'--version').splitlines()[0],
         helper_flags=['-std=c11','-Wall','-Wextra','-Werror','-O2'],checker_build='make build, normal CC, -O2',
         platform=platform.platform(),python=platform.python_version(),
-        cpu_affinity=sorted(os.sched_getaffinity(0)),rounds=a.rounds,iterations=a.iterations,
+        cpu_affinity=sorted(os.sched_getaffinity(0)),
+        cpu_model=next((line.split(':',1)[1].strip() for line in Path('/proc/cpuinfo').read_text().splitlines()
+                        if line.startswith('model name')),platform.machine()),
+        load_average_start=list(os.getloadavg()),rounds=a.rounds,iterations=a.iterations,
         unit='nanoseconds per checked invocation',hashes=identities,warmup=[],samples=[],
         scope='One shared-host healthy-fixture series. Direct controller caches fixture bytes and omits checker file loading, guards, incremental caps and its extra process. Not safety-contract parity, a memory benchmark or a universal speed claim.')
-    consumer.controller_scope()
     before_fds=len(list(Path('/proc/self/fd').iterdir()))
     seed=20261105
     report['shuffle_seed']=seed
@@ -105,8 +116,14 @@ def main():
 
             pairs=[(name,route) for name in cases for route in ['direct','checker','configured']]
             for name,route in pairs:
-                start=time.perf_counter_ns(); execute(name,route)
-                report['warmup'].append(dict(fixture=name,route=route,wall_ns=time.perf_counter_ns()-start,passed=True))
+                start=time.perf_counter_ns()
+                warmup=dict(fixture=name,route=route,passed=False)
+                report['warmup'].append(warmup)
+                try:
+                    execute(name,route)
+                    warmup['passed']=True
+                finally:
+                    warmup['wall_ns']=time.perf_counter_ns()-start
             started=time.perf_counter_ns()
             for round_number in range(a.rounds):
                 order=pairs.copy(); rng.shuffle(order)
@@ -149,6 +166,7 @@ def main():
             raise
         finally:
             report['finished_at']=datetime.now(timezone.utc).isoformat()
+            report['load_average_finish']=list(os.getloadavg())
             a.output.parent.mkdir(parents=True,exist_ok=True)
             a.output.write_text(json.dumps(report,indent=2)+'\n')
             print('Raw invocation report: '+str(a.output))

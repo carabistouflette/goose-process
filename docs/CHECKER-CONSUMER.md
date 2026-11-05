@@ -13,8 +13,8 @@ make checker-source-test checker-consumer CC=gcc
 
 The compiler pin must match between projects. Setup places the checker under an
 ignored content-addressed `.build/` directory, refuses changed/hidden-index or
-mismatched sources, and never resets a sibling checkout. Run one Make invocation
-per checkout. The subsequent consumer workflow is offline; it does not fetch
+mismatched sources, and never resets a sibling checkout. Run one serial Make invocation
+per checkout (without `-j`). The subsequent consumer workflow is offline; it does not fetch
 library dependencies or modify goose-check, Honk or the parent repository.
 GCC CI runs this workflow as a developer-tool check. The library itself has no
 runtime/build dependency on the checker; normal `make check test` is unchanged.
@@ -49,7 +49,7 @@ taskset -c 0 make checker-overhead CC=gcc
 Nine shuffled rounds retain ten checked calls in each fixture/route cell, plus
 separate warmup records: empty exit, literal/binary argument framing and 64 KiB
 binary stdin/stdout; direct controller, checker flags, and configured checker.
-All raw timings, ordering, byte oracles, source/compiler/binary/script identities,
+All raw timings, ordering, fixture lengths and hashes, source/compiler/binary/script identities,
 CPU affinity and wall-clock context are retained. No memory inference is made.
 
 The direct route caches fixture bytes in Python and uses communicate on fixed,

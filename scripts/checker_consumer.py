@@ -25,8 +25,20 @@ def executable(value):
     return Path(found).resolve()
 
 
-def command(arguments, cwd=ROOT, timeout=180):
-    subprocess.run(list(map(str, arguments)), cwd=cwd, check=True, timeout=timeout)
+def command(arguments, cwd=ROOT, timeout=180, env=None):
+    with subprocess.Popen(list(map(str, arguments)), cwd=cwd, env=env,
+                          start_new_session=True) as proc:
+        try:
+            code = proc.wait(timeout=timeout)
+            if code:
+                raise subprocess.CalledProcessError(code, arguments)
+        finally:
+            if proc.returncode is None:
+                try:
+                    os.killpg(proc.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                proc.wait()
 
 
 def git(*arguments, cwd=ROOT):
@@ -65,7 +77,11 @@ def setup(goose, cc):
     clean_source(SOURCE, REVISION)
     if (SOURCE / 'GOOSE_REVISION').read_bytes() != (ROOT / 'GOOSE_REVISION').read_bytes():
         raise ValueError('checker and library require different compiler revisions')
-    command(['make', 'build', 'GOOSE=' + str(goose), 'CC=' + str(cc)], cwd=SOURCE, timeout=300)
+    build_env = os.environ.copy()
+    for name in ['MAKEFLAGS', 'GNUMAKEFLAGS', 'MFLAGS', 'MAKEOVERRIDES']:
+        build_env.pop(name, None)
+    command(['make', 'build', 'SANITIZE=0', 'GOOSE=' + str(goose), 'CC=' + str(cc)],
+            cwd=SOURCE, timeout=300, env=build_env)
     clean_source(SOURCE, REVISION)
     print('Built pinned goose-check ' + REVISION)
 
@@ -83,22 +99,41 @@ def controller_scope():
 
 def adopted_cleanup():
     count = 0
+    first_error = None
     while True:
         children = Path('/proc/self/task', str(os.getpid()), 'children').read_text().split()
         if not children:
+            if first_error is not None:
+                raise first_error
             return count
         for text in children:
             pid = int(text)
             # Every listed PID is this controller's unreaped child. No other
             # waiter can release its reservation before pidfd acquisition.
-            fd = os.pidfd_open(pid)
             try:
+                fd = os.pidfd_open(pid)
+            except OSError as error:
+                # Exclusively owned, unreaped children retain their numeric
+                # identities until our wait. Allocation failure cannot bypass
+                # signaling/reaping them; still fail validation after cleanup.
+                if first_error is None:
+                    first_error = error
                 try:
-                    signal.pidfd_send_signal(fd, signal.SIGKILL)
+                    os.kill(pid, signal.SIGKILL)
                 except ProcessLookupError:
                     pass
-            finally:
-                os.close(fd)
+            else:
+                try:
+                    try:
+                        signal.pidfd_send_signal(fd, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    except OSError as error:
+                        if first_error is None:
+                            first_error = error
+                        os.kill(pid, signal.SIGKILL)
+                finally:
+                    os.close(fd)
             while True:
                 try:
                     waited, _ = os.waitpid(pid, 0)
@@ -199,11 +234,15 @@ def main():
     parser.add_argument('--setup', action='store_true')
     args = parser.parse_args()
     goose, cc = executable(args.goose), executable(args.cc)
+    controller_scope()
     if args.setup:
-        setup(goose, cc)
+        try:
+            setup(goose, cc)
+        finally:
+            if adopted_cleanup():
+                raise AssertionError('checker build left adopted children')
         return
     checker = executable(args.checker)
-    controller_scope()
     before = len(list(Path('/proc/self/fd').iterdir()))
     try:
         exercise(checker, build(goose, cc))
