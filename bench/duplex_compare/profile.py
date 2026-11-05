@@ -15,6 +15,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--measurement', type=Path, default=measure.ROOT / '.build/duplex-compare-2026-11-05.json')
     parser.add_argument('--output', type=Path, default=measure.ROOT / '.build/duplex-profile.json')
+    parser.add_argument('--language', action='append', choices=['goose', 'rust'])
+    parser.add_argument('--tool', action='append', choices=['strace', 'memcheck', 'callgrind'])
     args = parser.parse_args()
     recorded = json.loads(args.measurement.read_text())
     if recorded['status'] != 'complete' or measure.controller.git('status', '--porcelain'):
@@ -39,9 +41,11 @@ def main():
                   'Only checkout prefixes are normalized; raw log hashes retained. No general safety/performance ranking.',
                   runs=[])
     try:
-        for language in ['goose', 'rust']:
+        for language in args.language or ['goose', 'rust']:
             for size in [31, 4096]:
                 for tool in ['strace', 'memcheck', 'callgrind']:
+                    if args.tool and tool not in args.tool:
+                        continue
                     if tool == 'callgrind' and size == 31:
                         continue
                     log = directory / f'{language}-{size}-{tool}.log'

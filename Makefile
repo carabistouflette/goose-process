@@ -33,6 +33,7 @@ check:
 	$(GOOSE) check bench/stream_soak.goose
 	$(GOOSE) check bench/stdin.goose
 	$(GOOSE) check bench/duplex_soak.goose
+	$(GOOSE) check bench/duplex_compare/driver.goose
 helpers:
 	mkdir -p .build
 	$(CC) $(CFLAGS) -O2 examples/worker.c -o .build/worker

@@ -8,6 +8,12 @@ int main(int argc, char **argv) {
     (void)argc;
     const char *name = strrchr(argv[0], '/');
     name = name ? name + 1 : argv[0];
+    if (!strcmp(name, "idle")) { sleep(60); return 0; }
+    if (!strcmp(name, "after-eof")) {
+        int result = worker_main();
+        if (result) return result;
+        sleep(60); return 0;
+    }
     if (!strcmp(name, "frontload")) {
         uint8_t frame[35] = {0, 0, 0, 31};
         static const uint8_t ack[4] = {'a', 'c', 'k', 0};

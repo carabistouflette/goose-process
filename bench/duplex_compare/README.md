@@ -10,6 +10,8 @@ Go and Python 3.11+:
 ```sh
 python3 bench/duplex_compare/measure.py --build-only
 python3 bench/duplex_compare/check.py
+# Optional actual30-second timeout checks, before first response and after EOF:
+taskset -c 2 python3 bench/duplex_compare/check.py --deadlines
 # Commit sources first. Affinity is inherited; it does not isolate the host.
 taskset -c 0 python3 bench/duplex_compare/measure.py --rounds 9 --calls 5
 ```
@@ -127,3 +129,7 @@ after explicit EOF, and all responses frontloaded before requests. All sixteen
 must fail without leaving an adopted child. A separate watchdog fixture proves
 partial stdout/stderr retention after timeout cleanup.
 It does not establish generic failure-policy parity or prove the absence of bugs.
+
+`--deadlines` additionally retains eight actual timeout probes with source/tool/
+binary hashes, affinity and timestamps. Its concurrent sessions are functional
+deadline/cleanup checks, not a latency or throughput comparison.
