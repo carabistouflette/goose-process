@@ -31,6 +31,7 @@ check:
 	$(GOOSE) check bench/bench.goose
 	$(GOOSE) check bench/stream.goose
 	$(GOOSE) check bench/stream_soak.goose
+	$(GOOSE) check bench/stdin.goose
 helpers:
 	mkdir -p .build
 	$(CC) $(CFLAGS) -O2 examples/worker.c -o .build/worker
