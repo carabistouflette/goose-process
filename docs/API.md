@@ -28,13 +28,15 @@ Stdout merges stderr into the child's already-routed stdout. A merged capture
 uses only the stdout limit and returns an empty stderr buffer. Separate captures
 have no combined ordering. Null discards output through `/dev/null`.
 
-`Input` supports Null (`/dev/null`, read-only), Inherit, Bytes, and Fd. Bytes
+`Input` supports Null (`/dev/null`, read-only), Inherit, Bytes, Fd, and Stream. Bytes
 copies at most 1 MiB before execution and sends it while draining both captures.
 It uses a **one-way Unix socket byte stream**, not a FIFO, to suppress write-side
 SIGPIPE with `MSG_NOSIGNAL` without changing the caller's signal state. Empty
 input delivers EOF. Early child-side closure is normal; unsent input is discarded.
 For programs requiring a real pipe, terminal, file or other descriptor type, use
 Fd. The library does not feed or manage a caller-supplied stdin FD.
+Stream is start-only: offer bounded views with `io_step` and explicitly close
+stdin when finished. See [incremental input](#bounded-incremental-stdin).
 
 Fd modes snapshot valid caller descriptor numbers during start. Sources must
 remain open and stable until `start`/`run` returns from launching; the caller may
@@ -97,13 +99,15 @@ It cannot be stored by value in arrays/other structs or sent to another thread.
 Its underscore fields and the native ABI are implementation details, not public
 API. Do not modify them directly. There is **no automatic destructor or background
 watchdog**: always finish an active child with wait, repeated step, repeated
-stream_step for streamed output, or close.
+stream_step for streamed output, io_step for streamed input, or close.
 
 | Function | Contract |
 | --- | --- |
 | `start(args, options, child)` | Launch; copy finite input and allocate captures; reject an active owner |
 | `step(child, timeout_ms = 0)` | Feed/drain at most one bounded IO iteration; return Status and completion flag |
 | `wait(child)` | Feed/drain to EOF/completion or cancellation |
+| `io_step(child, input, out, err, timeout_ms = 0)` | Input.Stream only; bounded duplex progress with named per-call counts |
+| `close_stdin(child)` | Input.Stream only; close local write endpoint without waiting or draining |
 | `try_wait(child)` | Nonblocking status observation/reaping; return Status and whether direct child reaped |
 | `send_signal(child, signal)` | Signal unreaped direct child by pidfd; zero tests signal permission/existence |
 | `terminate(child)`, `kill(child)` | Send SIGTERM or SIGKILL; still call wait/step/close |
@@ -116,7 +120,8 @@ Its slice uses an absolute monotonic deadline even under EINTR. The overall
 process deadline is checked during IO operations, not while an idle Child is
 held. try_wait does **not** feed input or drain output; a child blocked on IO may
 never finish through try_wait alone. Even when try_wait reaps the direct child,
-call wait/step to collect remaining captures or close to discard them. A completed
+call the appropriate wait/step/stream_step/io_step operation to collect remaining
+output, or close to discard it. A completed
 wait may be repeated. An unsuccessful start may replace previous captures;
 rejection of an already-active owner leaves it unchanged. An owner can be reused
 after completion/close. Views cannot outlive
@@ -165,7 +170,7 @@ cause TimedOut after the direct child exits; cleanup closes the remaining pipes.
 | MAX_ARGUMENT_LENGTH | 131,071 bytes per argument |
 | MAX_PATH_BYTES | 4,095 each for executable and cwd |
 | MAX_OUTPUT_BYTES | 1,048,576 per capture |
-| MAX_INPUT_BYTES | 1,048,576 finite input |
+| MAX_INPUT_BYTES | 1,048,576 finite input or each incremental offer; no cumulative Stream input limit |
 | MAX_TIMEOUT_MS | 86,400,000 (24 hours) for finite budgets; run minimum 1; explicit start-only 0 disables overall deadline |
 | MAX_ENVIRONMENT_CHANGES | 256 total sets/removals |
 | MAX_ENVIRONMENT_BYTES | 1,048,576 explicit change bytes including separators/NULs |
@@ -185,7 +190,7 @@ bounds, not exact allocator or RSS budgets.
 
 Requires Linux kernel 5.3+ and glibc 2.34+; no silent fallback weakens descriptor
 isolation. No Windows/macOS, PTYs, process groups, credential switching, pipeline
-builder or arbitrary incremental stdin API. Fd routing permits application-owned
+builder. Fd routing permits application-owned
 live streams. See [comparison scope](COMPARISON.md).
 
 Separate owners/buffers may run concurrently. The host must not externally reap
@@ -241,3 +246,51 @@ Slice budgets remain 0..24h, monotonic, without promising scheduler latency.
 There is no background I/O: a slow caller intentionally backpressures the child,
 and overall deadlines are enforced only while executing a library operation.
 Application processing/writing errors must still reach close/exceptional cleanup.
+
+## Bounded incremental stdin
+
+Use `start` with `stdin: Input.Stream` and an empty `Options.input`. `run` rejects
+this mode before launch. `Input.Bytes` keeps its existing copied finite payload
+and automatic EOF. Both managed input modes use the same one-way Unix socket,
+not a FIFO, with `MSG_NOSIGNAL`; parent SIGPIPE disposition/mask/pending state is
+not changed.
+
+`io_step(child, input: const u8[:], out: u8[:], err: u8[:], timeout_ms = 0)`
+returns `Progress { status, done, input_accepted, stdout_count, stderr_count,
+input_open }`. It requires an Input.Stream owner, including after EOF/completion.
+All output routes remain available. Supply caller output spans only for Stream
+routes; pass empty spans for Capture/Inherit/Null/Fd/merged stderr. Captures remain
+available through existing accessors; count fields report only caller Stream spans.
+
+Each offered input view is at most 1 MiB and remains stable during the call. No
+input payload or caller pointer is retained afterward. One bounded poll iteration
+can accept at most 16 KiB while draining both outputs and observing child state.
+`input_accepted` counts bytes accepted by the **kernel**, not bytes consumed or
+acknowledged by the command. Resubmit only the unaccepted suffix; the caller owns
+any pending queue and total-input policy. Empty input is no offer, never EOF.
+With no offer the input poll does not request POLLOUT, but still observes peer
+closure; it cannot spin merely because the socket is writable.
+
+`close_stdin` immediately closes the library's write endpoint. The child sees
+EOF after already accepted bytes are drained. It sends no new input, waits for
+nothing, does not drain output or reap the child, and does not reset its mode.
+Repeated calls are harmless and preserve final error status. Continue io_step
+until done, or use close for cancellation/discard. Legacy wait/step/stream_step
+reject this owner before and after stdin closure, preventing accidental loss of
+caller-driven input. Status observation, signaling and ordinary close remain valid.
+
+`input_open` reports local ability to attempt another send. It may remain true
+until peer closure is observed, and becomes false on explicit close, observed
+closure, reaping or terminal cleanup. After it becomes false, even a nonempty
+offer accepts zero bytes while output/reaping continue normally. Accepted bytes
+can still be discarded by an early-exiting command. A repeated completed call
+returns final status, done=true, zero per-call counts and input_open=false.
+
+Counts include bytes accepted or delivered before a later timeout/system/capture
+error in that call. Handle returned prefixes/counts before processing terminal
+errors, including the existing explicit unreaped_pid transfer. None alone does
+not imply completion; inspect done. Invalid input/state consumes no bytes and
+changes no owner state, and returns zero counts/default flags; false input_open
+in an invalid result is not evidence that a valid endpoint closed. Aliased input,
+output, state, metadata and native result spans reject before I/O. Existing
+monotonic overall/slice deadlines and direct-child-only ownership rules apply.

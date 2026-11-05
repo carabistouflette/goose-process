@@ -5,7 +5,7 @@ Experimental release 0.1.0; the API may change before 1.0.
 Requires Linux kernel 5.3+ and glibc 2.34+.
 
 Runs argument arrays with bounded captures, per-child environment and cwd,
-independent stdio routing, finite binary stdin, and cancellation deadlines.
+independent stdio routing, finite or incremental binary stdin, and cancellation deadlines.
 Child handles support polling, signals and explicit cleanup. Absolute executables
 are the default; PATH search is opt-in. No implicit shell. Native process operations
 use a small C kernel; Goose owns validation, input and returned output.
@@ -70,9 +70,12 @@ See [the API contract](docs/API.md) for limits, signals, per-child environment,
 descriptor handling, and exceptional cancellation failure. This is a process
 runner, not a sandbox or a process-tree supervisor. Finite stdin uses a one-way
 socket byte stream; use FD routing for programs requiring a real pipe or live
-output. Active child handles require wait/step/close; there is no automatic cleanup.
+output. Active child handles require an appropriate pumping operation or close;
+there is no automatic cleanup.
 Explicit `Output.Stream` with `stream_step` supports bounded caller-buffer live
 processing, including mixed capture. See the [streaming contract](docs/API.md#bounded-live-output).
+Explicit `Input.Stream` with `io_step` and `close_stdin` supports bounded duplex
+input without a library payload queue. See [incremental input and the worker example](docs/INCREMENTAL-STDIN.md).
 The [sustained streaming evidence](bench/STREAM-SOAK.md) records a resident
 five-minute run, quiescent resource observations, profiles and their limits.
 Pipelines, PTYs, credential switching and Windows are outside the current scope.
