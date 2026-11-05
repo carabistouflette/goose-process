@@ -1,0 +1,129 @@
+{
+  "status": "complete",
+  "source_revision": "1395b4f8a3c0e6895e27dee747b2bfd387cc77f9",
+  "source_dirty": false,
+  "timestamp": "2026-11-05T10:34:50.095094+00:00",
+  "cpu_affinity": [
+    2
+  ],
+  "hashes": {
+    "tool_goose": "9d37f42abee55079a179cda33b2c28c2879789135b37333c78654bb6ed536f2a",
+    "tool_cc": "8aac907d6fbf40394b424b5fa4a2ad1aa291dac7d3a0315c5b415c1f5ace1287",
+    "tool_go": "21401c8d2dae2e6db0d756f7b9ae5a885ac6c14882cbbe521c6f49b184da8402",
+    "tool_python": "122ce07db306cd111fd10e27125460362610452983a64903c470afd66b6403bd",
+    "tool_rustc": "ee1c504a3a86322e473259c90eeaf464952acad669d90f7134e87ed43e062934",
+    "binary_goose": "a0ef9a654cb42b2394d76bcda2a30050aff56df5dc22d6c396aee12da5a02552",
+    "binary_rust": "f4deed6866f392683b307907ac6ed7f893e03fec9880882c44f26c748b49dd62",
+    "binary_go": "cc4befef4372d0b2827f4b0087689e176897a076dbcdfe25baba371583c75e11",
+    "source_driver.goose": "c26fc0aa906a28ddd5903bedb7a41b6fea4872f159f99185428bce423029ff80",
+    "source_driver.rs": "d0de56dac4ceb6c43879b0aba8ab19681cc476da19502f5bdbf7b99b4e782111",
+    "source_driver.go": "3ca4f195ffd0bc887366487a0123e10953f7c4831391a0faabde670c26395427",
+    "source_driver.py": "9837364131f0098a7cde68e2247de279ef2833a83790443e828fa55d14e0ef3e",
+    "source_measure.py": "d078c13453484f52812e296ad190822912ad3f334795a8618d8b507f7c9a9349",
+    "library_process.goose": "7afbeef5ebb2f80441eab0b87bfeb41fc767f81f14830b37d1b86ac349bae2fb",
+    "library_process.build": "fcd9c0c891670688898ace55dbf12da1a4b1c1b9178b4e4339fbaee1131649ab",
+    "library_native/process.c": "2905f3f9c7055563dbf70c34d96839c9128233f72f6604e81d0b2b6f00a9e3c3",
+    "library_native/launch.c": "1b893ad4bb688af81d8f2ef1e3dbddaabcadeede23768e4da6d518b86c607c3e",
+    "library_native/process.h": "731824acd9e4434f081fa56111515070c0860dbb90345c251aa30efeeee42de1",
+    "library_native/internal.h": "f4b201e2075b414de644cec0797fcba3c1e4d709fbd802b6a124ff727afee17e",
+    "library_GOOSE_REVISION": "64e14b181dfe96743211738fb0f1b1f7798ea940da2ca50ff122e6f028c24e15",
+    "worker": "5a8bcb1fbedac4be65b3e89362829c2524730511371aef6f9a3e09a19db7d78c",
+    "worker_source": "6db198b3f5300a7bfa401d76d9b08f7f08646dbf6c4996399cae76f629df4c9c",
+    "ownership_controller": "5b18a869d6b48320d09da329be76d992e083586cb4b43f47f01a354cf529b705",
+    "check": "55d004bc5a4efce391e88d74747f0be078afaf788afde2fd09085da05bbc990a",
+    "fault": "fe9545aa17024f0c7e30045d20250a01de73f804a35069ba4b449cba65cea1bb",
+    "fault_binary": "1c333356d390ead2b66e71e295cd86b42f8c1c18ffc171173eadb8826ee83b8a"
+  },
+  "versions": {
+    "goose": "goose eadca40 (runtime 3025e5810379)",
+    "cc": "gcc (GCC) 16.2.1 20260810",
+    "rust": "rustc 1.101.0-nightly (822182db4 2026-10-13)",
+    "go": "go version go1.27.3-X:nodwarf5 linux/amd64",
+    "python": "Python 3.14.9"
+  },
+  "samples": [
+    {
+      "language": "goose",
+      "mode": "idle",
+      "elapsed_seconds": 30.01205115497578,
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "goose runtime error: assert failed (<source>/bench/duplex_compare/driver.goose:11)\n",
+      "raw_stderr_sha256": "b62dc4f04c28ff2ac2d95bd8c86788200f888992007cd63538777e64936aa3fb",
+      "passed": true
+    },
+    {
+      "language": "goose",
+      "mode": "after-eof",
+      "elapsed_seconds": 30.02546118700411,
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "goose runtime error: assert failed (<source>/bench/duplex_compare/driver.goose:11)\n",
+      "raw_stderr_sha256": "b62dc4f04c28ff2ac2d95bd8c86788200f888992007cd63538777e64936aa3fb",
+      "passed": true
+    },
+    {
+      "language": "rust",
+      "mode": "idle",
+      "elapsed_seconds": 30.009919920004904,
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "worker deadline\n",
+      "raw_stderr_sha256": "e9c322affc7db7b60f797ec62596950bb69bf9e227bdd20fcedf15aec84075b2",
+      "passed": true
+    },
+    {
+      "language": "rust",
+      "mode": "after-eof",
+      "elapsed_seconds": 30.02021019003587,
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "worker EOF deadline\n",
+      "raw_stderr_sha256": "309f26633e4b6cdbfaa231d698c7c631bca21077b7029ae4d5a0f986e936ce32",
+      "passed": true
+    },
+    {
+      "language": "go",
+      "mode": "idle",
+      "elapsed_seconds": 30.044553643965628,
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "context deadline exceeded\n",
+      "raw_stderr_sha256": "ff0b142000f16b0b98c9ff243db59a282e37ede46cdc5cae77d4b896a7e10116",
+      "passed": true
+    },
+    {
+      "language": "go",
+      "mode": "after-eof",
+      "elapsed_seconds": 30.039910805004183,
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "context deadline exceeded\n",
+      "raw_stderr_sha256": "ff0b142000f16b0b98c9ff243db59a282e37ede46cdc5cae77d4b896a7e10116",
+      "passed": true
+    },
+    {
+      "language": "python",
+      "mode": "idle",
+      "elapsed_seconds": 30.18481955397874,
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"<source>/bench/duplex_compare/driver.py\", line 90, in <module>\n    main()\n    ~~~~^^\n  File \"<source>/bench/duplex_compare/driver.py\", line 37, in main\n    raise TimeoutError('worker deadline')\nTimeoutError: worker deadline\n",
+      "raw_stderr_sha256": "b5b0f20c70ebc97519407b361c81166c7690a9e4db00b8cede9b97cfaa1b7bfa",
+      "passed": true
+    },
+    {
+      "language": "python",
+      "mode": "after-eof",
+      "elapsed_seconds": 30.179167188005522,
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"<source>/bench/duplex_compare/driver.py\", line 90, in <module>\n    main()\n    ~~~~^^\n  File \"<source>/bench/duplex_compare/driver.py\", line 65, in main\n    raise TimeoutError('worker EOF deadline')\nTimeoutError: worker EOF deadline\n",
+      "raw_stderr_sha256": "7c168a5a824f57f37fec97b80d4f7bf7711aefc786aac17a7fbd24ea4f477349",
+      "passed": true
+    }
+  ],
+  "scope": "Eight concurrent fixed-adapter30s deadline probes, not timing comparison. Idle before first response and idle after protocol EOF; private groups/direct-child cleanup. stderr checkout prefixes normalized; original bytes separately SHA256-fingerprinted.",
+  "adopted_cleanup_count": 0,
+  "finished_at": "2026-11-05T10:35:20.359817+00:00"
+}
