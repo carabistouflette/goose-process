@@ -56,7 +56,7 @@ test: helpers
 	$(GOOSE) run examples/compiler.goose
 	python3 tests/ownership.py $(abspath $(GOOSE))
 	python3 tests/stream_soak_controller.py
-	python3 bench/stream_soak.py --goose "$(GOOSE)" --cc "$(CC)" --seconds 1 --output .build/stream-soak-smoke.json
+	python3 bench/stream_soak.py --goose "$(GOOSE)" --cc "$(CC)" --seconds 1 --smoke --output .build/stream-soak-smoke.json
 	$(MAKE) native
 native: helpers
 	$(CC) $(CFLAGS) -O2 tests/stream.c $(NATIVE_SOURCES) -Wl,--wrap=read -o .build/stream-native

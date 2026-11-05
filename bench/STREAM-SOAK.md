@@ -21,7 +21,9 @@ taskset -c 0 python3 bench/stream_profile.py --finite-only --tool valgrind --too
 Python, GCC, the pinned Goose compiler, Linux/glibc, strace, Valgrind and
 `callgrind_annotate` are host tools. Compilation/profiling is separate from the
 measured region. Normal tests run only a one-second smoke, not a five-minute CI
-timing threshold. The script can accept 1..3600 seconds, subject to explicit
+timing threshold. Explicit `--smoke --seconds 1` permits and labels local dirty
+source for functional development tests; ordinary measurements still require a
+clean checkout. The script can accept 1..3600 seconds, subject to explicit
 protocol output caps. It stops after the requested duration at a completed-case
 handshake, preserving the last case rather than truncating it.
 

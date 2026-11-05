@@ -98,7 +98,8 @@ class Session:
 
 
 def measure(args):
-    if controller.git('status', '--porcelain'):
+    initial_status = controller.git('status', '--porcelain')
+    if initial_status and not args.smoke:
         raise ValueError('commit source before measurement')
     goose, cc = controller.executable(args.goose), controller.executable(args.cc)
     directory = ROOT / '.build/stream-soak'; directory.mkdir(parents=True, exist_ok=True)
@@ -114,6 +115,7 @@ def measure(args):
                   cat=controller.executable('/bin/cat'), true=controller.executable('/bin/true'))
     identities = {name: digest(path) for name, path in inputs.items()}
     report = dict(status='incomplete', source_revision=controller.git('rev-parse', 'HEAD'),
+                  source_dirty=bool(initial_status), smoke=args.smoke,
                   hashes=identities, timestamp=datetime.now(timezone.utc).isoformat(),
                   requested_seconds=args.seconds, warmup_cases=12, platform=platform.platform(),
                   cpu_affinity=sorted(os.sched_getaffinity(0)), load_start=list(os.getloadavg()),
@@ -180,7 +182,7 @@ def measure(args):
             raise RuntimeError('consumer reported unexpected output or status')
         if identities != {name: digest(path) for name, path in inputs.items()}:
             raise RuntimeError('measurement identities changed')
-        if controller.git('rev-parse', 'HEAD') != report['source_revision'] or controller.git('status', '--porcelain'):
+        if controller.git('rev-parse', 'HEAD') != report['source_revision'] or controller.git('status', '--porcelain') != initial_status:
             raise RuntimeError('measurement source changed')
         report['status'] = 'complete'
     except BaseException as error:
@@ -209,10 +211,13 @@ def main():
     parser.add_argument('--goose', required=True)
     parser.add_argument('--cc', default='gcc')
     parser.add_argument('--seconds', type=int, default=300)
+    parser.add_argument('--smoke', action='store_true', help='one-second functional check; permits declared dirty source')
     parser.add_argument('--output', type=Path, default=ROOT / '.build/stream-soak.json')
     args = parser.parse_args()
     if not 1 <= args.seconds <= 3600:
         parser.error('seconds must be1..3600')
+    if args.smoke and args.seconds != 1:
+        parser.error('smoke mode requires --seconds 1')
     controller.controller_scope()
     try:
         measure(args)
