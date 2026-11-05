@@ -32,6 +32,7 @@ check:
 	$(GOOSE) check bench/stream.goose
 	$(GOOSE) check bench/stream_soak.goose
 	$(GOOSE) check bench/stdin.goose
+	$(GOOSE) check bench/duplex_soak.goose
 helpers:
 	mkdir -p .build
 	$(CC) $(CFLAGS) -O2 examples/worker.c -o .build/worker
@@ -70,6 +71,8 @@ test: helpers
 	./.build/worker-client-debug
 	python3 tests/ownership.py $(abspath $(GOOSE))
 	python3 tests/stream_soak_controller.py
+	python3 tests/duplex_soak_controller.py
+	python3 bench/duplex_soak.py --goose "$(GOOSE)" --cc "$(CC)" --seconds 1 --smoke --output .build/duplex-soak-smoke.json
 	python3 bench/stream_soak.py --goose "$(GOOSE)" --cc "$(CC)" --seconds 1 --smoke --output .build/stream-soak-smoke.json
 	$(MAKE) native
 native: helpers
