@@ -58,8 +58,12 @@ methods reject new-mode owners; synchronous run rejects before launch.
 
 `tests/stdin.c` injects a clock failure immediately after a real successful send:
 accepted bytes remain reported, cleanup is terminal, waitpid proves ECHILD and
-descriptors return to baseline. It also checks result/input/output/state aliases
-and observes input poll events=0 for an empty offer. MSG_NOSIGNAL is asserted at
+descriptors return to baseline. A targeted denied terminal wait also transfers
+the PID exactly once while preserving accepted bytes; the local recovery owner
+then proves terminal reaping/ECHILD. A retryable EAGAIN reports zero acceptance,
+and a following empty offer proves no pending payload was retained. It also
+checks result/input/output/state aliases and input poll events=0 for an empty offer.
+MSG_NOSIGNAL is asserted at
 the send seam. Existing finite-input signal-state, EINTR deadlines, lifecycle and
 denied-cleanup transfer tests remain active. The intercepted-spawn fuzzer now
 exercises start-only input routing without executing mutated paths.
@@ -96,3 +100,28 @@ short CPU0 series does not establish a general speedup. Shared-host load,
 toolchain/CPU/flags and all raw values are retained. This is neither interactive
 request latency, a memory/allocation measurement nor a cross-language comparison.
 The useful new capability is bounded caller-driven input, not a timing promise.
+
+## Validation and publication scope
+
+Three independent contract, native security/lifecycle and acceptance/provenance
+reviews found no concrete defects in their reviewed scope. Normal interpreter,
+optimized/debug public tests and worker clients passed, including eight actual
+worker protocol boundary/error cases. The full native/model/validation suite,
+GCC and Clang ASan/UBSan suites, Clang static analysis of both library C sources
+and the worker, and the intercepted-spawn 10,000-run fuzzer passed locally.
+The latest accepted-count/transfer/EAGAIN fixtures were additionally checked
+under both sanitizer compilers; the latest stdin suite passed optimized/debug
+execution. The pinned-checker integration passed with the worker's exact stdout.
+
+A clean local clone through feature `b6edad1b4c36661b4fe866c7e3042aab5e272904`,
+with spaces in its path and a fresh `GOOSE_HOME`, passed checker setup/probes,
+the actual worker consumer and debug incremental-input tests, using the matching
+existing compiler. This is not a new compiler bootstrap or anonymous public-clone
+execution claim. Subsequent changes add retry-coverage robustness and docs;
+library runtime source and the measured driver remain unchanged since the named
+measurement source. Hosted CI conclusions are a separate exact-head gate.
+
+This milestone changes experimental runtime/native code. It does not move any
+release tag or silently repin Honk, goose-check or the parent repository. Existing
+Capture and finite Bytes semantics stay in place. There is no claim of universal
+feature parity, speed, memory use or absence of bugs.
