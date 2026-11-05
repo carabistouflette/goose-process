@@ -55,6 +55,8 @@ reading, empty offers, explicit/repeated EOF, mid-process peer closure, discarde
 unaccepted bytes, capture-only/mixed routing and overflow, invalid offers/slices,
 reaping before output drain, terminal repetition and owner reuse. Legacy pumping
 methods reject new-mode owners; synchronous run rejects before launch.
+Borrowed/merged output routing and compile-time rejection of capture views held
+across io_step are also covered.
 
 `tests/stdin.c` injects a clock failure immediately after a real successful send:
 accepted bytes remain reported, cleanup is terminal, waitpid proves ECHILD and
