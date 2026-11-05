@@ -25,6 +25,12 @@ fn main() {
     let stalled, stalled_done, stalled_out, stalled_err = process::stream_step(child, out[..0], err[..0]);
     assert(stalled.error == process::Error.None && !stalled_done && stalled_out == 0 && stalled_err == 0);
     var total_out: i64 = 0; var total_err: i64 = 0; var done = false;
+    for i in 5 {
+        let current, complete, n, m = process::stream_step(child, out[..0], err[..], 1);
+        assert(current.error == process::Error.None && !complete && n == 0);
+        for byte in err[..m] { assert(byte == 'y'); }
+        total_err += m;
+    }
     while !done {
         let current, complete, n, m = process::stream_step(child, out[..], err[..], 20);
         assert(current.error == process::Error.None);
@@ -116,6 +122,20 @@ fn main() {
         total_out += n; done = complete; result = current;
     }
     assert(process::success(result) && total_out == 256);
+    result = process::start(["/bin/sleep", "60"], process::Options {
+        stdout: process::Output.Stream, stderr: process::Output.Null, timeout_ms: 0,
+    }, child);
+    assert(result.error == process::Error.None);
+    let live, live_done, live_out, live_err = process::stream_step(child, out[..0], err[..0]);
+    assert(live.error == process::Error.None && !live_done && live_out == 0 && live_err == 0);
+    assert(process::terminate(child).error == process::Error.None);
+    done = false;
+    while !done {
+        let current, complete, n, m = process::stream_step(child, out[..], err[..0], 20);
+        assert(current.error == process::Error.None && n == 0 && m == 0);
+        done = complete; result = current;
+    }
+    assert(result.signal == 15 && process::id(child) == -1);
     // A capture-only reuse restores legacy wait and capture behavior.
     result = process::start(["/bin/echo", "reuse"], process::Options { .. }, child);
     assert(result.error == process::Error.None && process::success(process::wait(child)));
