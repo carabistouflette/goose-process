@@ -34,6 +34,7 @@ def run_fixture(body, exception, expected_stderr, adopted=0, expected_stdout=b''
 
 
 def main():
+    (ROOT / '.build').mkdir(exist_ok=True)
     soak.controller.controller_scope()
     before = len(list(Path('/proc/self/fd').iterdir()))
     run_fixture('print("ready",flush=True)\nsys.stdin.readline()\n'
