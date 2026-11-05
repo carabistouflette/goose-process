@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add bounded live output with `Output.Stream` and `stream_step`.
+- Add incremental input with `Input.Stream`, `io_step` and explicit `close_stdin`.
+
 - Add managed two-stage pipelines with one shared deadline, bounded captures,
   finite stdin, per-stage outcomes and explicit dual-child cleanup/transfer.
 - Add pipe-pressure, partial-launch, deadline, descriptor and cleanup-fault
@@ -36,8 +39,4 @@ pipe/terminal/file semantics. The library is not a sandbox or process-tree
 supervisor. See [the API](docs/API.md) and [caller contracts](docs/CALLERS.md)
 for limits and host duties, and [validation evidence](docs/VALIDATION.md).
 
-Validated with the published Honk process-consumer checkpoint
-[`db81d8f`](https://github.com/carabistouflette/honk/commit/db81d8fe552b233231ff8ff29af9e75761484cd6),
-including an independent public clone, focused signal/lock/recovery cases and
-frozen self-check/package. Its feature-branch CI is green; promotion to Honk main
-is separate and is not claimed here. See the validation record for exact scope.
+See [validation records](docs/VALIDATION.md) for historical caller checks.

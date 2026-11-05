@@ -1,8 +1,16 @@
 # Managed two-stage pipelines
 
-This is the implementation contract for GL-PIPELINE-01. The interface remains
-experimental. It connects exactly two literal argv commands through one owned,
-blocking OS pipe, without a shell or process-tree supervision.
+Connect two commands through a blocking pipe, without a shell. Both share a
+deadline and each reports its own exit or signal. This API is on main, not v0.1.0.
+
+After `make setup`, run the compiler example:
+
+```sh
+.toolchain/goose/build/goose run examples/pipeline.goose
+```
+
+It sends valid and invalid C source through `/usr/bin/printf` into `/usr/bin/cc`
+and prints `pipeline compiler checks passed`. Both host tools must be installed.
 
 ## Public interface
 
@@ -84,28 +92,4 @@ its execution scope/locks and recover every transferred child according to
 CALLERS.md. Descendants retaining a capture may force timeout; descendants are
 not claimed to be supervised or killed by this interface.
 
-Native state is private: 55 i64 words (seven pipeline fields plus two unchanged
-24-word child states). Native metadata is 17 words: overall errno at0; first and
-second result codes at1/2; child metadata at3..8 and9..14; launch flags at15/16.
-The exported native signatures and full span/alias validation must agree with
-the public wrapper. No caller input/output pointer is retained natively.
-
-## Acceptance
-
-Cover binary input and arguments, no-shell semantics, exact/zero/overflow caps
-for every capture, simultaneous stream pressure above pipe capacity, early
-consumer closure/SIGPIPE, independent stage statuses and owner reuse. Validate
-all conflicting modes/second-stage malformed input before any launch.
-
-Fault fixtures must cover both launch failures, successful spawn followed by
-pidfd/setup failure, the shared deadline across delayed launch/EINTR, cancellation
-of both children before wait, independent cleanup denials/transfers, descriptor
-isolation/leaks, closed standard descriptors, and descendant-held captures.
-Compile-time checks reject copied owners and capture views surviving mutation.
-
-A real example sends C source through `/usr/bin/printf` into
-`/usr/bin/cc -x c -fsyntax-only -`, checking positive and negative compilation.
-Run normal GCC/Clang, both sanitizers, intercepted-spawn fuzzing and static
-analysis; independently review implementation and evidence. Retain measured
-benchmark methods/samples/limits without claiming universal speed or safety.
-Publish only after exact-head hosted CI and standalone-clone checks pass.
+See [validation records](VALIDATION.md) for tests and implementation checks.

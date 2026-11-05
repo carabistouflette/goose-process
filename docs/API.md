@@ -1,5 +1,8 @@
 # API and execution contract
 
+These docs describe main. Streaming and managed pipelines are not in `v0.1.0`;
+see [version scope](../README.md#main-versus-release).
+
 ## Commands and configuration
 
 `process::run(args, options, out, err) -> Status` executes one command and waits
@@ -182,7 +185,8 @@ Custom inherited-environment construction inspects at most 4,096 inherited
 entries; oversized inherited records are rejected even when removed. Unmodified
 inheritance forwards the existing environment without imposing construction
 bounds. The OS may impose a smaller combined argv/environment budget (E2BIG).
-Logical captures total at most 2 MiB; Child also owns a finite input copy.
+A single Child retains at most 2 MiB of captures plus its finite input copy.
+A Pipeline retains three captures; see its separate bounds below.
 Preparation scans/copies arguments/input, sorts explicit environment changes,
 and zero-initializes configured captures. Native read scratch is 16 KiB; bounded
 chunks keep both streams, input and cancellation responsive. These are payload

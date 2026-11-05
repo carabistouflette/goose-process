@@ -41,6 +41,11 @@ There are no external waiters. Kernel cleanup can exceed the command budget.
 
 ## Invocation-cost experiment
 
+**Historical measurement:** the report below used checker `32de6c4` and an older
+process implementation. Latest checker main is `713e274`; neither current
+application nor current library costs are established by that table. See
+[benchmark source scope](../bench/CURRENTNESS.md).
+
 ```sh
 make checker-setup checker-consumer CC=gcc
 # Commit measurement source first. Build/setup is outside timing.

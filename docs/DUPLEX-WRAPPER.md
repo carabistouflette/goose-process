@@ -1,5 +1,9 @@
 # Duplex wrapper cost and one native-state reload
 
+Historical engineering record: statements about unchanged source, pending CI or
+performance apply to the revisions named here, not current main. See
+[benchmark scope](../bench/CURRENTNESS.md) and [current API](API.md).
+
 ## Validation scope
 
 This work follows the checked duplex evidence at

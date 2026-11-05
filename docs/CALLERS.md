@@ -99,6 +99,10 @@ transfer, cleans up through a separate test owner, and verifies later Child
 close/wait calls do not transfer or signal again. These fault tests cover the
 library handoff; an application's recovery helper needs its own denial tests.
 
+Recovery diagnostics must not interrupt cleanup. In particular, writing to a
+closed stderr pipe can raise SIGPIPE; handle that in the application before
+logging from a recovery path.
+
 ## Environment and status policy stay with the caller
 
 Use per-child EnvOverride entries for Git/tar sanitization, not mutations of the

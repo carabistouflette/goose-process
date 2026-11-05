@@ -1,23 +1,11 @@
 # goose-process
 
-A small subprocess library for Goose. Apache-2.0.
-Experimental release 0.1.0; the API may change before 1.0.
-Requires Linux kernel 5.3+ and glibc 2.34+.
+Run commands from Goose without a shell. Capture binary output, send input,
+set a child environment or working directory, and cancel a child on a deadline.
+Use a Child for live input/output or signal forwarding, or a Pipeline to connect
+two commands.
 
-Runs argument arrays with bounded captures, per-child environment and cwd,
-independent stdio routing, finite or incremental binary stdin, and cancellation deadlines.
-Child handles support polling, signals and explicit cleanup. Absolute executables
-are the default; PATH search is opt-in. No implicit shell. Native process operations
-use a small C kernel; Goose owns validation, input and returned output.
-Execution has a finite deadline by default. Supervised Child handles can explicitly
-disable the overall deadline for long-lived services while retaining IO bounds.
-
-[API contract](docs/API.md) · [Benchmarks](bench/README.md) · [Comparisons](bench/compare/README.md) ·
-[Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
-
-[Caller integration](docs/CALLERS.md) covers signals, lock retention and exceptional
-child ownership. [Changelog](CHANGELOG.md) records release readiness.
-[Validation evidence](docs/VALIDATION.md) separates library checks from caller tests.
+Requires **Linux kernel 5.3+ and glibc 2.34+**. Apache-2.0. The API is experimental.
 
 ## Quickstart
 
@@ -28,7 +16,6 @@ headers. Python 3.11+ is required for the checks and tests.
 git clone https://github.com/carabistouflette/goose-process.git
 cd goose-process
 make setup
-make check test
 .toolchain/goose/build/goose run examples/command.goose
 ```
 
@@ -37,10 +24,10 @@ in [GOOSE_REVISION](GOOSE_REVISION), with optional graphics/audio disabled.
 Clang and its sanitizer/libFuzzer runtimes are needed for the optional Clang
 sanitizer and fuzz targets below.
 
-## Usage
+## Use it in a program
 
 ```goose
-import process from "carabistouflette/goose-process@160d23bbac93146f1d0926563e33dd26b5aecfd8";
+import process from "carabistouflette/goose-process@7f759bb22e4afcbe65c78dee20861509c3310a52";
 import std;
 
 fn main() {
@@ -54,84 +41,53 @@ fn main() {
 }
 ```
 
-Save the example as `main.goose` and run it with the pinned compiler. Declare
-the package in the application's root source. The example pins a reviewed
-library commit; use a full commit hash for reproducible application imports.
-Dynamic argument arrays should use `(const u8[:])[>..]`;
-when mixing an owned string with literals, bind its view as `const u8[:]` so
-array inference preserves read-only element types.
+Save this as `main.goose` and run `.toolchain/goose/build/goose run main.goose`.
+Keep the package import in your application's root source. Pin a full commit for
+reproducible builds; the example pins the implementation described here.
 
-`run` replaces both caller-owned output buffers and returns a fixed-size status.
-`Error.None` means the command completed and captures reached EOF; inspect the
-exit code or call `success` to check whether the program succeeded. Launch errors
-are distinct from child exits 126/127. Partial output survives timeout/overflow.
+`run` replaces `out` and `err`. `success` checks both the library result and exit
+code zero. Nonzero command exits are different from launch failures. Captures
+contain bytes; timeout or overflow may leave only a prefix.
 
-See [the API contract](docs/API.md) for limits, signals, per-child environment,
-descriptor handling, and exceptional cancellation failure. This is a process
-runner, not a sandbox or a process-tree supervisor. Finite stdin uses a one-way
-socket byte stream; use FD routing for programs requiring a real pipe or live
-output. Active child handles require an appropriate pumping operation or close;
-there is no automatic cleanup.
-Explicit `Output.Stream` with `stream_step` supports bounded caller-buffer live
-processing, including mixed capture. See the [streaming contract](docs/API.md#bounded-live-output).
-Explicit `Input.Stream` with `io_step` and `close_stdin` supports bounded duplex
-input without a library payload queue. See [incremental input and the worker example](docs/INCREMENTAL-STDIN.md).
-The [sustained streaming evidence](bench/STREAM-SOAK.md) records a resident
-five-minute run, quiescent resource observations, profiles and their limits.
-The [incremental duplex validation](docs/DUPLEX-VALIDATION.md) adds a resident
-stdin soak and a [checked worker comparison](bench/duplex_compare/RESULTS.md)
-with Rust, Go and Python adapters, retained samples and explicit policy differences.
-The [shared-engine wrapper study](bench/duplex_shared/RESULTS.md) isolates native
-policy from wrapper work and records the small state-reload optimization.
-[Managed two-stage pipelines](docs/PIPELINES.md) connect literal commands through
-an owned blocking pipe, with one deadline, three independent bounded captures
-and explicit cleanup of both direct children. The [compiler pipeline example](examples/pipeline.goose)
-checks valid and invalid C source without a shell. Larger pipeline graphs,
-PTYs, credential switching and Windows are outside the current scope.
-See [the Rust/Go/Python feature comparison](docs/COMPARISON.md).
+## Choose an interface
 
-## Development
+| Need | Use | Example |
+| --- | --- | --- |
+| Run a command and collect output | `run` | [command.goose](examples/command.goose) |
+| Read output as it arrives | `start` + `stream_step` | [compiler.goose](examples/compiler.goose) |
+| Send input in chunks while reading output | `start` + `io_step`, then `close_stdin` | [worker.goose](examples/worker.goose) |
+| Connect two commands | `run_pipeline` or an owned `Pipeline` | [pipeline.goose](examples/pipeline.goose) |
 
-```sh
-make setup
-make format check test
-make sanitize SANITIZER_CC=gcc
-make sanitize SANITIZER_CC=clang
-make bench BENCH_ITERATIONS=100
-make compare-check # optional; requires Rust and Go as well
-make compare
-make fuzz FUZZ_RUNS=10000
-make memcheck # optional; requires Valgrind
-```
+See the [API](docs/API.md), [incremental-input guide](docs/INCREMENTAL-STDIN.md),
+[pipeline guide](docs/PIPELINES.md) and [caller cleanup rules](docs/CALLERS.md).
 
-Setup requires Git, CMake 3.27+, C/C++20 compilers and Make. Tests require Python
-3.11+, GCC/Clang and Linux `/proc`. `GOOSE_REVISION` pins the same compiler as
-goose-json; other revisions are not guaranteed. An existing matching compiler
-can be supplied with `make GOOSE=/absolute/path/to/goose ...`.
+## Defaults and limits
 
-Validation covers Goose in-process, native and debug execution; compile-time
-resource ownership and capture-view lifetime rejection; binary and adversarial argument oracles;
-simultaneous stream saturation, exact limits and cancellation; signal defaults;
-closed standard descriptors; descriptor/zombie leaks; concurrent callers; and
-injected syscall failures. GCC and Clang ASan/UBSan instrument the native kernel.
-CI also enables glibc fortification for the sanitizer matrix; fault injection
-covers both ordinary and fortified libc entry points.
-Protected pages check exact input/output boundaries, resource-limit tests check
-descriptor exhaustion, and signal storms exercise interrupted cancellation.
-Traced-child stop notifications have real and deterministic injected regressions.
-Independent classification tests cover exact native input limits while refusing
-execution; cancellation tests also cover early output closure and new sessions.
-The classification model freezes time to isolate validation from scheduling;
-real deadlines and child cleanup remain covered by the integration tests.
-The optional Clang/libFuzzer target mutates native validation/setup inputs under
-ASan/UBSan and refuses all execution through an intercepted spawn call.
-The [benchmark](bench/README.md) records local end-to-end measurements and raw
-samples; there is no universal throughput claim.
+- Executables must be absolute paths. PATH lookup requires `search_path: true`
+  and uses the child's environment. Arguments are passed literally.
+- Default timeout: 30 seconds. Default capture: 64 KiB per stream. Each capture
+  and finite input can be at most 1 MiB; argv can contain at most 4,096 entries.
+- A supervised `Child` can explicitly use `timeout_ms: 0`. `run` and pipelines
+  require positive deadlines. A deadline requests cancellation; kernel work and
+  reaping can take longer.
+- Finish every active owner by pumping to completion or calling close. There is
+  no automatic cleanup. An exceptional `unreaped_pid` transfers cleanup to you.
+- Only direct children are supervised. This is not a sandbox or process-tree
+  supervisor. PTYs, job control, credentials and other OSes are unsupported.
 
-[Apache-2.0](LICENSE). Copyright 2026 goose-process contributors.
-See [third-party and tooling notices](THIRD_PARTY.md).
+## Main versus release
 
-An optional [goose-check consumer workflow](docs/CHECKER-CONSUMER.md) verifies
-this checkout's real public regressions with exact stdout/exit fixtures and
-binary stdin, using the pinned external developer tool. `make checker-setup`
-performs the explicit download; `make checker-consumer` is offline afterwards.
+These docs describe main's implementation at `7f759bb22e4afcbe65c78dee20861509c3310a52`.
+The experimental `v0.1.0` tag stays at `470c23f8244d17ff2597bca3da35f3a98cc3ca50`.
+It has command execution and Child control, but **not** `Output.Stream`,
+`Input.Stream` or managed pipelines. Read the docs at the revision you import.
+No stable API or maintenance guarantee is implied by the experimental tag.
+
+## Development and results
+
+Run `make check test` for this checkout. See [CONTRIBUTING.md](CONTRIBUTING.md)
+for sanitizer and fuzz commands, [validation records](docs/VALIDATION.md) for
+coverage, and [benchmarks](bench/README.md) for measurements and source versions.
+Historical results are not current-main speed claims.
+
+[Security reporting](SECURITY.md) · [Apache-2.0](LICENSE) · [Notices](THIRD_PARTY.md)

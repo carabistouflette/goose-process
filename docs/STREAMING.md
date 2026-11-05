@@ -1,87 +1,33 @@
-# Streaming validation and local measurements
+# Read output as it arrives
 
-The [interface contract](API.md#bounded-live-output) is authoritative. Run
-`make setup check test` to build the pinned compiler and execute the public
-interface regressions, including optimized/debug streaming tests and a compiler
-consumer. `make checker-setup checker-source-test checker-consumer CC=gcc`
-(serial) also checks the compiler consumer's stdout with the pinned external
-fixture tool. That tool retains its older library pin; test executables link this
-checkout. No application or dependency pin has been silently updated.
+Use `Output.Stream` when you want to inspect output without keeping a whole log.
+Start a Child, provide output buffers to `stream_step`, and consume the reported
+prefixes before reusing those buffers. This API is on main, not v0.1.0.
 
-`examples/compiler.goose` feeds valid and invalid C source to `/usr/bin/cc` and
-counts diagnostic bytes/newlines as bounded chunks arrive, with no retained log.
-It prints its result after compiler cleanup. This is a fixed-fixture demonstration,
-not a general production runner or complete exceptional transferred-PID recovery
-implementation; applications need the [caller obligations](CALLERS.md).
-
-## Acceptance coverage
-
-`tests/stream.goose` checks two 3 MiB streams through unequal small buffers,
-one-byte delivery, empty-span backpressure, mixed captures and overflow, merged
-stderr ordering, 1 MiB finite binary stdin, reaping before drain, terminal
-observation, invalid/legacy operations and owner reuse. Byte oracles remain
-binary and length-exact. Stream does not accumulate whole output in its owner.
-
-`tests/stream.c` adds actual read-failure and timeout cleanup, alias rejection,
-direct-child ECHILD proof, descriptor counts and a held-descendant-EOF fixture.
-The fixture controller adopts/reaps its own descendant after library completion;
-this does not add process-tree supervision to the library. Existing lifecycle,
-denied-cleanup transfer, signal-state, descriptor and intercepted-spawn fuzz
-regressions continue to exercise the shared machinery.
-
-Independent contract, native security/lifecycle, and acceptance/provenance
-reviews found no actionable defects in their reviewed streaming scope. Local
-and hosted execution results are recorded separately; a review is not a test run.
-
-Final local validation passed normal interpreter/release/debug tests, GCC and
-Clang ASan/UBSan suites (including the held-pipe fixture), Clang static analysis,
-the existing 10,000-run intercepted-spawn fuzz check, and pinned-checker probes
-and consumer execution. A fresh local clone of `0fe1703` with spaces in its path
-and a fresh `GOOSE_HOME` passed setup and consumer execution using the pinned
-existing compiler; this does not claim a new compiler bootstrap or anonymous
-public-source execution. Subsequent added backpressure/no-deadline tests passed
-interpreter, optimized and debug execution. Hosted CI remains a separate gate.
-
-## Reproducible healthy-output timing
-
-Commit source first, then run:
+After `make setup`, try the compiler example:
 
 ```sh
-taskset -c 0 python3 bench/stream_measure.py --goose .toolchain/goose/build/goose --cc gcc
+.toolchain/goose/build/goose run examples/compiler.goose
 ```
 
-The [retained raw report](../bench/results/stream-2026-11-05.json) identifies
-clean source `072d125f963104437038153bcb42bbc521cec28a`, compiler and binary
-hashes, flags, CPU affinity/model, host load and versions. Nine shuffled rounds
-contain six cells, with one warmup and five timed calls per cell: 54 warmups and
-270 timed calls, all successful. Build/driver startup is outside the reported
-public-call timer. Timers include launch, reading/reaping and byte validation.
-Capture buffers and streamed Child are reused; a fresh-process measurement would
-have different allocation/startup costs.
+It sends valid and invalid C source to `/usr/bin/cc`, counts diagnostic bytes and
+newlines as they arrive, then prints `streamed compiler diagnostics checked`.
+It needs that host compiler. It is a fixed example, not a general command runner.
 
-Later commits added consumer/tests/documentation and corrected an oversized
-initializer in the new held-pipe test fixture. They did not change runtime source,
-the measured driver or its helper. The timing preparation did not compile that
-fixture; its final corrected version passed the validation above.
+For each streamed route, `stream_step(child, out, err, timeout_ms)` returns
+`(status, done, stdout_count, stderr_count)`. Only the indicated prefixes are
+valid. Process them even on a terminal error. An empty buffer pauses that route;
+it does not discard its data. A child can block if you never provide space.
 
-Each successful command emits identical bytes/status: 64 KiB or 1 MiB **on each**
-of stdout and stderr. Capture enforces a total cap; Stream has no total cap.
-These are unequal safety policies, not a matched-contract or language comparison.
-No additional optimization was made to obtain these results.
+One call handles bounded work. Continue until `done`, or call `close` to cancel.
+A zero timeout polls without waiting; it does not disable the Child's overall
+deadline. `Output.Capture` can be mixed with Stream when one stream should be
+retained. Stream has no cumulative byte cap, so apply your own workload policy.
 
-Milliseconds below are the median of the nine round medians, each round taking
-the median of its five timed calls. Parentheses show the complete round-median
-range; individual samples and every warmup remain in the report.
+See [the full stream contract](API.md#bounded-live-output) for routing, buffer
+lifetimes and EOF behavior, and [caller cleanup](CALLERS.md) for signals and
+exceptional transferred children. Descendants retaining output descriptors can
+keep streams open after the direct child exits.
 
-| Bytes per stream | Capture | Stream 4 KiB view | Stream 16 KiB view |
-| --- | ---: | ---: | ---: |
-| 64 KiB | 0.817 (0.773–0.873) | 0.799 (0.770–0.986) | 0.822 (0.752–0.891) |
-| 1 MiB | 3.212 (2.966–3.691) | 3.421 (3.135–3.618) | 2.919 (2.698–3.228) |
-
-Small-output differences overlap shared-host noise, and the 4 KiB view regresses
-on the larger payload. The 16 KiB result is specific to this short run. Retain
-both outcomes; neither proves a general speedup. Both streaming routes use fixed
-16 KiB stack storage per output; the 4 KiB route exposes only a 4 KiB view.
-This measures neither peak memory nor allocations: bounded-storage claims come
-from the interface/implementation, not RSS inference. No exclusive-core claim,
-independent repeat, tail-latency estimate or sustained-throughput claim is made.
+[Tests and old measurements](STREAMING-HISTORY.md) describe their named snapshots.
+[Current benchmark scope](../bench/CURRENTNESS.md) distinguishes them from main.

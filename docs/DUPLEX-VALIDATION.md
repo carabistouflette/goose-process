@@ -1,5 +1,9 @@
 # Incremental duplex validation
 
+Historical engineering record: statements about unchanged source, pending CI or
+performance apply to the revisions named here, not current main. See
+[benchmark scope](../bench/CURRENTNESS.md) and [current API](API.md).
+
 ## Scope and acceptance criteria
 
 This milestone follows the reviewed Input.Stream publication at

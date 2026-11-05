@@ -1,5 +1,9 @@
 # Exceptional-path coverage audit
 
+Historical engineering record: statements about unchanged source, pending CI or
+performance apply to the revisions named here, not current main. See
+[benchmark scope](../bench/CURRENTNESS.md) and [current API](API.md).
+
 Audit base: `e19080fc5995d5361d3a58d21d1006972ba6f84c`, 2026-11-04.
 The audit compared [API contracts](API.md) and [caller ownership rules](CALLERS.md)
 with the maintained native and public tests. Two independent auditors examined
