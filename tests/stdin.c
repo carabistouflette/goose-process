@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <dirent.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <poll.h>
 #include <signal.h>
 #include <stdbool.h>
@@ -121,6 +122,18 @@ int main(void) {
     do { recovered = waitpid(tested_pid, &terminal, 0); } while (recovered < 0 && errno == EINTR);
     assert(recovered == tested_pid && (WIFSIGNALED(terminal) || WIFEXITED(terminal)));
     errno = 0; assert(waitpid(tested_pid, NULL, WNOHANG) == -1 && errno == ECHILD);
+    /* Borrowed output routing still works while caller-driven input is pumped. */
+    config[1] = 5; config[4] = open("/dev/null", O_WRONLY | O_CLOEXEC); assert(config[4] >= 0);
+    assert(gp_start((gp_input){command, sizeof command - 1}, empty(), empty(), empty(), 0,
+                    words(config, 11), words(state, 24), words(meta, 6)) == 0);
+    assert(close((int)config[4]) == 0);
+    assert(gp_io_step(words(state, 24), (gp_input){input, sizeof input}, none, none, 20,
+                       words(meta, 6), words(progress, 3)) == 0 && progress[1] == sizeof input);
+    assert(gp_close_stdin(words(state, 24), words(meta, 6)) == 0);
+    do {
+        assert(gp_io_step(words(state, 24), empty(), none, none, 20, words(meta, 6), words(progress, 3)) == 0);
+    } while (!progress[0]);
+    assert(meta[1] == 0 && !progress[2]);
     assert(descriptors() == before);
     puts("streaming stdin accepted-byte, idle-poll and cleanup fault tests passed");
     return 0;
