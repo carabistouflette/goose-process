@@ -16,6 +16,10 @@ int64_t gp_wait(gp_metadata state, gp_input input, gp_output out, gp_output err,
     int64_t slice_ms, int64_t one_step, gp_metadata meta, int64_t *done);
 int64_t gp_stream_step(gp_metadata state, gp_input input, gp_output out, gp_output err,
     int64_t slice_ms, gp_metadata meta, int64_t *done);
+/* progress: done, input accepted in this call, local input endpoint open. */
+int64_t gp_io_step(gp_metadata state, gp_input input, gp_output out, gp_output err,
+    int64_t slice_ms, gp_metadata meta, gp_metadata progress);
+int64_t gp_close_stdin(gp_metadata state, gp_metadata meta);
 int64_t gp_try_wait(gp_metadata state, gp_metadata meta, int64_t *done);
 int64_t gp_signal(gp_metadata state, int64_t signal, gp_metadata meta);
 int64_t gp_close(gp_metadata state, gp_metadata meta);

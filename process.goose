@@ -3,7 +3,7 @@ namespace process;
 import std;
 
 enum Error { None, InvalidInput, LaunchFailed, SystemError, TimedOut, OutputLimit, InvalidState }
-enum Input { Null, Inherit, Bytes, Fd }
+enum Input { Null, Inherit, Bytes, Fd, Stream }
 enum Output { Default, Capture, Inherit, Null, Stdout, Fd, Stream }
 struct EnvOverride { key: const u8[:], value: const u8[:] = "", remove: bool = false }
 const NO_ENVIRONMENT: EnvOverride[0] = [];
@@ -32,16 +32,25 @@ struct Status {
     signal:       i64   = 0,
     unreaped_pid: i64   = 0,
 }
+struct Progress {
+    status:         Status,
+    done:           bool = false,
+    input_accepted: i64  = 0,
+    stdout_count:   i64  = 0,
+    stderr_count:   i64  = 0,
+    input_open:     bool = false,
+}
 // Compiler-enforced noncopyable resource owner. Its fields are private API.
 root struct Child {
-    _native:     i64[24] = [0; 24],
-    _input:      u8[>..] = [],
-    _stdout:     u8[>..] = [],
-    _stderr:     u8[>..] = [],
-    _out_size:   i64     = 0,
-    _err_size:   i64     = 0,
-    _stream_out: bool    = false,
-    _stream_err: bool    = false,
+    _native:       i64[24] = [0; 24],
+    _input:        u8[>..] = [],
+    _stdout:       u8[>..] = [],
+    _stderr:       u8[>..] = [],
+    _out_size:     i64     = 0,
+    _err_size:     i64     = 0,
+    _stream_out:   bool    = false,
+    _stream_err:   bool    = false,
+    _stream_input: bool    = false,
 }
 const MAX_ARGUMENTS = 4096;
 const MAX_ARGUMENT_BYTES = 1048576;
@@ -62,6 +71,9 @@ extern fn native_wait(state: i64[:], input: const u8[:], out: u8[:], err: u8[:],
     slice_ms: i64, one_step: i64, meta: i64[:], done: i64&) -> i64 = "gp_wait";
 extern fn native_stream_step(state: i64[:], input: const u8[:], out: u8[:], err: u8[:],
     slice_ms: i64, meta: i64[:], done: i64&) -> i64 = "gp_stream_step";
+extern fn native_io_step(state: i64[:], input: const u8[:], out: u8[:], err: u8[:],
+    slice_ms: i64, meta: i64[:], progress: i64[:]) -> i64 = "gp_io_step";
+extern fn native_close_stdin(state: i64[:], meta: i64[:]) -> i64 = "gp_close_stdin";
 extern fn native_try_wait(state: i64[:], meta: i64[:], done: i64&) -> i64 = "gp_try_wait";
 extern fn native_signal(state: i64[:], signal: i64, meta: i64[:]) -> i64 = "gp_signal";
 extern fn native_close(state: i64[:], meta: i64[:]) -> i64 = "gp_close";
@@ -87,6 +99,7 @@ fn input_code(mode: Input) -> i64 {
     if mode == Input.Null { return 0; }
     if mode == Input.Inherit { return 1; }
     if mode == Input.Bytes { return 2; }
+    if mode == Input.Stream { return 4; }
     return 3;
 }
 fn limits(options: Options) -> i64, i64 {
@@ -151,7 +164,7 @@ fn capture_buffers(config: const i64[:], out: u8[>..]&, err: u8[>..]&) {
 }
 fn run(args: const (const u8[:])[:], options: Options, out: u8[>..]&, err: u8[>..]&) -> Status {
     var packed: u8[>..] = []; var sets: u8[>..] = []; var removes: u8[>..] = [];
-    if options.stdout == Output.Stream || options.stderr == Output.Stream || !pack(args, options, packed, sets, removes) {
+    if options.stdin == Input.Stream || options.stdout == Output.Stream || options.stderr == Output.Stream || !pack(args, options, packed, sets, removes) {
         out.clear(); err.clear(); return Status { error: Error.InvalidInput };
     }
     let config = settings(options);
@@ -173,17 +186,19 @@ fn start(args: const (const u8[:])[:], options: Options, child: Child&) -> Statu
     var input:     u8[>..] = []; input.append(options.input);
     let stream_out = options.stdout == Output.Stream;
     let stream_err = options.stderr == Output.Stream;
+    let stream_input = options.stdin == Input.Stream;
     child._input.clear(); child._input.append(input);
     child._stdout.clear(); child._stderr.clear(); child._out_size = 0; child._err_size = 0;
     child._stream_out = stream_out;
     child._stream_err = stream_err;
+    child._stream_input = stream_input;
     capture_buffers(config[..], child._stdout, child._stderr);
     var meta: i64[6] = [0, -1, 0, 0, 0, 0];
     let code = native_start(packed, directory, sets, removes, child._input.len, config[..], child._native[..], meta[..]);
     return status(code, meta[..]);
 }
 fn collect(child: Child&, slice_ms: i64, one_step: bool) -> Status, bool {
-    if child._stream_out || child._stream_err { return Status { error: Error.InvalidState }, false; }
+    if child._stream_input || child._stream_out || child._stream_err { return Status { error: Error.InvalidState }, false; }
     var meta: i64[6] = [0, -1, 0, 0, 0, 0]; var done: i64 = 0;
     let code = native_wait(child._native[..], child._input[..], child._stdout[..], child._stderr[..],
         slice_ms, if one_step { 1 } else { 0 }, meta[..], done);
@@ -204,7 +219,7 @@ fn stream_step(child: Child&, out: u8[:], err: u8[:], timeout_ms: i64 = 0) -> St
         (!child._stream_out && out.len != 0) || (!child._stream_err && err.len != 0) {
         return Status { error: Error.InvalidInput }, false, 0, 0;
     }
-    if !child._stream_out && !child._stream_err { return Status { error: Error.InvalidState }, false, 0, 0; }
+    if child._stream_input || (!child._stream_out && !child._stream_err) { return Status { error: Error.InvalidState }, false, 0, 0; }
     var meta: i64[6] = [0, -1, 0, 0, 0, 0]; var done: i64 = 0;
     let output = if child._stream_out { out } else { child._stdout[..] };
     let errors = if child._stream_err { err } else { child._stderr[..] };
@@ -217,6 +232,32 @@ fn stream_step(child: Child&, out: u8[:], err: u8[:], timeout_ms: i64 = 0) -> St
     }
     return status(code, meta[..]), done != 0,
         if child._stream_out { meta[3] } else { 0 }, if child._stream_err { meta[4] } else { 0 };
+}
+fn io_step(child: Child&, input: const u8[:], out: u8[:], err: u8[:], timeout_ms: i64 = 0) -> Progress {
+    if timeout_ms < 0 || timeout_ms > MAX_TIMEOUT_MS || input.len > MAX_INPUT_BYTES ||
+        out.len > MAX_OUTPUT_BYTES || err.len > MAX_OUTPUT_BYTES ||
+        (!child._stream_out && out.len != 0) || (!child._stream_err && err.len != 0) {
+        return Progress { status: Status { error: Error.InvalidInput } };
+    }
+    if !child._stream_input { return Progress { status: Status { error: Error.InvalidState } }; }
+    var meta: i64[6] = [0, -1, 0, 0, 0, 0]; var progress: i64[3] = [0; 3];
+    let output = if child._stream_out { out } else { child._stdout[..] };
+    let errors = if child._stream_err { err } else { child._stderr[..] };
+    let code = native_io_step(child._native[..], input, output, errors, timeout_ms, meta[..], progress[..]);
+    if code == 1 || code == 6 { return Progress { status: status(code, meta[..]) }; }
+    child._out_size = if child._stream_out { 0 } else { meta[3] };
+    child._err_size = if child._stream_err { 0 } else { meta[4] };
+    if progress[0] != 0 {
+        child._stdout.resize(child._out_size); child._stderr.resize(child._err_size); child._input.clear();
+    }
+    return Progress { status: status(code, meta[..]), done: progress[0] != 0, input_accepted: progress[1],
+        stdout_count: if child._stream_out { meta[3] } else { 0 },
+        stderr_count: if child._stream_err { meta[4] } else { 0 }, input_open: progress[2] != 0 };
+}
+fn close_stdin(child: Child&) -> Status {
+    if !child._stream_input { return Status { error: Error.InvalidState }; }
+    var meta: i64[6] = [0, -1, 0, 0, 0, 0];
+    return status(native_close_stdin(child._native[..], meta[..]), meta[..]);
 }
 fn try_wait(child: Child&) -> Status, bool {
     var meta: i64[6] = [0, -1, 0, 0, 0, 0]; var done: i64 = 0;

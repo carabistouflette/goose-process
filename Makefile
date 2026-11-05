@@ -26,6 +26,7 @@ check:
 	$(GOOSE) check examples/compiler.goose
 	$(GOOSE) check tests/features.goose
 	$(GOOSE) check tests/stream.goose
+	$(GOOSE) check tests/stdin.goose
 	$(GOOSE) check bench/bench.goose
 	$(GOOSE) check bench/stream.goose
 	$(GOOSE) check bench/stream_soak.goose
@@ -52,6 +53,11 @@ test: helpers
 	./.build/stream
 	$(GOOSE) build tests/stream.goose --cc $(CC) --debug --no-bce -o .build/stream-debug
 	./.build/stream-debug
+	$(GOOSE) run tests/stdin.goose
+	$(GOOSE) build tests/stdin.goose --cc $(CC) -O2 -o .build/stdin
+	./.build/stdin
+	$(GOOSE) build tests/stdin.goose --cc $(CC) --debug --no-bce -o .build/stdin-debug
+	./.build/stdin-debug
 	$(GOOSE) run examples/command.goose
 	$(GOOSE) run examples/compiler.goose
 	python3 tests/ownership.py $(abspath $(GOOSE))
