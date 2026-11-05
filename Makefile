@@ -24,6 +24,7 @@ check:
 	$(GOOSE) check tests/api.goose
 	$(GOOSE) check examples/command.goose
 	$(GOOSE) check tests/features.goose
+	$(GOOSE) check tests/stream.goose
 	$(GOOSE) check bench/bench.goose
 helpers:
 	mkdir -p .build
@@ -43,6 +44,11 @@ test: helpers
 	./.build/features
 	$(GOOSE) build tests/features.goose --cc $(CC) --debug -o .build/features-debug
 	./.build/features-debug
+	$(GOOSE) run tests/stream.goose
+	$(GOOSE) build tests/stream.goose --cc $(CC) -O2 -o .build/stream
+	./.build/stream
+	$(GOOSE) build tests/stream.goose --cc $(CC) --debug --no-bce -o .build/stream-debug
+	./.build/stream-debug
 	$(GOOSE) run examples/command.goose
 	python3 tests/ownership.py $(abspath $(GOOSE))
 	$(MAKE) native
