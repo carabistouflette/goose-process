@@ -2,6 +2,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -41,11 +42,9 @@ func reader(ctx context.Context, stream io.Reader, expected []byte, requests, wi
 				send(fmt.Errorf("zero progress or per-request excess output"))
 				return
 			}
-			for i := 0; i < n; i++ {
-				if buffer[i] != expected[offset+i] {
-					send(fmt.Errorf("output oracle"))
-					return
-				}
+			if !bytes.Equal(buffer[:n], expected[offset:offset+n]) {
+				send(fmt.Errorf("output oracle"))
+				return
 			}
 			offset += n
 		}

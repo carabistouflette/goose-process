@@ -36,8 +36,8 @@ fn main() {
             let progress = process::io_step(child, frame[sent..width], out[..], err[..], 20);
             checked(child, progress.status.error == process::Error.None && !progress.done && progress.input_open);
             checked(child, progress.input_accepted <= width - sent && progress.stdout_count <= width - received && progress.stderr_count <= 4 - acknowledged);
-            for i in progress.stdout_count { checked(child, out[i] == frame[received + i]); }
-            for i in progress.stderr_count { checked(child, err[i] == ack[acknowledged + i]); }
+            checked(child, out[..progress.stdout_count] == frame[received..received + progress.stdout_count]);
+            checked(child, err[..progress.stderr_count] == ack[acknowledged..acknowledged + progress.stderr_count]);
             sent += progress.input_accepted; received += progress.stdout_count; acknowledged += progress.stderr_count;
         }
     }
