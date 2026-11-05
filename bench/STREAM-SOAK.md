@@ -136,3 +136,21 @@ Independent design/security, harness and data reviews checked these contracts,
 cleanup and records. Concrete harness issues fixed were line-buffer reuse,
 trailing failure-output retention, and profile fixture permissions. These checks
 supplement the normal/debug/sanitizer/fault suites; they do not replace them.
+
+## Publication validation
+
+Normal interpreter/release/debug tests, native lifecycle/fault/model/validation
+checks, GCC and Clang ASan/UBSan suites, and the existing 10,000-run intercepted
+fuzz check passed locally. The final normal suite also runs the controller
+failure fixtures and bounded resident smoke. A development smoke with dirty
+source passed and was labeled `smoke: true, source_dirty: true`, not retained as
+clean-source timing evidence.
+
+A clean local clone of `7aada0e7e5632fe4cb4bf834579bc88e90c27544`, with spaces in
+its checkout path and a fresh `GOOSE_HOME`, passed controller fixtures and
+resident smoke using the matching existing compiler. This is not an anonymous
+public-clone execution or new compiler bootstrap claim. The clone remained
+clean. The first standalone attempt found missing test scratch-directory setup;
+that fixture preparation is now explicit. Hosted CI is a separate exact-head
+publication gate. Runtime/native sources, package fingerprint, existing tags and
+application dependency pins remain unchanged by this milestone.
