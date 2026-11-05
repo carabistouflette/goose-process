@@ -48,5 +48,12 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     assert(result == 1 || result == 2 || result == 3);
     assert(meta[5] == 0);
     for (size_t i = 0; i < sizeof out; ++i) assert(out[i] == 0xa5 && err[i] == 0x5a);
+    /* Include start-only routing (Input.Stream) without ever executing mutated
+       bytes: the posix_spawn wrapper above always refuses execution. */
+    int64_t storage[24] = {0};
+    result = (int)gp_start((gp_input){data + offset, (int64_t)(size - offset)}, fields[0], fields[1], fields[2],
+                           0, (gp_metadata){config, 11}, (gp_metadata){storage, 24}, (gp_metadata){meta, 6});
+    assert(result == 1 || result == 2 || result == 3);
+    assert(meta[5] == 0);
     return 0;
 }

@@ -182,6 +182,12 @@ def build(goose, cc):
     command([goose, 'build', ROOT / 'examples/compiler.goose', '--cc', cc,
              '-O2', '-o', destination])
     programs['compiler'] = destination
+    command([cc, '-std=c11', '-Wall', '-Wextra', '-Werror', '-O2',
+             ROOT / 'examples/worker.c', '-o', OUTPUT / 'worker'])
+    destination = OUTPUT / 'worker-client'
+    command([goose, 'build', ROOT / 'examples/worker.goose', '--cc', cc,
+             '-O2', '-o', destination])
+    programs['worker'] = destination
     return programs
 
 

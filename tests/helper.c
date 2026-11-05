@@ -66,6 +66,19 @@ int main(int argc, char **argv) {
     } else if (!strcmp(argv[1], "cwd")) {
         char path[4096]; if (!getcwd(path, sizeof path)) return 96;
         emit(1, path, strlen(path));
+    } else if (!strcmp(argv[1], "duplex-burst")) {
+        char out[4096], err[4096]; memset(out, 'x', sizeof out); memset(err, 'y', sizeof err);
+        for (int i = 0; i < 64; ++i) { emit(1, out, sizeof out); emit(2, err, sizeof err); }
+        for (;;) {
+            ssize_t count = read(0, out, sizeof out);
+            if (count < 0 && errno == EINTR) continue;
+            if (count < 0) return 102;
+            if (!count) break;
+            emit(1, out, (size_t)count);
+        }
+    } else if (!strcmp(argv[1], "close-input")) {
+        if (close(0) < 0) return 102;
+        emit(1, "closed", 6); pause_ms(60000);
     } else if (!strcmp(argv[1], "binary-streams")) {
         long n = argc > 2 ? atol(argv[2]) : 0, offset = 0;
         unsigned char out[4096], err[4096];

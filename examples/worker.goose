@@ -14,16 +14,19 @@ fn main() {
     var frame: u8[4100] = [0; 4100]; var out: u8[257] = [0; 257]; var err: u8[3] = [0; 3];
     var empty: u8[0]    = [];
     // A single worker processes >1 MiB cumulatively; no whole-input buffer/queue.
-    for request in 300 {
-        frame[0] = 0; frame[1] = 0; frame[2] = 16; frame[3] = 0;
-        for i in 4096 { frame[i + 4] = ((request + i) % 256) as u8; }
+    for request in 400 {
+        let size: i64 = if request % 10 == 0 { 0 } else if request % 10 == 1 { 1 }
+            else if request % 10 == 2 { 31 } else { 4096 };
+        let frame_size = size + 4;
+        frame[0] = 0; frame[1] = 0; frame[2] = (size / 256) as u8; frame[3] = (size % 256) as u8;
+        for i in size { frame[i + 4] = ((request + i) % 256) as u8; }
         var sent: i64 = 0; var received: i64 = 0; var acknowledgments: i64 = 0;
         let ack = "ack\x00";
-        while sent < frame.len || received < frame.len || acknowledgments < ack.len {
-            let progress = process::io_step(child, frame[sent..], out[..], err[..], 20);
+        while sent < frame_size || received < frame_size || acknowledgments < ack.len {
+            let progress = process::io_step(child, frame[sent..frame_size], out[..], err[..], 20);
             assert(progress.status.error == process::Error.None && !progress.done && progress.input_open);
             sent += progress.input_accepted;
-            assert(received + progress.stdout_count <= frame.len && acknowledgments + progress.stderr_count <= ack.len);
+            assert(received + progress.stdout_count <= frame_size && acknowledgments + progress.stderr_count <= ack.len);
             for i in progress.stdout_count { assert(out[i] == frame[received + i]); }
             for i in progress.stderr_count { assert(err[i] == ack[acknowledgments + i]); }
             received += progress.stdout_count; acknowledgments += progress.stderr_count;
@@ -39,5 +42,5 @@ fn main() {
         if done { assert(process::success(progress.status)); }
     }
     assert(process::close(child).error == process::Error.None);
-    print("300 framed worker requests passed");
+    print("400 framed worker requests passed");
 }

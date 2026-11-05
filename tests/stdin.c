@@ -63,6 +63,12 @@ int main(void) {
     assert(idle_polls == 1 && !progress[0] && progress[1] == 0 && progress[2]);
     /* Result aliases must reject before any bytes or state are consumed. */
     uint8_t input[] = {'a', 0, 255};
+    assert(gp_io_step(words(state, 24), empty(), none, none, 0,
+                       words(meta, 6), words(meta, 3)) == 1);
+    assert(gp_io_step(words(state, 24), (gp_input){input, sizeof input}, (gp_output){input, sizeof input}, none,
+                       0, words(meta, 6), words(progress, 3)) == 1);
+    assert(gp_io_step(words(state, 24), empty(), (gp_output){(uint8_t *)state, sizeof state}, none,
+                       0, words(meta, 6), words(progress, 3)) == 1);
     assert(gp_io_step(words(state, 24), (gp_input){input, sizeof input}, none, none, 0,
                        words(meta, 6), words(state, 3)) == 1);
     assert(gp_io_step(words(state, 24), (gp_input){(uint8_t *)progress, sizeof progress}, none, none, 0,

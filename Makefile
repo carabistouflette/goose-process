@@ -64,6 +64,8 @@ test: helpers
 	$(GOOSE) run examples/compiler.goose
 	$(GOOSE) build examples/worker.goose --cc $(CC) -O2 -o .build/worker-client
 	./.build/worker-client
+	$(GOOSE) build examples/worker.goose --cc $(CC) --debug --no-bce -o .build/worker-client-debug
+	./.build/worker-client-debug
 	python3 tests/ownership.py $(abspath $(GOOSE))
 	python3 tests/stream_soak_controller.py
 	python3 bench/stream_soak.py --goose "$(GOOSE)" --cc "$(CC)" --seconds 1 --smoke --output .build/stream-soak-smoke.json
