@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import platform
 import random
+import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -38,7 +39,8 @@ def measure(args):
     report = dict(status='incomplete', source_revision=revision, hashes=hashes,
                   timestamp=datetime.now(timezone.utc).isoformat(),
                   platform=platform.platform(), python=platform.python_version(),
-                  goose_version=controller.git('rev-parse', 'HEAD', cwd=ROOT / '.toolchain/goose'),
+                  goose_version=subprocess.check_output([goose, 'version'], text=True, timeout=30).strip(),
+                  cc_version=subprocess.check_output([cc, '--version'], text=True, timeout=30).splitlines()[0],
                   compiler_revision=(ROOT / 'GOOSE_REVISION').read_text().strip(),
                   cpu_affinity=sorted(os.sched_getaffinity(0)), load_start=list(os.getloadavg()),
                   cpu_model=next((s.split(':', 1)[1].strip() for s in Path('/proc/cpuinfo').read_text().splitlines()
@@ -74,8 +76,17 @@ def measure(args):
         report.update(status='failed', error_kind=type(error).__name__)
         raise
     finally:
-        report.update(finished_at=datetime.now(timezone.utc).isoformat(), load_finish=list(os.getloadavg()))
-        args.output.write_text(json.dumps(report, indent=2) + '\n')
+        try:
+            if controller.adopted_cleanup():
+                report['status'] = 'failed'
+                raise RuntimeError('unexpected adopted child during final cleanup')
+        except BaseException as error:
+            report.update(status='failed', cleanup_error_kind=type(error).__name__)
+            raise
+        finally:
+            report.update(finished_at=datetime.now(timezone.utc).isoformat(), load_finish=list(os.getloadavg()))
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            args.output.write_text(json.dumps(report, indent=2) + '\n')
 
 
 def main():
