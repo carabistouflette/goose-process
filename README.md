@@ -78,6 +78,9 @@ Explicit `Input.Stream` with `io_step` and `close_stdin` supports bounded duplex
 input without a library payload queue. See [incremental input and the worker example](docs/INCREMENTAL-STDIN.md).
 The [sustained streaming evidence](bench/STREAM-SOAK.md) records a resident
 five-minute run, quiescent resource observations, profiles and their limits.
+The [incremental duplex validation](docs/DUPLEX-VALIDATION.md) adds a resident
+stdin soak and a [checked worker comparison](bench/duplex_compare/RESULTS.md)
+with Rust, Go and Python adapters, retained samples and explicit policy differences.
 Pipelines, PTYs, credential switching and Windows are outside the current scope.
 See [the Rust/Go/Python feature comparison](docs/COMPARISON.md).
 

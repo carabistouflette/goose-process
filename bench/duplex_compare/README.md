@@ -4,6 +4,8 @@ This track compares four implementations of one successful interactive protocol.
 It measures a whole checked worker session, not pure spawn time, individual
 request latency, whole-API feature parity or a general language/safety ranking.
 
+[Recorded sessions, profiles and limits](RESULTS.md) retain both complete series.
+
 From a standalone Linux checkout, after `make setup`, with GCC, installed Rust,
 Go and Python 3.11+:
 
