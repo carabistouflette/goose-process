@@ -37,6 +37,17 @@ concurrency proofs. The [pipeline route report](../bench/PIPELINES.md) retains a
 180 measured calls and 36 warmups with unchanged source/tool/binary identities,
 shared-host and short-run limitations, and no universal speed or memory claim.
 
+A credential-disabled anonymous HTTPS checkout of
+`141c8b38a7087592e3d356d14a4bd3a011b2495b` passed the complete GCC check/test
+suite and all four unmeasured benchmark protocol cells. Both checkout and fresh
+`GOOSE_HOME` paths contained spaces, using the existing exact pinned compiler;
+this is not a cold compiler-bootstrap claim. The tested tree stayed clean.
+The first standalone attempt exposed unquoted absolute helper arguments in Make;
+the quoted-path fix changed build/test invocations only and the fresh rerun passed.
+An independent evidence review matched every raw measurement and its source
+identities to the immutable measured commit, verified summary arithmetic and
+reported no publication blocker in the reviewed sources/docs.
+
 Hosted CI and final public-main identity are checked separately during publication;
 local validation does not imply a pending hosted run has succeeded.
 
