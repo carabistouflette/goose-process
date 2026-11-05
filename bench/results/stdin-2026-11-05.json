@@ -1,0 +1,340 @@
+{
+  "status": "complete",
+  "source_revision": "e6286440045a6ff30354c30d6a3c3f8e216b0c8c",
+  "hashes": {
+    "worker": "5a8bcb1fbedac4be65b3e89362829c2524730511371aef6f9a3e09a19db7d78c",
+    "driver": "84fbaad56e502136958aa558c72649b8591a4a05b42adce599aa2944a8d06040",
+    "goose": "9d37f42abee55079a179cda33b2c28c2879789135b37333c78654bb6ed536f2a",
+    "cc": "8aac907d6fbf40394b424b5fa4a2ad1aa291dac7d3a0315c5b415c1f5ace1287",
+    "script": "30614a6795fc456b1f7933b931dedf0ec12fa67c9f190f5b8ffe38b2b1cf2274",
+    "benchmark": "e0266215f599ed5de606dea0376257c5cf9705d9a389235a7fbdbeed9e7969cf",
+    "worker_source": "6db198b3f5300a7bfa401d76d9b08f7f08646dbf6c4996399cae76f629df4c9c",
+    "ownership_controller": "5b18a869d6b48320d09da329be76d992e083586cb4b43f47f01a354cf529b705",
+    "manifest": "fcd9c0c891670688898ace55dbf12da1a4b1c1b9178b4e4339fbaee1131649ab"
+  },
+  "timestamp": "2026-11-05T09:15:39.418032+00:00",
+  "platform": "Linux-7.2.11-arch1-1-x86_64-with-glibc2.44",
+  "cpu_affinity": [
+    0
+  ],
+  "load_start": [
+    4.2021484375,
+    4.0126953125,
+    4.5263671875
+  ],
+  "cpu_model": "Intel(R) Core(TM) Ultra 7 258V",
+  "compiler_revision": "eadca409f68210893f366e60d0c2f0dc29a339be",
+  "goose_version": "goose eadca40 (runtime 3025e5810379)",
+  "cc_version": "gcc (GCC) 16.2.1 20260810",
+  "flags": "worker -std=c11 -Wall -Wextra -Werror -O2; Goose --cc selected -O2",
+  "frames": 128,
+  "input_bytes": 524800,
+  "stdout_bytes": 524800,
+  "stderr_bytes": 512,
+  "output_cap_per_stream": 1048576,
+  "timeout_ms": 30000,
+  "rounds": 9,
+  "calls_per_cell": 5,
+  "seed": 20261105,
+  "samples": [
+    {
+      "round": 0,
+      "route": "incremental",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 4817218\n1 2224559\n2 2195002\n3 2257546\n4 2198547\n5 2191823\n",
+      "stderr": "",
+      "warmup_ns": 4817218,
+      "calls_ns": [
+        2224559,
+        2195002,
+        2257546,
+        2198547,
+        2191823
+      ]
+    },
+    {
+      "round": 0,
+      "route": "finite",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 5201587\n1 2318872\n2 2211962\n3 2232036\n4 2193702\n5 2172298\n",
+      "stderr": "",
+      "warmup_ns": 5201587,
+      "calls_ns": [
+        2318872,
+        2211962,
+        2232036,
+        2193702,
+        2172298
+      ]
+    },
+    {
+      "round": 1,
+      "route": "incremental",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 4436033\n1 2236688\n2 2084132\n3 2133433\n4 2017031\n5 2088428\n",
+      "stderr": "",
+      "warmup_ns": 4436033,
+      "calls_ns": [
+        2236688,
+        2084132,
+        2133433,
+        2017031,
+        2088428
+      ]
+    },
+    {
+      "round": 1,
+      "route": "finite",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 5011856\n1 2345967\n2 2330698\n3 2141511\n4 2126667\n5 2202246\n",
+      "stderr": "",
+      "warmup_ns": 5011856,
+      "calls_ns": [
+        2345967,
+        2330698,
+        2141511,
+        2126667,
+        2202246
+      ]
+    },
+    {
+      "round": 2,
+      "route": "incremental",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 4390810\n1 2406269\n2 2281447\n3 2302367\n4 2154988\n5 1982445\n",
+      "stderr": "",
+      "warmup_ns": 4390810,
+      "calls_ns": [
+        2406269,
+        2281447,
+        2302367,
+        2154988,
+        1982445
+      ]
+    },
+    {
+      "round": 2,
+      "route": "finite",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 5002968\n1 2223159\n2 2204224\n3 2127098\n4 2123811\n5 2193298\n",
+      "stderr": "",
+      "warmup_ns": 5002968,
+      "calls_ns": [
+        2223159,
+        2204224,
+        2127098,
+        2123811,
+        2193298
+      ]
+    },
+    {
+      "round": 3,
+      "route": "finite",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 4967929\n1 2268484\n2 2141685\n3 2129787\n4 2142930\n5 2068987\n",
+      "stderr": "",
+      "warmup_ns": 4967929,
+      "calls_ns": [
+        2268484,
+        2141685,
+        2129787,
+        2142930,
+        2068987
+      ]
+    },
+    {
+      "round": 3,
+      "route": "incremental",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 4377764\n1 2126615\n2 2073714\n3 2035212\n4 2171052\n5 2120241\n",
+      "stderr": "",
+      "warmup_ns": 4377764,
+      "calls_ns": [
+        2126615,
+        2073714,
+        2035212,
+        2171052,
+        2120241
+      ]
+    },
+    {
+      "round": 4,
+      "route": "incremental",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 4321408\n1 2072829\n2 2182929\n3 2111641\n4 2058106\n5 1990236\n",
+      "stderr": "",
+      "warmup_ns": 4321408,
+      "calls_ns": [
+        2072829,
+        2182929,
+        2111641,
+        2058106,
+        1990236
+      ]
+    },
+    {
+      "round": 4,
+      "route": "finite",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 5067919\n1 2227799\n2 2261072\n3 2107535\n4 2179314\n5 2103722\n",
+      "stderr": "",
+      "warmup_ns": 5067919,
+      "calls_ns": [
+        2227799,
+        2261072,
+        2107535,
+        2179314,
+        2103722
+      ]
+    },
+    {
+      "round": 5,
+      "route": "finite",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 4902827\n1 2192923\n2 2163647\n3 2138095\n4 2168713\n5 2173537\n",
+      "stderr": "",
+      "warmup_ns": 4902827,
+      "calls_ns": [
+        2192923,
+        2163647,
+        2138095,
+        2168713,
+        2173537
+      ]
+    },
+    {
+      "round": 5,
+      "route": "incremental",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 4410754\n1 2188365\n2 2118528\n3 2141021\n4 2099048\n5 2070935\n",
+      "stderr": "",
+      "warmup_ns": 4410754,
+      "calls_ns": [
+        2188365,
+        2118528,
+        2141021,
+        2099048,
+        2070935
+      ]
+    },
+    {
+      "round": 6,
+      "route": "finite",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 4915460\n1 2260545\n2 2135409\n3 2330146\n4 2088322\n5 2086763\n",
+      "stderr": "",
+      "warmup_ns": 4915460,
+      "calls_ns": [
+        2260545,
+        2135409,
+        2330146,
+        2088322,
+        2086763
+      ]
+    },
+    {
+      "round": 6,
+      "route": "incremental",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 4424224\n1 2167412\n2 2109283\n3 2139267\n4 2171896\n5 2142791\n",
+      "stderr": "",
+      "warmup_ns": 4424224,
+      "calls_ns": [
+        2167412,
+        2109283,
+        2139267,
+        2171896,
+        2142791
+      ]
+    },
+    {
+      "round": 7,
+      "route": "incremental",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 4398443\n1 2241102\n2 2140815\n3 2056901\n4 2130910\n5 1911857\n",
+      "stderr": "",
+      "warmup_ns": 4398443,
+      "calls_ns": [
+        2241102,
+        2140815,
+        2056901,
+        2130910,
+        1911857
+      ]
+    },
+    {
+      "round": 7,
+      "route": "finite",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 5278250\n1 2421662\n2 2356986\n3 2277324\n4 2295709\n5 2338265\n",
+      "stderr": "",
+      "warmup_ns": 5278250,
+      "calls_ns": [
+        2421662,
+        2356986,
+        2277324,
+        2295709,
+        2338265
+      ]
+    },
+    {
+      "round": 8,
+      "route": "finite",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 5059959\n1 2240800\n2 2261113\n3 2201636\n4 2142841\n5 2167699\n",
+      "stderr": "",
+      "warmup_ns": 5059959,
+      "calls_ns": [
+        2240800,
+        2261113,
+        2201636,
+        2142841,
+        2167699
+      ]
+    },
+    {
+      "round": 8,
+      "route": "incremental",
+      "passed": true,
+      "returncode": 0,
+      "stdout": "0 4762041\n1 2157554\n2 2100501\n3 2171728\n4 2105630\n5 2015741\n",
+      "stderr": "",
+      "warmup_ns": 4762041,
+      "calls_ns": [
+        2157554,
+        2100501,
+        2171728,
+        2105630,
+        2015741
+      ]
+    }
+  ],
+  "scope": "One shared-host successful bulk-input series, no exclusive-core claim. Same child bytes/status/captured outputs; synchronous copied Input.Bytes versus caller-driven Input.Stream. Input.Stream has no cumulative input cap; Input.Bytes does. Not complete safety-policy parity. One warmup per cell process retained separately; driver startup/build/batch construction excluded. Per-call timer includes public API calls, draining, reaping, byte validation and incremental close. Reusable capture buffers/Child. Not interactive-worker latency, memory evidence or a universal speed comparison.",
+  "controller_fds": [
+    4,
+    4
+  ],
+  "finished_at": "2026-11-05T09:15:39.802733+00:00",
+  "load_finish": [
+    4.42626953125,
+    4.0625,
+    4.5400390625
+  ]
+}
