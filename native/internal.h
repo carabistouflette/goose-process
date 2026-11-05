@@ -15,7 +15,7 @@ enum { GP_ARGS = 4096, GP_ARG_BYTES = 1048576, GP_ARG = 131071,
 enum { GP_IN_NULL, GP_IN_INHERIT, GP_IN_BYTES, GP_IN_FD, GP_IN_STREAM };
 enum { GP_OUT_DEFAULT, GP_OUT_CAPTURE, GP_OUT_INHERIT, GP_OUT_NULL,
        GP_OUT_MERGE, GP_OUT_FD, GP_OUT_STREAM };
-enum { GP_CONFIG_WORDS = 11, GP_CHILD_WORDS = 24 };
+enum { GP_CONFIG_WORDS = 11, GP_CHILD_WORDS = 24, GP_PIPE_WORDS = 55, GP_PIPE_META = 17 };
 
 typedef struct {
     int64_t timeout_ms, out_mode, err_mode, in_mode, out_fd, err_fd, in_fd;

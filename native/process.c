@@ -120,19 +120,22 @@ static int reap_ready(child *value) {
     }
     return 0;
 }
-static void finish(child *value) {
-    close_slot(&value->in_fd); close_slot(&value->out_fd); close_slot(&value->err_fd);
+static bool cancel_child(child *value) {
+    if (value->pid <= 0 || value->reaped) return false;
+    int sent = -1;
+    if (value->pidfd >= 0) {
+        do { sent = (int)syscall(SYS_pidfd_send_signal, (int)value->pidfd, SIGKILL, NULL, 0); }
+        while (sent < 0 && errno == EINTR);
+    }
+    if (sent < 0 && (value->pidfd < 0 || errno != ESRCH)) {
+        do { sent = kill((pid_t)value->pid, SIGKILL); } while (sent < 0 && errno == EINTR);
+    }
+    bool denied = sent < 0 && errno != ESRCH;
+    if (denied) { value->result = GP_SYSTEM; value->os_error = errno; }
+    return denied;
+}
+static void complete_child(child *value, bool denied) {
     if (value->pid > 0 && !value->reaped) {
-        int sent = -1;
-        if (value->pidfd >= 0) {
-            do { sent = (int)syscall(SYS_pidfd_send_signal, (int)value->pidfd, SIGKILL, NULL, 0); }
-            while (sent < 0 && errno == EINTR);
-        }
-        if (sent < 0 && (value->pidfd < 0 || errno != ESRCH)) {
-            do { sent = kill((pid_t)value->pid, SIGKILL); } while (sent < 0 && errno == EINTR);
-        }
-        bool denied = sent < 0 && errno != ESRCH;
-        if (denied) { value->result = GP_SYSTEM; value->os_error = errno; }
         int status; pid_t waited;
         do { waited = waitpid((pid_t)value->pid, &status, denied ? WNOHANG : 0); }
         while ((waited < 0 && errno == EINTR) ||
@@ -148,6 +151,11 @@ static void finish(child *value) {
     }
     close_slot(&value->pidfd);
     value->phase = 2;
+}
+static void finish(child *value) {
+    close_slot(&value->in_fd); close_slot(&value->out_fd); close_slot(&value->err_fd);
+    bool denied = cancel_child(value);
+    complete_child(value, denied);
 }
 
 static int make_input(int fds[2]);
@@ -165,18 +173,9 @@ static bool source_fd(int64_t mode, int64_t fd, int64_t fd_mode) {
     return mode == fd_mode ? fd >= 0 && fd <= INT_MAX : fd == -1;
 }
 
-int64_t gp_start(gp_input packed, gp_input cwd, gp_input sets, gp_input removes,
-    int64_t input_size, gp_metadata settings, gp_metadata storage, gp_metadata meta) {
-    if (!method_meta(storage, meta)) return GP_INVALID;
-    if (settings.len != GP_CONFIG_WORDS || !settings.data) return GP_INVALID;
-    gp_output inputs[] = {{(uint8_t *)packed.data, packed.len}, {(uint8_t *)cwd.data, cwd.len},
-        {(uint8_t *)sets.data, sets.len}, {(uint8_t *)removes.data, removes.len}, words(settings)};
-    for (size_t i = 0; i < sizeof inputs / sizeof inputs[0]; ++i)
-        if (overlaps(inputs[i], words(storage)) || overlaps(inputs[i], words(meta))) return GP_INVALID;
-    empty_meta(meta);
-    if (!gp_can_start(storage)) return GP_STATE;
-    gp_config config; memcpy(&config, settings.data, sizeof config);
-    if (config.timeout_ms < 0 || config.timeout_ms > 86400000 ||
+static bool start_config_valid(const gp_config *settings, int64_t input_size, gp_input cwd) {
+    gp_config config = *settings;
+    return !(config.timeout_ms < 0 || config.timeout_ms > 86400000 ||
         !route(config.out_mode, false) || !route(config.err_mode, true) ||
         config.in_mode < GP_IN_NULL || config.in_mode > GP_IN_STREAM ||
         !source_fd(config.in_mode, config.in_fd, GP_IN_FD) ||
@@ -189,9 +188,24 @@ int64_t gp_start(gp_input packed, gp_input cwd, gp_input sets, gp_input removes,
         input_size < 0 || input_size > GP_INPUT ||
         (config.in_mode != GP_IN_BYTES && input_size != 0) ||
         cwd.len < 0 || cwd.len > GP_PATH || (cwd.len && !cwd.data) ||
-        (cwd.len && memchr(cwd.data, 0, (size_t)cwd.len))) return GP_INVALID;
+        (cwd.len && memchr(cwd.data, 0, (size_t)cwd.len)));
+}
+
+static int64_t start_impl(gp_input packed, gp_input cwd, gp_input sets, gp_input removes,
+    int64_t input_size, gp_metadata settings, gp_metadata storage, gp_metadata meta,
+    const gp_command *prepared, int64_t deadline, bool defer_cleanup, int64_t owner) {
+    if (!method_meta(storage, meta)) return GP_INVALID;
+    if (settings.len != GP_CONFIG_WORDS || !settings.data) return GP_INVALID;
+    gp_output inputs[] = {{(uint8_t *)packed.data, packed.len}, {(uint8_t *)cwd.data, cwd.len},
+        {(uint8_t *)sets.data, sets.len}, {(uint8_t *)removes.data, removes.len}, words(settings)};
+    for (size_t i = 0; i < sizeof inputs / sizeof inputs[0]; ++i)
+        if (overlaps(inputs[i], words(storage)) || overlaps(inputs[i], words(meta))) return GP_INVALID;
+    empty_meta(meta);
+    if (!gp_can_start(storage)) return GP_STATE;
+    gp_config config; memcpy(&config, settings.data, sizeof config);
+    if (!start_config_valid(&config, input_size, cwd)) return GP_INVALID;
     child value = {0};
-    value.owner = (int64_t)(uintptr_t)storage.data; value.phase = 1;
+    value.owner = owner ? owner : (int64_t)(uintptr_t)storage.data; value.phase = 1;
     value.pid = value.pidfd = value.in_fd = value.out_fd = value.err_fd = -1;
     value.exit_code = -1; value.result = GP_SYSTEM;
     value.input_size = input_size;
@@ -213,18 +227,23 @@ int64_t gp_start(gp_input packed, gp_input cwd, gp_input sets, gp_input removes,
     for (int i = 0; i < 3; ++i)
         if (sources[i] >= 0 && fcntl((int)sources[i], F_GETFD) < 0) goto system_error;
     int preparation_error = 0;
-    int result = gp_command_prepare(packed, sets, removes, &config, &command, &preparation_error);
+    int result = GP_OK;
+    if (prepared) command = *prepared;
+    else result = gp_command_prepare(packed, sets, removes, &config, &command, &preparation_error);
     /* gp_command_prepare reports errno separately from classification. */
     if (result) {
         value.result = result;
         value.os_error = preparation_error;
         goto failed;
     }
-    int64_t began = gp_clock_ns();
-    if (began < 0) goto system_error;
-    int64_t budget = config.timeout_ms * 1000000;
-    if (began > INT64_MAX - budget) { errno = EOVERFLOW; goto system_error; }
-    value.deadline = config.timeout_ms ? began + budget : 0;
+    if (deadline) value.deadline = deadline;
+    else {
+        int64_t began = gp_clock_ns();
+        if (began < 0) goto system_error;
+        int64_t budget = config.timeout_ms * 1000000;
+        if (began > INT64_MAX - budget) { errno = EOVERFLOW; goto system_error; }
+        value.deadline = config.timeout_ms ? began + budget : 0;
+    }
     struct sigaction disposition;
     if (sigaction(SIGCHLD, NULL, &disposition) < 0) goto system_error;
     if (disposition.sa_handler == SIG_IGN || (disposition.sa_flags & SA_NOCLDWAIT)) {
@@ -303,7 +322,7 @@ int64_t gp_start(gp_input packed, gp_input cwd, gp_input sets, gp_input removes,
 system_error:
     value.result = GP_SYSTEM; value.os_error = errno;
 failed:
-    finish(&value);
+    if (!defer_cleanup) finish(&value);
 cleanup:
     if (attributes_ready) posix_spawnattr_destroy(&attributes);
     if (actions_ready) posix_spawn_file_actions_destroy(&actions);
@@ -312,9 +331,14 @@ cleanup:
     close_fd(&in_pipe[0]); close_fd(&in_pipe[1]);
     close_fd(&out_pipe[0]); close_fd(&out_pipe[1]);
     close_fd(&err_pipe[0]); close_fd(&err_pipe[1]);
-    gp_command_destroy(&command);
+    if (!prepared) gp_command_destroy(&command);
     int code = emit(&value, meta); store(storage, &value);
     return code;
+}
+
+int64_t gp_start(gp_input packed, gp_input cwd, gp_input sets, gp_input removes,
+    int64_t input_size, gp_metadata settings, gp_metadata storage, gp_metadata meta) {
+    return start_impl(packed, cwd, sets, removes, input_size, settings, storage, meta, NULL, 0, false, 0);
 }
 
 /* Finite input uses a one-way local socket, so MSG_NOSIGNAL can suppress
@@ -349,6 +373,33 @@ static int drain(int64_t *fd, gp_output target, int64_t *length, bool stream) {
     if (take_count && !stream) memcpy(target.data + *length, block, (size_t)take_count);
     *length += take_count;
     return count > remaining ? GP_LIMIT : GP_OK;
+}
+
+static int dispatch_ready(child *value, gp_input input, gp_output out, gp_output err,
+                          const struct pollfd fds[4]) {
+    for (int i = 0; i < 4; ++i)
+        if (fds[i].revents & POLLNVAL) { errno = EBADF; return GP_SYSTEM; }
+    value->ready = (fds[2].revents & (POLLIN | POLLHUP | POLLERR)) != 0;
+    for (int i = 0; i < 2; ++i) {
+        if (!(fds[i].revents & (POLLIN | POLLHUP | POLLERR))) continue;
+        int result = drain(i ? &value->err_fd : &value->out_fd,
+                           i ? err : out, i ? &value->err_size : &value->out_size,
+                           i ? value->err_stream : value->out_stream);
+        if (result == GP_SYSTEM) return GP_SYSTEM;
+        if (result == GP_LIMIT) return GP_LIMIT;
+    }
+    if (fds[3].revents & (POLLERR | POLLHUP)) close_slot(&value->in_fd);
+    else if (fds[3].revents & POLLOUT) {
+        int64_t count = value->input_size - value->input_sent;
+        if (count > 16384) count = 16384;
+        ssize_t written = send((int)value->in_fd, input.data + value->input_sent, (size_t)count, MSG_NOSIGNAL);
+        if (written > 0) {
+            value->input_sent += written;
+            if (value->input_sent == value->input_size && !value->in_stream) close_slot(&value->in_fd);
+        } else if (written < 0 && errno == EPIPE) close_slot(&value->in_fd);
+        else if (written < 0 && errno != EAGAIN && errno != EWOULDBLOCK && errno != EINTR) return GP_SYSTEM;
+    }
+    return GP_OK;
 }
 
 static void pump(child *value, gp_input input, gp_output out, gp_output err,
@@ -386,28 +437,9 @@ static void pump(child *value, gp_input input, gp_output out, gp_output err,
         int timeout = !one_step && !value->deadline ? -1 : wait_ms > INT_MAX ? INT_MAX : (int)wait_ms;
         int ready = poll(fds, 4, timeout);
         if (ready < 0) { if (errno == EINTR) continue; goto system_error; }
-        for (int i = 0; i < 4; ++i)
-            if (fds[i].revents & POLLNVAL) { errno = EBADF; goto system_error; }
-        value->ready = (fds[2].revents & (POLLIN | POLLHUP | POLLERR)) != 0;
-        for (int i = 0; i < 2; ++i) {
-            if (!(fds[i].revents & (POLLIN | POLLHUP | POLLERR))) continue;
-            int result = drain(i ? &value->err_fd : &value->out_fd,
-                               i ? err : out, i ? &value->err_size : &value->out_size,
-                               i ? value->err_stream : value->out_stream);
-            if (result == GP_SYSTEM) goto system_error;
-            if (result == GP_LIMIT) { value->result = GP_LIMIT; finish(value); return; }
-        }
-        if (fds[3].revents & (POLLERR | POLLHUP)) close_slot(&value->in_fd);
-        else if (fds[3].revents & POLLOUT) {
-            int64_t count = value->input_size - value->input_sent;
-            if (count > 16384) count = 16384;
-            ssize_t written = send((int)value->in_fd, input.data + value->input_sent, (size_t)count, MSG_NOSIGNAL);
-            if (written > 0) {
-                value->input_sent += written;
-                if (value->input_sent == value->input_size && !value->in_stream) close_slot(&value->in_fd);
-            } else if (written < 0 && errno == EPIPE) close_slot(&value->in_fd);
-            else if (written < 0 && errno != EAGAIN && errno != EWOULDBLOCK && errno != EINTR) goto system_error;
-        }
+        int dispatched = dispatch_ready(value, input, out, err, fds);
+        if (dispatched == GP_SYSTEM) goto system_error;
+        if (dispatched == GP_LIMIT) { value->result = GP_LIMIT; finish(value); return; }
         if (!one_step) continue;
         if (value->ready && reap_ready(value) < 0) goto system_error;
         if (value->reaped && value->out_fd < 0 && value->err_fd < 0) { finish(value); return; }
@@ -573,4 +605,253 @@ int64_t gp_run(gp_input packed, gp_input cwd, int64_t timeout_ms,
         0, 0, out.len, err.len};
     return gp_execute(packed, cwd, (gp_input){NULL, 0}, (gp_input){NULL, 0},
         (gp_input){NULL, 0}, (gp_metadata){settings, GP_CONFIG_WORDS}, out, err, meta);
+}
+
+/* Pipeline state is copied as a whole, while child owner tokens identify their
+   eventual slots in the noncopyable public owner's stable storage. */
+typedef struct {
+    int64_t owner, phase, deadline, first_launched, second_launched, result, os_error;
+    child first, second;
+} pipeline;
+_Static_assert(sizeof(pipeline) == GP_PIPE_WORDS * sizeof(int64_t), "pipeline ABI size");
+
+static bool pipeline_meta(gp_metadata storage, gp_metadata meta) {
+    return storage.len == GP_PIPE_WORDS && storage.data && meta.len == GP_PIPE_META && meta.data &&
+           !overlaps(words(storage), words(meta));
+}
+static void pipeline_empty_meta(gp_metadata meta) {
+    for (int i = 0; i < GP_PIPE_META; ++i) meta.data[i] = 0;
+    meta.data[4] = meta.data[10] = -1;
+}
+static bool pipeline_load(gp_metadata storage, pipeline *value) {
+    if (storage.len != GP_PIPE_WORDS || !storage.data) return false;
+    memcpy(value, storage.data, sizeof *value);
+    if (value->owner != (int64_t)(uintptr_t)storage.data || (value->phase != 1 && value->phase != 2)) return false;
+    const child *stages[] = {&value->first, &value->second};
+    size_t offsets[] = {offsetof(pipeline, first), offsetof(pipeline, second)};
+    for (int i = 0; i < 2; ++i) {
+        if (!stages[i]->phase) continue;
+        if ((stages[i]->phase != 1 && stages[i]->phase != 2) ||
+            stages[i]->owner != (int64_t)(uintptr_t)((uint8_t *)storage.data + offsets[i])) return false;
+    }
+    return true;
+}
+static void pipeline_store(gp_metadata storage, const pipeline *value) { memcpy(storage.data, value, sizeof *value); }
+int64_t gp_pipeline_can_start(gp_metadata storage) {
+    if (storage.len != GP_PIPE_WORDS || !storage.data) return 0;
+    bool empty = true;
+    for (int i = 0; i < GP_PIPE_WORDS; ++i) if (storage.data[i]) empty = false;
+    pipeline value;
+    return empty || (pipeline_load(storage, &value) && value.phase == 2);
+}
+static int pipeline_emit(pipeline *value, gp_metadata meta) {
+    pipeline_empty_meta(meta);
+    meta.data[0] = value->os_error;
+    child *stages[] = {&value->first, &value->second};
+    for (int i = 0; i < 2; ++i) {
+        meta.data[1 + i] = stages[i]->result;
+        gp_metadata target = {meta.data + (i ? 9 : 3), 6};
+        if (stages[i]->phase) emit(stages[i], target);
+        else target.data[0] = stages[i]->os_error;
+    }
+    meta.data[15] = value->first_launched; meta.data[16] = value->second_launched;
+    return (int)value->result;
+}
+static void pipeline_abort(pipeline *value, int cause, int error) {
+    value->result = cause; value->os_error = error;
+    child *stages[] = {&value->first, &value->second};
+    bool denied[2] = {false, false};
+    bool stage_cause = value->first.result != GP_OK || value->second.result != GP_OK;
+    for (int i = 0; i < 2; ++i) {
+        child *stage = stages[i];
+        if (stage->phase != 1) continue;
+        if (cause && !stage_cause && !stage->result) { stage->result = cause; stage->os_error = error; }
+        close_slot(&stage->in_fd); close_slot(&stage->out_fd); close_slot(&stage->err_fd);
+    }
+    /* Both cancellation requests precede either potentially blocking wait. */
+    for (int i = 0; i < 2; ++i)
+        if (stages[i]->phase == 1) denied[i] = cancel_child(stages[i]);
+    for (int i = 0; i < 2; ++i)
+        if (stages[i]->phase == 1) complete_child(stages[i], denied[i]);
+    for (int i = 0; i < 2; ++i) {
+        if (stages[i]->result != GP_SYSTEM) continue;
+        value->result = GP_SYSTEM; value->os_error = stages[i]->os_error; break;
+    }
+    value->phase = 2;
+}
+
+int64_t gp_pipeline_start(gp_input first_packed, gp_input first_cwd, gp_input first_sets, gp_input first_removes,
+    gp_input second_packed, gp_input second_cwd, gp_input second_sets, gp_input second_removes,
+    int64_t input_size, gp_metadata first_settings, gp_metadata second_settings,
+    gp_metadata storage, gp_metadata meta) {
+    if (!pipeline_meta(storage, meta) || first_settings.len != GP_CONFIG_WORDS || !first_settings.data ||
+        second_settings.len != GP_CONFIG_WORDS || !second_settings.data) return GP_INVALID;
+    gp_output inputs[] = {{(uint8_t *)first_packed.data, first_packed.len}, {(uint8_t *)first_cwd.data, first_cwd.len},
+        {(uint8_t *)first_sets.data, first_sets.len}, {(uint8_t *)first_removes.data, first_removes.len},
+        {(uint8_t *)second_packed.data, second_packed.len}, {(uint8_t *)second_cwd.data, second_cwd.len},
+        {(uint8_t *)second_sets.data, second_sets.len}, {(uint8_t *)second_removes.data, second_removes.len},
+        words(first_settings), words(second_settings)};
+    for (size_t i = 0; i < sizeof inputs / sizeof inputs[0]; ++i)
+        if (overlaps(inputs[i], words(storage)) || overlaps(inputs[i], words(meta))) return GP_INVALID;
+    pipeline_empty_meta(meta);
+    if (!gp_pipeline_can_start(storage)) return GP_STATE;
+    gp_config first, second;
+    memcpy(&first, first_settings.data, sizeof first); memcpy(&second, second_settings.data, sizeof second);
+    if (!start_config_valid(&first, input_size, first_cwd) || !start_config_valid(&second, 0, second_cwd) ||
+        first.timeout_ms < 1 || first.timeout_ms != second.timeout_ms ||
+        first.out_mode != GP_OUT_CAPTURE || first.err_mode != GP_OUT_CAPTURE ||
+        (first.in_mode != GP_IN_NULL && first.in_mode != GP_IN_BYTES) ||
+        second.in_mode != GP_IN_NULL || second.out_mode != GP_OUT_CAPTURE || second.err_mode != GP_OUT_CAPTURE)
+        return GP_INVALID;
+    pipeline value = {0};
+    value.owner = (int64_t)(uintptr_t)storage.data; value.phase = 1;
+    gp_command commands[2] = {{0}, {0}};
+    int connection[2] = {-1, -1};
+    int64_t began = gp_clock_ns();
+    if (began < 0) { pipeline_abort(&value, GP_SYSTEM, errno); goto cleanup; }
+    if (began > INT64_MAX - first.timeout_ms * 1000000) {
+        pipeline_abort(&value, GP_SYSTEM, EOVERFLOW); goto cleanup;
+    }
+    value.deadline = began + first.timeout_ms * 1000000;
+    int preparation_error = 0;
+    int code = gp_command_prepare(first_packed, first_sets, first_removes, &first, &commands[0], &preparation_error);
+    if (code) {
+        value.first.result = code; value.first.os_error = preparation_error;
+        pipeline_abort(&value, code, preparation_error); goto cleanup;
+    }
+    code = gp_command_prepare(second_packed, second_sets, second_removes, &second, &commands[1], &preparation_error);
+    if (code) {
+        value.second.result = code; value.second.os_error = preparation_error;
+        pipeline_abort(&value, code, preparation_error); goto cleanup;
+    }
+    if (pipe2(connection, O_CLOEXEC) < 0) { pipeline_abort(&value, GP_SYSTEM, errno); goto cleanup; }
+    connection[0] = promote(connection[0]);
+    if (connection[0] < 0) { pipeline_abort(&value, GP_SYSTEM, errno); goto cleanup; }
+    connection[1] = promote(connection[1]);
+    if (connection[1] < 0) { pipeline_abort(&value, GP_SYSTEM, errno); goto cleanup; }
+    second.in_mode = GP_IN_FD; second.in_fd = connection[0];
+    int64_t scratch[6];
+    gp_metadata second_state = {(int64_t *)&value.second, GP_CHILD_WORDS};
+    code = (int)start_impl(second_packed, second_cwd, second_sets, second_removes, 0,
+        (gp_metadata){(int64_t *)&second, GP_CONFIG_WORDS}, second_state, (gp_metadata){scratch, 6},
+        &commands[1], value.deadline, true,
+        (int64_t)(uintptr_t)((uint8_t *)storage.data + offsetof(pipeline, second)));
+    value.second_launched = value.second.pid > 0;
+    close_fd(&connection[0]);
+    if (code) { close_fd(&connection[1]); pipeline_abort(&value, code, value.second.os_error); goto cleanup; }
+    first.out_mode = GP_OUT_FD; first.out_fd = connection[1];
+    gp_metadata first_state = {(int64_t *)&value.first, GP_CHILD_WORDS};
+    code = (int)start_impl(first_packed, first_cwd, first_sets, first_removes, input_size,
+        (gp_metadata){(int64_t *)&first, GP_CONFIG_WORDS}, first_state, (gp_metadata){scratch, 6},
+        &commands[0], value.deadline, true,
+        (int64_t)(uintptr_t)((uint8_t *)storage.data + offsetof(pipeline, first)));
+    value.first_launched = value.first.pid > 0;
+    close_fd(&connection[1]);
+    if (code) pipeline_abort(&value, code, value.first.os_error);
+    else {
+        int64_t now = gp_clock_ns();
+        if (now < 0) pipeline_abort(&value, GP_SYSTEM, errno);
+        else if (now >= value.deadline) pipeline_abort(&value, GP_TIMEOUT, 0);
+    }
+cleanup:
+    close_fd(&connection[0]); close_fd(&connection[1]);
+    gp_command_destroy(&commands[0]); gp_command_destroy(&commands[1]);
+    int result = pipeline_emit(&value, meta); pipeline_store(storage, &value);
+    return result;
+}
+
+static int pipeline_settle(pipeline *value) {
+    child *stages[] = {&value->first, &value->second};
+    for (int i = 0; i < 2; ++i) {
+        child *stage = stages[i];
+        if (stage->phase != 1) continue;
+        if (!stage->reaped && stage->ready && reap_ready(stage) < 0) {
+            stage->result = GP_SYSTEM; stage->os_error = errno; return GP_SYSTEM;
+        }
+        if (stage->reaped && stage->out_fd < 0 && stage->err_fd < 0) finish(stage);
+    }
+    if (value->first.phase == 2 && value->second.phase == 2) value->phase = 2;
+    return GP_OK;
+}
+static void pipeline_pump(pipeline *value, gp_input input, gp_output out, gp_output first_err,
+                          gp_output second_err, int64_t slice_ms, bool one_step) {
+    out.len = value->second.out_limit;
+    first_err.len = value->first.err_limit;
+    second_err.len = value->second.err_limit;
+    int64_t slice_deadline = 0;
+    if (one_step) {
+        int64_t now = gp_clock_ns();
+        if (now < 0) { pipeline_abort(value, GP_SYSTEM, errno); return; }
+        if (now > INT64_MAX - slice_ms * 1000000) { pipeline_abort(value, GP_SYSTEM, EOVERFLOW); return; }
+        slice_deadline = now + slice_ms * 1000000;
+    }
+    bool polled = false;
+    for (;;) {
+        if (pipeline_settle(value)) { pipeline_abort(value, GP_SYSTEM, errno); return; }
+        if (value->phase == 2) return;
+        int64_t now = gp_clock_ns();
+        if (now < 0) { pipeline_abort(value, GP_SYSTEM, errno); return; }
+        if (now >= value->deadline) { pipeline_abort(value, GP_TIMEOUT, 0); return; }
+        if (one_step && polled && now >= slice_deadline) return;
+        int64_t remaining = value->deadline - now;
+        if (one_step && slice_deadline - now < remaining) remaining = slice_deadline > now ? slice_deadline - now : 0;
+        int64_t wait_ms = remaining / 1000000 + (remaining % 1000000 != 0);
+        struct pollfd fds[6] = {
+            {(int)value->first.err_fd, POLLIN, 0}, {(int)value->second.out_fd, POLLIN, 0},
+            {(int)value->second.err_fd, POLLIN, 0}, {(int)value->first.pidfd, POLLIN, 0},
+            {(int)value->second.pidfd, POLLIN, 0}, {(int)value->first.in_fd, POLLOUT, 0}
+        };
+        polled = true;
+        int ready = poll(fds, 6, wait_ms > INT_MAX ? INT_MAX : (int)wait_ms);
+        if (ready < 0) { if (errno == EINTR) continue; pipeline_abort(value, GP_SYSTEM, errno); return; }
+        struct pollfd first[4] = {{-1, 0, 0}, fds[0], fds[3], fds[5]};
+        struct pollfd second[4] = {fds[1], fds[2], fds[4], {-1, 0, 0}};
+        int code = dispatch_ready(&value->first, input, (gp_output){NULL, 0}, first_err, first);
+        if (code) {
+            value->first.result = code; value->first.os_error = code == GP_SYSTEM ? errno : 0;
+            pipeline_abort(value, code, value->first.os_error); return;
+        }
+        code = dispatch_ready(&value->second, (gp_input){NULL, 0}, out, second_err, second);
+        if (code) {
+            value->second.result = code; value->second.os_error = code == GP_SYSTEM ? errno : 0;
+            pipeline_abort(value, code, value->second.os_error); return;
+        }
+        if (pipeline_settle(value)) { pipeline_abort(value, GP_SYSTEM, errno); return; }
+        if (value->phase == 2) return;
+        now = gp_clock_ns();
+        if (now < 0) { pipeline_abort(value, GP_SYSTEM, errno); return; }
+        if (now >= value->deadline) { pipeline_abort(value, GP_TIMEOUT, 0); return; }
+        if (one_step) return;
+    }
+}
+
+int64_t gp_pipeline_wait(gp_metadata storage, gp_input input, gp_output out,
+    gp_output first_err, gp_output second_err, int64_t slice_ms, int64_t one_step,
+    gp_metadata meta, int64_t *done) {
+    if (!pipeline_meta(storage, meta) || !done || !buffer(out) || !buffer(first_err) || !buffer(second_err) ||
+        input.len < 0 || input.len > GP_INPUT || (input.len && !input.data) ||
+        slice_ms < 0 || slice_ms > 86400000 || (one_step != 0 && one_step != 1)) return GP_INVALID;
+    gp_output spans[] = {out, first_err, second_err, {(uint8_t *)input.data, input.len},
+                         {(uint8_t *)done, sizeof *done}, words(storage), words(meta)};
+    for (size_t i = 0; i < sizeof spans / sizeof spans[0]; ++i)
+        for (size_t j = i + 1; j < sizeof spans / sizeof spans[0]; ++j)
+            if (overlaps(spans[i], spans[j])) return GP_INVALID;
+    pipeline_empty_meta(meta);
+    pipeline value;
+    if (!pipeline_load(storage, &value)) return GP_STATE;
+    if (value.phase == 1 && (input.len != value.first.input_size || out.len < value.second.out_limit ||
+                            first_err.len < value.first.err_limit || second_err.len < value.second.err_limit)) return GP_INVALID;
+    if (value.phase == 1) pipeline_pump(&value, input, out, first_err, second_err, slice_ms, one_step != 0);
+    *done = value.phase == 2;
+    int result = pipeline_emit(&value, meta); pipeline_store(storage, &value);
+    return result;
+}
+int64_t gp_pipeline_close(gp_metadata storage, gp_metadata meta) {
+    if (!pipeline_meta(storage, meta)) return GP_INVALID;
+    pipeline_empty_meta(meta);
+    pipeline value;
+    if (!pipeline_load(storage, &value)) return gp_pipeline_can_start(storage) ? GP_OK : GP_STATE;
+    if (value.phase == 1) pipeline_abort(&value, GP_OK, 0);
+    int result = pipeline_emit(&value, meta); pipeline_store(storage, &value);
+    return result;
 }
