@@ -66,6 +66,18 @@ int main(int argc, char **argv) {
     } else if (!strcmp(argv[1], "cwd")) {
         char path[4096]; if (!getcwd(path, sizeof path)) return 96;
         emit(1, path, strlen(path));
+    } else if (!strcmp(argv[1], "binary-streams")) {
+        long n = argc > 2 ? atol(argv[2]) : 0, offset = 0;
+        unsigned char out[4096], err[4096];
+        while (offset < n) {
+            size_t take = n - offset < (long)sizeof out ? (size_t)(n - offset) : sizeof out;
+            for (size_t i = 0; i < take; ++i) {
+                long position = offset + (long)i;
+                out[i] = (unsigned char)(position * 17 + position / 251);
+                err[i] = (unsigned char)(255 - out[i]);
+            }
+            emit(1, out, take); emit(2, err, take); offset += (long)take;
+        }
     } else if (!strcmp(argv[1], "streams")) {
         long n = argc > 2 ? atol(argv[2]) : 0;
         char block[4096], errors[4096];
