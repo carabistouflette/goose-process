@@ -43,7 +43,7 @@ def main():
             raise ValueError('profile compiler identities differ from soak')
         directory = ROOT / '.build/stream-soak-profile'; directory.mkdir(exist_ok=True)
         binary = directory / 'driver'
-        shutil.copyfile(helper, directory / 'helper')
+        shutil.copy2(helper, directory / 'helper')
         helper = directory / 'helper'
         controller.command([goose, 'build', ROOT / 'bench/stream_soak.goose', '--cc', cc, '-O2', '-o', binary])
         if controller.adopted_cleanup():
