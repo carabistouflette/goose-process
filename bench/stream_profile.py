@@ -40,7 +40,8 @@ def main():
                   scope='Two separate 12-case resident public-API profiles, not timing evidence. '
                   'Parent-only strace (no -f); child executable work excluded. '
                   'Memcheck sees native heap/access errors but does not fully account for Goose mmap-backed ownership/storage. '
-                  'No absence-of-bugs, peak-memory, throughput or equal-policy comparison claim.', runs=[])
+                  'No absence-of-bugs, peak-memory, throughput or equal-policy comparison claim. '
+                  'Published text replaces only the checkout prefix with <source>; original local logs retain raw hashes.', runs=[])
     configs = [
         ('strace', [strace, '-c', '-o', ROOT / '.build/stream-strace.txt', '-e',
                     'trace=read,poll,wait4,pipe2,socketpair,sendto,close,pidfd_open,pidfd_send_signal', binary]),
@@ -56,10 +57,11 @@ def main():
             code, output, errors = controller.run_owned(command, input_bytes=b'next\n' * 12 + b'stop\n',
                                                          timeout=180, stderr=subprocess.PIPE)
             sample.update(returncode=code, stdout=output.decode('ascii', errors='replace'),
-                          stderr=errors.decode('utf-8', errors='replace'))
+                          stderr=errors.decode('utf-8', errors='replace').replace(str(ROOT), '<source>'))
             log = ROOT / ('.build/stream-' + name + '.txt')
-            sample['log'] = log.read_text()
-            sample['log_sha256'] = digest(log)
+            sample['log'] = log.read_text().replace(str(ROOT), '<source>')
+            sample['raw_log_sha256'] = digest(log)
+            sample['log_sha256'] = hashlib.sha256(sample['log'].encode()).hexdigest()
             lines = output.splitlines()
             if code or len(lines) != 14 or lines[0] != b'ready' or lines[-1] != b'stopped 12':
                 raise RuntimeError('instrumented driver failed its fixed protocol')
