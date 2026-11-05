@@ -126,6 +126,25 @@ fn main() {
         else { assert(current.status.error == process::Error.None); }
     }
     assert(process::stderr(child).len == 0 && process::id(child) == -1);
+    result = process::start([helper, "bytes"], process::Options {
+        stdout: process::Output.Stream, stderr: process::Output.Null, stdin: process::Input.Stream,
+    }, child);
+    assert(result.error == process::Error.None);
+    var reaped = false;
+    while !reaped {
+        let observed, complete = process::try_wait(child);
+        assert(observed.error == process::Error.None); reaped = complete;
+    }
+    assert(process::id(child) == -1);
+    done = false; received = 0;
+    while !done {
+        let current = process::io_step(child, input[..], out[..], empty[..], 20);
+        assert(current.status.error == process::Error.None && !current.input_open && current.input_accepted == 0);
+        for i in current.stdout_count { assert(out[i] == (received + i) as u8); }
+        received += current.stdout_count; done = current.done;
+        if done { assert(process::success(current.status)); }
+    }
+    assert(received == 256);
     result = process::start([helper, "close-input"], process::Options {
         stdout: process::Output.Stream, stderr: process::Output.Null, stdin: process::Input.Stream,
     }, child);
