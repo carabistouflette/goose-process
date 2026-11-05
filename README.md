@@ -73,6 +73,8 @@ socket byte stream; use FD routing for programs requiring a real pipe or live
 output. Active child handles require wait/step/close; there is no automatic cleanup.
 Explicit `Output.Stream` with `stream_step` supports bounded caller-buffer live
 processing, including mixed capture. See the [streaming contract](docs/API.md#bounded-live-output).
+The [sustained streaming evidence](bench/STREAM-SOAK.md) records a resident
+five-minute run, quiescent resource observations, profiles and their limits.
 Pipelines, PTYs, credential switching and Windows are outside the current scope.
 See [the Rust/Go/Python feature comparison](docs/COMPARISON.md).
 

@@ -1,5 +1,9 @@
 # Process benchmark
 
+For the resident streaming resource/latency soak and separate instrumented
+profiles, see [the sustained streaming evidence](STREAM-SOAK.md). It retains the
+full measured run and failed profiler attempts without a general speed claim.
+
 For the checked Rust/Go/Python successful-workload comparison, see
 [the comparative harness and its contract differences](compare/README.md).
 Its [recorded results](compare/RESULTS.md) include checked Rust/Go/Python/Goose

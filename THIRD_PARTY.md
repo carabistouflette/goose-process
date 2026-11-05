@@ -15,7 +15,9 @@ Development setup downloads the upstream
 in `GOOSE_REVISION`. Compiler sources/builds live in ignored `.toolchain/` and
 are not part of the published library. Runtime process operations use the host
 Linux kernel and glibc. Tests/benchmarks additionally invoke host tools such as
-the C compiler, Python, `/bin/true` and `/bin/sleep`; profiling uses `strace`.
+the C compiler, Python, `/bin/true` and `/bin/sleep`; optional profiling uses
+`strace`, Valgrind/Memcheck and Callgrind. Their generated reports are retained
+as evidence; tool executables are not bundled.
 Those dependencies retain their respective licenses and are not redistributed
 by this repository.
 
