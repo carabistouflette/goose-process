@@ -63,6 +63,7 @@ test: helpers
 	./.build/stdin-debug
 	$(GOOSE) run examples/command.goose
 	$(GOOSE) run examples/compiler.goose
+	python3 tests/worker.py .build/worker
 	$(GOOSE) build examples/worker.goose --cc $(CC) -O2 -o .build/worker-client
 	./.build/worker-client
 	$(GOOSE) build examples/worker.goose --cc $(CC) --debug --no-bce -o .build/worker-client-debug
@@ -95,6 +96,8 @@ native: helpers
 	$(CC) $(CFLAGS) -O2 -shared -fPIC tests/validation.c $(NATIVE_SOURCES) -Wl,--wrap=posix_spawn -Wl,--wrap=clock_gettime -o .build/validation.so
 	python3 tests/validation.py
 sanitize: helpers
+	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie examples/worker.c -o .build/worker-sanitize
+	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 tests/worker.py .build/worker-sanitize
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/stdin.c $(NATIVE_SOURCES) -Wl,--wrap=send,--wrap=clock_gettime,--wrap=poll,--wrap=__poll_chk -o .build/stdin-sanitize
 	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/stdin-sanitize
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/stream.c $(NATIVE_SOURCES) -Wl,--wrap=read -o .build/stream-sanitize
