@@ -37,15 +37,9 @@ def artifacts(directory, recorded):
     return result
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--before', type=Path, required=True); parser.add_argument('--after', type=Path, required=True)
-    parser.add_argument('--before-directory', type=Path, required=True)
-    parser.add_argument('--after-directory', type=Path, required=True)
-    parser.add_argument('--output', type=Path, default=ROOT / '.build/duplex-paired.json')
-    args = parser.parse_args()
+def measure(args, report):
     if shared.controller.git('status', '--porcelain'):
-        parser.error('commit sources before timing')
+        raise ValueError('commit sources before timing')
     records = {phase: json.loads(path.read_text()) for phase, path in [('before', args.before), ('after', args.after)]}
     if any(record['status'] != 'complete' for record in records.values()):
         raise ValueError('both shared-engine measurements must be complete')
@@ -63,7 +57,7 @@ def main():
     hashes = {name: shared.digest(path) for name, path in inputs.items()}
     shared.controller.controller_scope()
     fds = len(list(Path('/proc/self/fd').iterdir()))
-    report = dict(status='incomplete', source_revision=shared.controller.git('rev-parse', 'HEAD'),
+    report.update(status='incomplete', source_revision=shared.controller.git('rev-parse', 'HEAD'),
                   timestamp=datetime.now(timezone.utc).isoformat(), hashes=hashes,
                   phases={phase: dict(source_revision=r['source_revision'], hashes=r['hashes'],
                                       native_object_pairs=r['native_object_pairs'], versions=r['versions'])
@@ -75,32 +69,44 @@ def main():
                   'Same128framed requests/31or4096payload/stdout257/stderr3/30s native budget. '
                   'Whole checked-session wall times exclude driver startup/frame construction; auxiliary CPU includes startup/worker. '
                   'Shared host, no exclusive isolation, no general speed/memory/safety ranking or independent kernel correctness proof.')
+    cells = [(phase, language, size) for phase in ['before', 'after'] for language in ['goose', 'rust'] for size in [31, 4096]]
+    rng = random.Random(report['seed'])
+    for round_number in range(9):
+        order = cells.copy(); rng.shuffle(order)
+        for order_index, (phase, language, size) in enumerate(order):
+            sample = dict(round=round_number, order=order_index, phase=phase, language=language,
+                          payload_size=size, warmup=None, calls=[], passed=False)
+            report['samples'].append(sample)
+            report['active_invocation'] = dict(round=round_number, order=order_index, phase=phase,
+                                               language=language, payload_size=size, kind='warmup', call_index=0)
+            command, worker = [binaries[phase]['binary_' + language]], binaries['before']['worker']
+            sample['warmup'] = shared.base.checked(command, worker, size)
+            for call_index in range(5):
+                report['active_invocation'].update(kind='measured', call_index=call_index)
+                sample['calls'].append(shared.base.checked(command, worker, size))
+            sample['passed'] = True
+    report.pop('active_invocation', None)
+    if hashes != {name: shared.digest(path) for name, path in inputs.items()}:
+        raise RuntimeError('paired artifact/script/record changed')
+    if shared.controller.git('status', '--porcelain') or shared.controller.git('rev-parse', 'HEAD') != report['source_revision']:
+        raise RuntimeError('paired source changed')
+    report['controller_fds'] = [fds, len(list(Path('/proc/self/fd').iterdir()))]
+    if report['controller_fds'] != [fds, fds]:
+        raise RuntimeError('paired controller descriptor growth')
+    report['status'] = 'complete'
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--before', type=Path, required=True); parser.add_argument('--after', type=Path, required=True)
+    parser.add_argument('--before-directory', type=Path, required=True)
+    parser.add_argument('--after-directory', type=Path, required=True)
+    parser.add_argument('--output', type=Path, default=ROOT / '.build/duplex-paired.json')
+    args = parser.parse_args()
+    report = dict(status='incomplete', timestamp=datetime.now(timezone.utc).isoformat(), samples=[])
     try:
-        cells = [(phase, language, size) for phase in ['before', 'after'] for language in ['goose', 'rust'] for size in [31, 4096]]
-        rng = random.Random(report['seed'])
-        for round_number in range(9):
-            order = cells.copy(); rng.shuffle(order)
-            for order_index, (phase, language, size) in enumerate(order):
-                sample = dict(round=round_number, order=order_index, phase=phase, language=language,
-                              payload_size=size, warmup=None, calls=[], passed=False)
-                report['samples'].append(sample)
-                report['active_invocation'] = dict(round=round_number, order=order_index, phase=phase,
-                                                   language=language, payload_size=size, kind='warmup', call_index=0)
-                command, worker = [binaries[phase]['binary_' + language]], binaries['before']['worker']
-                sample['warmup'] = shared.base.checked(command, worker, size)
-                for call_index in range(5):
-                    report['active_invocation'].update(kind='measured', call_index=call_index)
-                    sample['calls'].append(shared.base.checked(command, worker, size))
-                sample['passed'] = True
-        report.pop('active_invocation', None)
-        if hashes != {name: shared.digest(path) for name, path in inputs.items()}:
-            raise RuntimeError('paired artifact/script/record changed')
-        if shared.controller.git('status', '--porcelain') or shared.controller.git('rev-parse', 'HEAD') != report['source_revision']:
-            raise RuntimeError('paired source changed')
-        report['controller_fds'] = [fds, len(list(Path('/proc/self/fd').iterdir()))]
-        if report['controller_fds'] != [fds, fds]:
-            raise RuntimeError('paired controller descriptor growth')
-        report['status'] = 'complete'
+        report['source_revision'] = shared.controller.git('rev-parse', 'HEAD')
+        measure(args, report)
     except BaseException as error:
         report.update(status='failed', error_kind=type(error).__name__, error=str(error))
         if isinstance(error, shared.base.InvocationFailed): report['failed_invocation'] = error.result
