@@ -203,6 +203,8 @@ def measure(args):
                 report['adopted_cleanup_count'] = controller.adopted_cleanup()
             if report['adopted_cleanup_count']:
                 raise RuntimeError('controller found an adopted fixture')
+            if len(list(Path('/proc/self/fd').iterdir())) != controller_before:
+                raise RuntimeError('controller retained descriptors')
         except BaseException as error:
             report.update(status='failed', cleanup_error_kind=type(error).__name__)
             raise

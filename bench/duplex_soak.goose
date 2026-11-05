@@ -47,7 +47,7 @@ fn main() {
         assert(status.error == process::Error.None);
         var sent:         i64 = 0; var received: i64 = 0; var errors: i64 = 0; var calls: i64 = 0;
         var empty_offers: i64 = 0; var idle_accepts: i64 = 0; var signaled = false;
-        var closed = false; var done = false;
+        var closed = false; var done = false; var peer_closed = false;
         if kind == 0 {
             // One live worker handles >1MiB. Validate before reusing each frame.
             let ack = "ack\x00";
@@ -89,6 +89,10 @@ fn main() {
             let progress = process::io_step(child, offer, out[..chunk(seed)],
                 if kind == 5 { empty[..] } else { err[..chunk(seed)] }, 20);
             assert(progress.input_accepted >= 0 && progress.input_accepted <= offer.len && progress.input_accepted <= 16384);
+            if kind == 2 {
+                if peer_closed { assert(!progress.input_open && progress.input_accepted == 0); }
+                if !progress.input_open { peer_closed = true; }
+            }
             if offer.len == 0 { empty_offers += 1; assert(progress.input_accepted == 0); }
             if offer.len > 0 && progress.input_accepted == 0 { idle_accepts += 1; }
             for i in progress.stdout_count {
