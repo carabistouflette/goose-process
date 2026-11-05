@@ -16,6 +16,16 @@
 static bool fail_after_send, clock_failed, inspect_idle;
 static ssize_t accepted;
 static int idle_polls;
+static bool deny_reap_once;
+static pid_t tested_pid;
+static int wait_denials;
+pid_t __real_waitpid(pid_t pid, int *status, int flags);
+pid_t __wrap_waitpid(pid_t pid, int *status, int flags) {
+    if (clock_failed && deny_reap_once && pid == tested_pid) {
+        deny_reap_once = false; ++wait_denials; errno = EIO; return -1;
+    }
+    return __real_waitpid(pid, status, flags);
+}
 int __real_clock_gettime(clockid_t clock, struct timespec *value);
 int __wrap_clock_gettime(clockid_t clock, struct timespec *value) {
     if (clock_failed) { errno = EIO; return -1; }
@@ -85,6 +95,22 @@ int main(void) {
     assert(progress[0] && progress[1] == 0 && !progress[2]);
     assert(gp_close_stdin(words(state, 24), words(meta, 6)) == 3);
     assert(gp_close(words(state, 24), words(meta, 6)) == 3 && meta[5] == 0);
+    /* A targeted denied terminal wait transfers this child exactly once while
+       preserving accepted-byte accounting. The local recovery owner reaps it. */
+    assert(gp_start((gp_input){command, sizeof command - 1}, empty(), empty(), empty(), 0,
+                    words(config, 11), words(state, 24), words(meta, 6)) == 0);
+    tested_pid = (pid_t)gp_id(words(state, 24)); assert(tested_pid > 0);
+    deny_reap_once = true; fail_after_send = true; accepted = 0;
+    code = (int)gp_io_step(words(state, 24), (gp_input){input, sizeof input}, none, none, 20,
+                           words(meta, 6), words(progress, 3));
+    clock_failed = false; fail_after_send = false;
+    assert(code == 3 && wait_denials == 1 && meta[5] == tested_pid);
+    assert(accepted > 0 && progress[1] == accepted && progress[0] && !progress[2]);
+    assert(gp_close(words(state, 24), words(meta, 6)) == 3 && meta[5] == 0);
+    int terminal; pid_t recovered;
+    do { recovered = waitpid(tested_pid, &terminal, 0); } while (recovered < 0 && errno == EINTR);
+    assert(recovered == tested_pid && (WIFSIGNALED(terminal) || WIFEXITED(terminal)));
+    errno = 0; assert(waitpid(tested_pid, NULL, WNOHANG) == -1 && errno == ECHILD);
     assert(descriptors() == before);
     puts("streaming stdin accepted-byte, idle-poll and cleanup fault tests passed");
     return 0;

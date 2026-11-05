@@ -73,7 +73,7 @@ test: helpers
 	python3 bench/stream_soak.py --goose "$(GOOSE)" --cc "$(CC)" --seconds 1 --smoke --output .build/stream-soak-smoke.json
 	$(MAKE) native
 native: helpers
-	$(CC) $(CFLAGS) -O2 tests/stdin.c $(NATIVE_SOURCES) -Wl,--wrap=send,--wrap=clock_gettime,--wrap=poll,--wrap=__poll_chk -o .build/stdin-native
+	$(CC) $(CFLAGS) -O2 tests/stdin.c $(NATIVE_SOURCES) -Wl,--wrap=send,--wrap=clock_gettime,--wrap=poll,--wrap=__poll_chk,--wrap=waitpid -o .build/stdin-native
 	python3 scripts/run.py .build/stdin-native
 	$(CC) $(CFLAGS) -O2 tests/stream.c $(NATIVE_SOURCES) -Wl,--wrap=read -o .build/stream-native
 	python3 scripts/run.py .build/stream-native
@@ -98,7 +98,7 @@ native: helpers
 sanitize: helpers
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie examples/worker.c -o .build/worker-sanitize
 	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 tests/worker.py .build/worker-sanitize
-	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/stdin.c $(NATIVE_SOURCES) -Wl,--wrap=send,--wrap=clock_gettime,--wrap=poll,--wrap=__poll_chk -o .build/stdin-sanitize
+	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/stdin.c $(NATIVE_SOURCES) -Wl,--wrap=send,--wrap=clock_gettime,--wrap=poll,--wrap=__poll_chk,--wrap=waitpid -o .build/stdin-sanitize
 	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/stdin-sanitize
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/stream.c $(NATIVE_SOURCES) -Wl,--wrap=read -o .build/stream-sanitize
 	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/stream-sanitize
