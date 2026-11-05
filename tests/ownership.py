@@ -18,6 +18,11 @@ CASES = {
     let view = process::stdout(child);
     let finished = process::wait(child);
     print(view, started.error, finished.error);''', 'shrinks'),
+    'stdin_view': ('''let started = process::start(["/bin/cat"], process::Options { stdin: process::Input.Stream }, child);
+    let view = process::stdout(child);
+    var empty: u8[0] = [];
+    let progress = process::io_step(child, "", empty[..], empty[..]);
+    print(view, started.error, progress.status.error);''', 'shrinks'),
 }
 for name, (body, diagnostic) in CASES.items():
     path = ROOT / '.build' / f'reject-{name}.goose'
@@ -25,4 +30,4 @@ for name, (body, diagnostic) in CASES.items():
     result = subprocess.run([sys.argv[1], 'check', str(path)], capture_output=True, text=True, timeout=30)
     assert result.returncode != 0, f'{name}: unsafe ownership unexpectedly accepted'
     assert diagnostic in result.stderr, result.stderr
-print('3 resource ownership rejection cases passed')
+print(f'{len(CASES)} resource ownership rejection cases passed')
