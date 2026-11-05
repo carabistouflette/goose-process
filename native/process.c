@@ -422,7 +422,7 @@ system_error:
 
 static int wait_impl(gp_metadata storage, gp_input input, gp_output out, gp_output err,
     int64_t slice_ms, int64_t one_step, gp_metadata meta, int64_t *done, bool streaming,
-    bool duplex, int64_t *accepted) {
+    bool duplex, int64_t *accepted, bool *input_open) {
     if (!method_meta(storage, meta) || !done || !buffer(out) || !buffer(err) ||
         input.len < 0 || input.len > GP_INPUT || (input.len && !input.data) ||
         slice_ms < 0 || slice_ms > 86400000 || (one_step != 0 && one_step != 1)) return GP_INVALID;
@@ -451,17 +451,18 @@ static int wait_impl(gp_metadata storage, gp_input input, gp_output out, gp_outp
     if (accepted) *accepted = value.input_sent;
     *done = value.phase == 2;
     int result = emit(&value, meta); store(storage, &value);
+    if (input_open) *input_open = value.phase == 1 && value.in_fd >= 0;
     return result;
 }
 
 int64_t gp_wait(gp_metadata storage, gp_input input, gp_output out, gp_output err,
     int64_t slice_ms, int64_t one_step, gp_metadata meta, int64_t *done) {
-    return wait_impl(storage, input, out, err, slice_ms, one_step, meta, done, false, false, NULL);
+    return wait_impl(storage, input, out, err, slice_ms, one_step, meta, done, false, false, NULL, NULL);
 }
 
 int64_t gp_stream_step(gp_metadata storage, gp_input input, gp_output out, gp_output err,
     int64_t slice_ms, gp_metadata meta, int64_t *done) {
-    return wait_impl(storage, input, out, err, slice_ms, 1, meta, done, true, false, NULL);
+    return wait_impl(storage, input, out, err, slice_ms, 1, meta, done, true, false, NULL, NULL);
 }
 
 int64_t gp_io_step(gp_metadata storage, gp_input input, gp_output out, gp_output err,
@@ -471,11 +472,10 @@ int64_t gp_io_step(gp_metadata storage, gp_input input, gp_output out, gp_output
     if (overlaps(result, words(storage)) || overlaps(result, words(meta)) ||
         overlaps(result, payload) || overlaps(result, out) || overlaps(result, err)) return GP_INVALID;
     int64_t done = 0, accepted = 0;
-    int code = wait_impl(storage, input, out, err, slice_ms, 1, meta, &done, true, true, &accepted);
-    child value;
+    bool input_open = false;
+    int code = wait_impl(storage, input, out, err, slice_ms, 1, meta, &done, true, true, &accepted, &input_open);
     progress.data[0] = done; progress.data[1] = accepted;
-    progress.data[2] = code != GP_INVALID && code != GP_STATE && load(storage, &value) &&
-                       value.phase == 1 && value.in_fd >= 0;
+    progress.data[2] = code != GP_INVALID && code != GP_STATE && input_open;
     return code;
 }
 
