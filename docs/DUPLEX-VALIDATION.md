@@ -135,6 +135,10 @@ Independent reviews were separated:
   comparison, matched recorded source/tool/binary identities and noted the
   development deadline record's limits. Final-span comparison/profile conclusions
   are reported separately with their actual source identities.
+- Final acceptance: independently verified all six retained reports, recomputed
+  the final comparison, checked profile log/source/binary identities and deadline
+  records, and reviewed the added profiling/deadline controllers. No publication
+  blocker was found in that scope.
 
 Full normal GCC and Clang interpreter/release/debug/native suites passed, as did
 the new debug/no-BCE driver cycles, bounded controller failure fixtures and

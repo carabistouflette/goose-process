@@ -113,4 +113,8 @@ now reject sixteen actual bad-worker cases across the four languages, and prove
 watchdog diagnostic retention. Eight final actual 30-second deadline checks
 pass separately with no adopted child. Independent evidence review recomputed
 the resident soak and first series and matched their source/binary/tool hashes.
+Final independent acceptance recomputed the final series and verified all six
+reports, profile/log identities and final deadline probes, with no publication
+blocker. Standards had zero actionable findings; all three Spec findings were
+resolved before the first retained comparison series.
 See [resident validation and its limits](../../docs/DUPLEX-VALIDATION.md).
