@@ -60,3 +60,37 @@ process. Both routes also include the same controller ownership/cleanup checks.
 The experiment quantifies this healthy-workload tool layer; it is not safety
 contract parity or a general Python/Goose performance comparison. Shared-host
 noise and all regressions must remain visible; optimize only after evidence.
+
+### Retained local result, 2026-11-05
+
+[Raw report](../bench/results/checker-overhead-2026-11-05.json), measured source
+`ccbe654f84d4c80ca0063a3e256ab368b64d9250`, checker
+`32de6c4783bf8d3242e042993dadd160a98b2945`. All 810 measured calls and nine
+warmups passed. The controller retained four descriptors before/after and no
+adopted children. Binary/compiler/driver identities and fixture contents were
+checked unchanged after timing. The JSON retains fixture lengths/hashes; exact
+bytes are reconstructible from the pinned driver.
+
+For each cell, take the median of its ten calls in each round, then the median
+of those nine round medians. Parentheses show the full range of round medians;
+all individual calls remain in the report. Units are milliseconds per checked
+invocation, including controller subprocess and cleanup overhead.
+
+| Fixture | Direct controller | Checker flags | Configured checker |
+| --- | ---: | ---: | ---: |
+| Empty exit | 2.279 (2.172–2.520) | 3.760 (3.528–5.342) | 3.984 (3.764–4.142) |
+| Literal arguments | 2.278 (2.203–2.520) | 3.792 (3.682–4.080) | 4.014 (3.925–12.788) |
+| Binary 64 KiB | 2.703 (2.592–2.782) | 5.547 (4.990–6.757) | 5.752 (5.622–6.945) |
+
+Pairing by round, the median checker-minus-direct differences were 1.481,
+1.516 and 2.923 ms respectively. Configured-minus-flags differences were 0.226,
+0.238 and 0.191 ms. These are local added tool costs under the unequal policies
+above; they do not justify a library/runtime optimization or a speedup claim.
+The argument/configured round reaching 12.788 ms is retained without filtering.
+
+This short series ran 00:10:40–00:10:43 UTC on CPU0 of an Intel Core Ultra 7
+258V, Linux 7.2.11/glibc 2.44, Python 3.14.9, GCC 16.2.1 and the repository-pinned Goose
+compiler. Host load averages and exact versions are in the raw record. Affinity
+does not provide isolation: this was a shared host, with no exclusive-core claim,
+independent repeat, long-duration timing, memory evidence or generalization to
+other hosts/workloads.

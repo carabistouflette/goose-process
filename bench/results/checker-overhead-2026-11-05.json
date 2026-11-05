@@ -1,0 +1,3942 @@
+{
+  "status": "complete",
+  "timestamp": "2026-11-05T00:10:40.131215+00:00",
+  "source_revision": "ccbe654f84d4c80ca0063a3e256ab368b64d9250",
+  "source_dirty": false,
+  "checker_revision": "32de6c4783bf8d3242e042993dadd160a98b2945",
+  "compiler_revision": "eadca409f68210893f366e60d0c2f0dc29a339be",
+  "goose_version": "goose eadca40 (runtime 3025e5810379)",
+  "cc_version": "gcc (GCC) 16.2.1 20260810",
+  "helper_flags": [
+    "-std=c11",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-O2"
+  ],
+  "checker_build": "make build, normal CC, -O2",
+  "platform": "Linux-7.2.11-arch1-1-x86_64-with-glibc2.44",
+  "python": "3.14.9",
+  "cpu_affinity": [
+    0
+  ],
+  "cpu_model": "Intel(R) Core(TM) Ultra 7 258V",
+  "load_average_start": [
+    2.392578125,
+    3.07275390625,
+    4.4033203125
+  ],
+  "rounds": 9,
+  "iterations": 10,
+  "unit": "nanoseconds per checked invocation",
+  "hashes": {
+    "helper": "d192898ee4c38e3246845fc9f7b578f775f98636780691a04bc290f43415cbad",
+    "checker": "113ac0d16d3a55c7e716f25d2861daa8c2adc8f8842bcca56f256b17052b7da0",
+    "cat": "b97039a4875fc8d2262bb78523032f5b7637308da54551fb55038c38274817be",
+    "goose": "9d37f42abee55079a179cda33b2c28c2879789135b37333c78654bb6ed536f2a",
+    "cc": "8aac907d6fbf40394b424b5fa4a2ad1aa291dac7d3a0315c5b415c1f5ace1287",
+    "driver": "6ff87f7d5cca23b60d5c20c1488bee800eb1580d8f08a1b0be7d83e116b5c860",
+    "consumer": "9bbc478e54c052aa6a11e2009bc2821d2515daf801afbd5d264b62914ff68505",
+    "defaults": "43d730d11b3b109b684ff16e9f114c26e94cab9ff6243e9e8075670f7726936f",
+    "helper_source": "e65f6442dcdb6b7e5c4fb6683f7632b79af6aef23f94b85e3f10a1c098cbcb9e",
+    "native_manifest": "8ad78d100d5840ac5b96356d2cac08af1189a86ef738878f3457945365671a26"
+  },
+  "warmup": [
+    {
+      "fixture": "exit",
+      "route": "direct",
+      "passed": true,
+      "wall_ns": 1754352
+    },
+    {
+      "fixture": "exit",
+      "route": "checker",
+      "passed": true,
+      "wall_ns": 3898852
+    },
+    {
+      "fixture": "exit",
+      "route": "configured",
+      "passed": true,
+      "wall_ns": 4138269
+    },
+    {
+      "fixture": "arguments",
+      "route": "direct",
+      "passed": true,
+      "wall_ns": 2243387
+    },
+    {
+      "fixture": "arguments",
+      "route": "checker",
+      "passed": true,
+      "wall_ns": 4631433
+    },
+    {
+      "fixture": "arguments",
+      "route": "configured",
+      "passed": true,
+      "wall_ns": 9098643
+    },
+    {
+      "fixture": "binary-64k",
+      "route": "direct",
+      "passed": true,
+      "wall_ns": 2946048
+    },
+    {
+      "fixture": "binary-64k",
+      "route": "checker",
+      "passed": true,
+      "wall_ns": 6088461
+    },
+    {
+      "fixture": "binary-64k",
+      "route": "configured",
+      "passed": true,
+      "wall_ns": 6135853
+    }
+  ],
+  "samples": [
+    {
+      "round": 0,
+      "fixture": "exit",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 3755010,
+          "passed": true
+        },
+        {
+          "wall_ns": 3736422,
+          "passed": true
+        },
+        {
+          "wall_ns": 6381365,
+          "passed": true
+        },
+        {
+          "wall_ns": 5601397,
+          "passed": true
+        },
+        {
+          "wall_ns": 3826687,
+          "passed": true
+        },
+        {
+          "wall_ns": 5531024,
+          "passed": true
+        },
+        {
+          "wall_ns": 5152740,
+          "passed": true
+        },
+        {
+          "wall_ns": 5073993,
+          "passed": true
+        },
+        {
+          "wall_ns": 21659817,
+          "passed": true
+        },
+        {
+          "wall_ns": 24085600,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 0,
+      "fixture": "arguments",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 8271200,
+          "passed": true
+        },
+        {
+          "wall_ns": 6413892,
+          "passed": true
+        },
+        {
+          "wall_ns": 26842322,
+          "passed": true
+        },
+        {
+          "wall_ns": 18359599,
+          "passed": true
+        },
+        {
+          "wall_ns": 9561772,
+          "passed": true
+        },
+        {
+          "wall_ns": 6783064,
+          "passed": true
+        },
+        {
+          "wall_ns": 24171042,
+          "passed": true
+        },
+        {
+          "wall_ns": 16013394,
+          "passed": true
+        },
+        {
+          "wall_ns": 6792147,
+          "passed": true
+        },
+        {
+          "wall_ns": 23052898,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 0,
+      "fixture": "binary-64k",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 15872935,
+          "passed": true
+        },
+        {
+          "wall_ns": 7851567,
+          "passed": true
+        },
+        {
+          "wall_ns": 7074945,
+          "passed": true
+        },
+        {
+          "wall_ns": 6813510,
+          "passed": true
+        },
+        {
+          "wall_ns": 6849284,
+          "passed": true
+        },
+        {
+          "wall_ns": 6443233,
+          "passed": true
+        },
+        {
+          "wall_ns": 6700917,
+          "passed": true
+        },
+        {
+          "wall_ns": 5889319,
+          "passed": true
+        },
+        {
+          "wall_ns": 5976359,
+          "passed": true
+        },
+        {
+          "wall_ns": 6493211,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 0,
+      "fixture": "arguments",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2749224,
+          "passed": true
+        },
+        {
+          "wall_ns": 2416453,
+          "passed": true
+        },
+        {
+          "wall_ns": 2399762,
+          "passed": true
+        },
+        {
+          "wall_ns": 2631454,
+          "passed": true
+        },
+        {
+          "wall_ns": 2376545,
+          "passed": true
+        },
+        {
+          "wall_ns": 2241931,
+          "passed": true
+        },
+        {
+          "wall_ns": 2686530,
+          "passed": true
+        },
+        {
+          "wall_ns": 2344149,
+          "passed": true
+        },
+        {
+          "wall_ns": 2890058,
+          "passed": true
+        },
+        {
+          "wall_ns": 2624405,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 0,
+      "fixture": "exit",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2499445,
+          "passed": true
+        },
+        {
+          "wall_ns": 11073809,
+          "passed": true
+        },
+        {
+          "wall_ns": 3882985,
+          "passed": true
+        },
+        {
+          "wall_ns": 2748461,
+          "passed": true
+        },
+        {
+          "wall_ns": 2246786,
+          "passed": true
+        },
+        {
+          "wall_ns": 2662466,
+          "passed": true
+        },
+        {
+          "wall_ns": 2517471,
+          "passed": true
+        },
+        {
+          "wall_ns": 2307490,
+          "passed": true
+        },
+        {
+          "wall_ns": 2523438,
+          "passed": true
+        },
+        {
+          "wall_ns": 2315725,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 0,
+      "fixture": "arguments",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 4069339,
+          "passed": true
+        },
+        {
+          "wall_ns": 4212537,
+          "passed": true
+        },
+        {
+          "wall_ns": 4093222,
+          "passed": true
+        },
+        {
+          "wall_ns": 3958793,
+          "passed": true
+        },
+        {
+          "wall_ns": 4091452,
+          "passed": true
+        },
+        {
+          "wall_ns": 3788406,
+          "passed": true
+        },
+        {
+          "wall_ns": 4247183,
+          "passed": true
+        },
+        {
+          "wall_ns": 4180693,
+          "passed": true
+        },
+        {
+          "wall_ns": 3923566,
+          "passed": true
+        },
+        {
+          "wall_ns": 3811382,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 0,
+      "fixture": "binary-64k",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2912932,
+          "passed": true
+        },
+        {
+          "wall_ns": 3012341,
+          "passed": true
+        },
+        {
+          "wall_ns": 2709166,
+          "passed": true
+        },
+        {
+          "wall_ns": 2697589,
+          "passed": true
+        },
+        {
+          "wall_ns": 2557895,
+          "passed": true
+        },
+        {
+          "wall_ns": 2693698,
+          "passed": true
+        },
+        {
+          "wall_ns": 3114399,
+          "passed": true
+        },
+        {
+          "wall_ns": 2645267,
+          "passed": true
+        },
+        {
+          "wall_ns": 2556184,
+          "passed": true
+        },
+        {
+          "wall_ns": 2757501,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 0,
+      "fixture": "binary-64k",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 6527190,
+          "passed": true
+        },
+        {
+          "wall_ns": 6236445,
+          "passed": true
+        },
+        {
+          "wall_ns": 6715938,
+          "passed": true
+        },
+        {
+          "wall_ns": 6505250,
+          "passed": true
+        },
+        {
+          "wall_ns": 5330775,
+          "passed": true
+        },
+        {
+          "wall_ns": 6465610,
+          "passed": true
+        },
+        {
+          "wall_ns": 5419277,
+          "passed": true
+        },
+        {
+          "wall_ns": 4904823,
+          "passed": true
+        },
+        {
+          "wall_ns": 6106392,
+          "passed": true
+        },
+        {
+          "wall_ns": 6490596,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 0,
+      "fixture": "exit",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 4508404,
+          "passed": true
+        },
+        {
+          "wall_ns": 4207804,
+          "passed": true
+        },
+        {
+          "wall_ns": 4320785,
+          "passed": true
+        },
+        {
+          "wall_ns": 3834882,
+          "passed": true
+        },
+        {
+          "wall_ns": 3901465,
+          "passed": true
+        },
+        {
+          "wall_ns": 4777069,
+          "passed": true
+        },
+        {
+          "wall_ns": 4077144,
+          "passed": true
+        },
+        {
+          "wall_ns": 3388553,
+          "passed": true
+        },
+        {
+          "wall_ns": 2822505,
+          "passed": true
+        },
+        {
+          "wall_ns": 4661289,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "fixture": "binary-64k",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 7081863,
+          "passed": true
+        },
+        {
+          "wall_ns": 7059935,
+          "passed": true
+        },
+        {
+          "wall_ns": 7175079,
+          "passed": true
+        },
+        {
+          "wall_ns": 7066265,
+          "passed": true
+        },
+        {
+          "wall_ns": 6690328,
+          "passed": true
+        },
+        {
+          "wall_ns": 6484318,
+          "passed": true
+        },
+        {
+          "wall_ns": 6963416,
+          "passed": true
+        },
+        {
+          "wall_ns": 6925942,
+          "passed": true
+        },
+        {
+          "wall_ns": 6675004,
+          "passed": true
+        },
+        {
+          "wall_ns": 6785337,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "fixture": "binary-64k",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 5965344,
+          "passed": true
+        },
+        {
+          "wall_ns": 6599209,
+          "passed": true
+        },
+        {
+          "wall_ns": 5209277,
+          "passed": true
+        },
+        {
+          "wall_ns": 5533331,
+          "passed": true
+        },
+        {
+          "wall_ns": 6892010,
+          "passed": true
+        },
+        {
+          "wall_ns": 8491075,
+          "passed": true
+        },
+        {
+          "wall_ns": 6444345,
+          "passed": true
+        },
+        {
+          "wall_ns": 6250665,
+          "passed": true
+        },
+        {
+          "wall_ns": 6072362,
+          "passed": true
+        },
+        {
+          "wall_ns": 6232301,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "fixture": "exit",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2362558,
+          "passed": true
+        },
+        {
+          "wall_ns": 2828867,
+          "passed": true
+        },
+        {
+          "wall_ns": 2295650,
+          "passed": true
+        },
+        {
+          "wall_ns": 2362732,
+          "passed": true
+        },
+        {
+          "wall_ns": 2414391,
+          "passed": true
+        },
+        {
+          "wall_ns": 2205836,
+          "passed": true
+        },
+        {
+          "wall_ns": 2233591,
+          "passed": true
+        },
+        {
+          "wall_ns": 2508075,
+          "passed": true
+        },
+        {
+          "wall_ns": 2226746,
+          "passed": true
+        },
+        {
+          "wall_ns": 2347470,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "fixture": "exit",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 4615481,
+          "passed": true
+        },
+        {
+          "wall_ns": 3999810,
+          "passed": true
+        },
+        {
+          "wall_ns": 4575851,
+          "passed": true
+        },
+        {
+          "wall_ns": 4361441,
+          "passed": true
+        },
+        {
+          "wall_ns": 4058951,
+          "passed": true
+        },
+        {
+          "wall_ns": 4123574,
+          "passed": true
+        },
+        {
+          "wall_ns": 3887235,
+          "passed": true
+        },
+        {
+          "wall_ns": 4364983,
+          "passed": true
+        },
+        {
+          "wall_ns": 3997901,
+          "passed": true
+        },
+        {
+          "wall_ns": 4029867,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "fixture": "arguments",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2630943,
+          "passed": true
+        },
+        {
+          "wall_ns": 2148509,
+          "passed": true
+        },
+        {
+          "wall_ns": 2410460,
+          "passed": true
+        },
+        {
+          "wall_ns": 2474949,
+          "passed": true
+        },
+        {
+          "wall_ns": 2152971,
+          "passed": true
+        },
+        {
+          "wall_ns": 2323217,
+          "passed": true
+        },
+        {
+          "wall_ns": 2506990,
+          "passed": true
+        },
+        {
+          "wall_ns": 2333603,
+          "passed": true
+        },
+        {
+          "wall_ns": 2269291,
+          "passed": true
+        },
+        {
+          "wall_ns": 2436376,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "fixture": "arguments",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 4167077,
+          "passed": true
+        },
+        {
+          "wall_ns": 4381521,
+          "passed": true
+        },
+        {
+          "wall_ns": 3971564,
+          "passed": true
+        },
+        {
+          "wall_ns": 4170092,
+          "passed": true
+        },
+        {
+          "wall_ns": 4315099,
+          "passed": true
+        },
+        {
+          "wall_ns": 3895906,
+          "passed": true
+        },
+        {
+          "wall_ns": 3809793,
+          "passed": true
+        },
+        {
+          "wall_ns": 3845852,
+          "passed": true
+        },
+        {
+          "wall_ns": 4217584,
+          "passed": true
+        },
+        {
+          "wall_ns": 3901140,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "fixture": "exit",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 3959989,
+          "passed": true
+        },
+        {
+          "wall_ns": 3765326,
+          "passed": true
+        },
+        {
+          "wall_ns": 4041845,
+          "passed": true
+        },
+        {
+          "wall_ns": 3729296,
+          "passed": true
+        },
+        {
+          "wall_ns": 3593624,
+          "passed": true
+        },
+        {
+          "wall_ns": 3688897,
+          "passed": true
+        },
+        {
+          "wall_ns": 4069856,
+          "passed": true
+        },
+        {
+          "wall_ns": 4269208,
+          "passed": true
+        },
+        {
+          "wall_ns": 3970759,
+          "passed": true
+        },
+        {
+          "wall_ns": 3962540,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "fixture": "arguments",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 3780062,
+          "passed": true
+        },
+        {
+          "wall_ns": 3089214,
+          "passed": true
+        },
+        {
+          "wall_ns": 3939101,
+          "passed": true
+        },
+        {
+          "wall_ns": 4140292,
+          "passed": true
+        },
+        {
+          "wall_ns": 3861883,
+          "passed": true
+        },
+        {
+          "wall_ns": 3915065,
+          "passed": true
+        },
+        {
+          "wall_ns": 4292533,
+          "passed": true
+        },
+        {
+          "wall_ns": 3930072,
+          "passed": true
+        },
+        {
+          "wall_ns": 4241149,
+          "passed": true
+        },
+        {
+          "wall_ns": 3836875,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "fixture": "binary-64k",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 3123789,
+          "passed": true
+        },
+        {
+          "wall_ns": 2768044,
+          "passed": true
+        },
+        {
+          "wall_ns": 2987516,
+          "passed": true
+        },
+        {
+          "wall_ns": 2727115,
+          "passed": true
+        },
+        {
+          "wall_ns": 2471723,
+          "passed": true
+        },
+        {
+          "wall_ns": 2899110,
+          "passed": true
+        },
+        {
+          "wall_ns": 2796208,
+          "passed": true
+        },
+        {
+          "wall_ns": 2854727,
+          "passed": true
+        },
+        {
+          "wall_ns": 2688801,
+          "passed": true
+        },
+        {
+          "wall_ns": 2718991,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "fixture": "arguments",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 4720819,
+          "passed": true
+        },
+        {
+          "wall_ns": 3391320,
+          "passed": true
+        },
+        {
+          "wall_ns": 3966450,
+          "passed": true
+        },
+        {
+          "wall_ns": 4475153,
+          "passed": true
+        },
+        {
+          "wall_ns": 4140577,
+          "passed": true
+        },
+        {
+          "wall_ns": 4320158,
+          "passed": true
+        },
+        {
+          "wall_ns": 4102690,
+          "passed": true
+        },
+        {
+          "wall_ns": 4111891,
+          "passed": true
+        },
+        {
+          "wall_ns": 4488780,
+          "passed": true
+        },
+        {
+          "wall_ns": 4020227,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "fixture": "exit",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 4062640,
+          "passed": true
+        },
+        {
+          "wall_ns": 4141473,
+          "passed": true
+        },
+        {
+          "wall_ns": 3526920,
+          "passed": true
+        },
+        {
+          "wall_ns": 3671216,
+          "passed": true
+        },
+        {
+          "wall_ns": 3791274,
+          "passed": true
+        },
+        {
+          "wall_ns": 3664556,
+          "passed": true
+        },
+        {
+          "wall_ns": 3858208,
+          "passed": true
+        },
+        {
+          "wall_ns": 4128124,
+          "passed": true
+        },
+        {
+          "wall_ns": 3757750,
+          "passed": true
+        },
+        {
+          "wall_ns": 4106936,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "fixture": "binary-64k",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 6289205,
+          "passed": true
+        },
+        {
+          "wall_ns": 5671225,
+          "passed": true
+        },
+        {
+          "wall_ns": 5414757,
+          "passed": true
+        },
+        {
+          "wall_ns": 5625391,
+          "passed": true
+        },
+        {
+          "wall_ns": 5453247,
+          "passed": true
+        },
+        {
+          "wall_ns": 5698748,
+          "passed": true
+        },
+        {
+          "wall_ns": 5376068,
+          "passed": true
+        },
+        {
+          "wall_ns": 5451121,
+          "passed": true
+        },
+        {
+          "wall_ns": 5469122,
+          "passed": true
+        },
+        {
+          "wall_ns": 5791500,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "fixture": "arguments",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2229952,
+          "passed": true
+        },
+        {
+          "wall_ns": 2278102,
+          "passed": true
+        },
+        {
+          "wall_ns": 2322627,
+          "passed": true
+        },
+        {
+          "wall_ns": 2179610,
+          "passed": true
+        },
+        {
+          "wall_ns": 2206299,
+          "passed": true
+        },
+        {
+          "wall_ns": 2223762,
+          "passed": true
+        },
+        {
+          "wall_ns": 2331440,
+          "passed": true
+        },
+        {
+          "wall_ns": 2201937,
+          "passed": true
+        },
+        {
+          "wall_ns": 2240399,
+          "passed": true
+        },
+        {
+          "wall_ns": 2272511,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "fixture": "binary-64k",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 6235967,
+          "passed": true
+        },
+        {
+          "wall_ns": 5845194,
+          "passed": true
+        },
+        {
+          "wall_ns": 5600036,
+          "passed": true
+        },
+        {
+          "wall_ns": 5569237,
+          "passed": true
+        },
+        {
+          "wall_ns": 5598407,
+          "passed": true
+        },
+        {
+          "wall_ns": 5581969,
+          "passed": true
+        },
+        {
+          "wall_ns": 5779020,
+          "passed": true
+        },
+        {
+          "wall_ns": 5959223,
+          "passed": true
+        },
+        {
+          "wall_ns": 5805307,
+          "passed": true
+        },
+        {
+          "wall_ns": 5619481,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "fixture": "binary-64k",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2703038,
+          "passed": true
+        },
+        {
+          "wall_ns": 2773629,
+          "passed": true
+        },
+        {
+          "wall_ns": 2528781,
+          "passed": true
+        },
+        {
+          "wall_ns": 2636306,
+          "passed": true
+        },
+        {
+          "wall_ns": 2636919,
+          "passed": true
+        },
+        {
+          "wall_ns": 2542214,
+          "passed": true
+        },
+        {
+          "wall_ns": 2635097,
+          "passed": true
+        },
+        {
+          "wall_ns": 2462072,
+          "passed": true
+        },
+        {
+          "wall_ns": 2613138,
+          "passed": true
+        },
+        {
+          "wall_ns": 2444084,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "fixture": "exit",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 3821053,
+          "passed": true
+        },
+        {
+          "wall_ns": 3824572,
+          "passed": true
+        },
+        {
+          "wall_ns": 3839114,
+          "passed": true
+        },
+        {
+          "wall_ns": 3990834,
+          "passed": true
+        },
+        {
+          "wall_ns": 3915879,
+          "passed": true
+        },
+        {
+          "wall_ns": 3996584,
+          "passed": true
+        },
+        {
+          "wall_ns": 3668316,
+          "passed": true
+        },
+        {
+          "wall_ns": 3732844,
+          "passed": true
+        },
+        {
+          "wall_ns": 3910273,
+          "passed": true
+        },
+        {
+          "wall_ns": 3810625,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "fixture": "arguments",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 3852899,
+          "passed": true
+        },
+        {
+          "wall_ns": 3675748,
+          "passed": true
+        },
+        {
+          "wall_ns": 3701290,
+          "passed": true
+        },
+        {
+          "wall_ns": 3651679,
+          "passed": true
+        },
+        {
+          "wall_ns": 3731229,
+          "passed": true
+        },
+        {
+          "wall_ns": 3738497,
+          "passed": true
+        },
+        {
+          "wall_ns": 3819928,
+          "passed": true
+        },
+        {
+          "wall_ns": 3778801,
+          "passed": true
+        },
+        {
+          "wall_ns": 3540068,
+          "passed": true
+        },
+        {
+          "wall_ns": 3679977,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "fixture": "exit",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2152785,
+          "passed": true
+        },
+        {
+          "wall_ns": 2145631,
+          "passed": true
+        },
+        {
+          "wall_ns": 2356229,
+          "passed": true
+        },
+        {
+          "wall_ns": 2242409,
+          "passed": true
+        },
+        {
+          "wall_ns": 2135433,
+          "passed": true
+        },
+        {
+          "wall_ns": 2191153,
+          "passed": true
+        },
+        {
+          "wall_ns": 2241575,
+          "passed": true
+        },
+        {
+          "wall_ns": 2288151,
+          "passed": true
+        },
+        {
+          "wall_ns": 2261614,
+          "passed": true
+        },
+        {
+          "wall_ns": 2175860,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "fixture": "arguments",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 4021880,
+          "passed": true
+        },
+        {
+          "wall_ns": 3890559,
+          "passed": true
+        },
+        {
+          "wall_ns": 3868338,
+          "passed": true
+        },
+        {
+          "wall_ns": 3887217,
+          "passed": true
+        },
+        {
+          "wall_ns": 3910562,
+          "passed": true
+        },
+        {
+          "wall_ns": 4002645,
+          "passed": true
+        },
+        {
+          "wall_ns": 4007784,
+          "passed": true
+        },
+        {
+          "wall_ns": 4140980,
+          "passed": true
+        },
+        {
+          "wall_ns": 3994508,
+          "passed": true
+        },
+        {
+          "wall_ns": 3998490,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "fixture": "binary-64k",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 5901508,
+          "passed": true
+        },
+        {
+          "wall_ns": 5725305,
+          "passed": true
+        },
+        {
+          "wall_ns": 5579772,
+          "passed": true
+        },
+        {
+          "wall_ns": 5592298,
+          "passed": true
+        },
+        {
+          "wall_ns": 5612055,
+          "passed": true
+        },
+        {
+          "wall_ns": 5632288,
+          "passed": true
+        },
+        {
+          "wall_ns": 5746976,
+          "passed": true
+        },
+        {
+          "wall_ns": 5578332,
+          "passed": true
+        },
+        {
+          "wall_ns": 5548072,
+          "passed": true
+        },
+        {
+          "wall_ns": 5793727,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "fixture": "binary-64k",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2626022,
+          "passed": true
+        },
+        {
+          "wall_ns": 2565705,
+          "passed": true
+        },
+        {
+          "wall_ns": 2741774,
+          "passed": true
+        },
+        {
+          "wall_ns": 2510770,
+          "passed": true
+        },
+        {
+          "wall_ns": 2653611,
+          "passed": true
+        },
+        {
+          "wall_ns": 2705594,
+          "passed": true
+        },
+        {
+          "wall_ns": 2542841,
+          "passed": true
+        },
+        {
+          "wall_ns": 2616513,
+          "passed": true
+        },
+        {
+          "wall_ns": 2606947,
+          "passed": true
+        },
+        {
+          "wall_ns": 2596496,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "fixture": "exit",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2152097,
+          "passed": true
+        },
+        {
+          "wall_ns": 2160964,
+          "passed": true
+        },
+        {
+          "wall_ns": 2138036,
+          "passed": true
+        },
+        {
+          "wall_ns": 2234845,
+          "passed": true
+        },
+        {
+          "wall_ns": 2333907,
+          "passed": true
+        },
+        {
+          "wall_ns": 2167870,
+          "passed": true
+        },
+        {
+          "wall_ns": 2193152,
+          "passed": true
+        },
+        {
+          "wall_ns": 2172553,
+          "passed": true
+        },
+        {
+          "wall_ns": 2264338,
+          "passed": true
+        },
+        {
+          "wall_ns": 2259238,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "fixture": "arguments",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2180976,
+          "passed": true
+        },
+        {
+          "wall_ns": 2157865,
+          "passed": true
+        },
+        {
+          "wall_ns": 2246393,
+          "passed": true
+        },
+        {
+          "wall_ns": 2337212,
+          "passed": true
+        },
+        {
+          "wall_ns": 2207675,
+          "passed": true
+        },
+        {
+          "wall_ns": 2363862,
+          "passed": true
+        },
+        {
+          "wall_ns": 2305080,
+          "passed": true
+        },
+        {
+          "wall_ns": 2298428,
+          "passed": true
+        },
+        {
+          "wall_ns": 2396955,
+          "passed": true
+        },
+        {
+          "wall_ns": 2418666,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "fixture": "arguments",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 4162953,
+          "passed": true
+        },
+        {
+          "wall_ns": 3897719,
+          "passed": true
+        },
+        {
+          "wall_ns": 3827262,
+          "passed": true
+        },
+        {
+          "wall_ns": 3823354,
+          "passed": true
+        },
+        {
+          "wall_ns": 3684191,
+          "passed": true
+        },
+        {
+          "wall_ns": 3793240,
+          "passed": true
+        },
+        {
+          "wall_ns": 3673264,
+          "passed": true
+        },
+        {
+          "wall_ns": 3511188,
+          "passed": true
+        },
+        {
+          "wall_ns": 3693965,
+          "passed": true
+        },
+        {
+          "wall_ns": 3723715,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "fixture": "exit",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 3470144,
+          "passed": true
+        },
+        {
+          "wall_ns": 3594178,
+          "passed": true
+        },
+        {
+          "wall_ns": 3589125,
+          "passed": true
+        },
+        {
+          "wall_ns": 3537639,
+          "passed": true
+        },
+        {
+          "wall_ns": 3465347,
+          "passed": true
+        },
+        {
+          "wall_ns": 3620239,
+          "passed": true
+        },
+        {
+          "wall_ns": 3638508,
+          "passed": true
+        },
+        {
+          "wall_ns": 3563556,
+          "passed": true
+        },
+        {
+          "wall_ns": 3603872,
+          "passed": true
+        },
+        {
+          "wall_ns": 3666299,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "fixture": "binary-64k",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 6402226,
+          "passed": true
+        },
+        {
+          "wall_ns": 5961839,
+          "passed": true
+        },
+        {
+          "wall_ns": 5883566,
+          "passed": true
+        },
+        {
+          "wall_ns": 5725463,
+          "passed": true
+        },
+        {
+          "wall_ns": 5797037,
+          "passed": true
+        },
+        {
+          "wall_ns": 5499485,
+          "passed": true
+        },
+        {
+          "wall_ns": 5376539,
+          "passed": true
+        },
+        {
+          "wall_ns": 5457031,
+          "passed": true
+        },
+        {
+          "wall_ns": 5397767,
+          "passed": true
+        },
+        {
+          "wall_ns": 5547835,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "fixture": "exit",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 3995305,
+          "passed": true
+        },
+        {
+          "wall_ns": 3636118,
+          "passed": true
+        },
+        {
+          "wall_ns": 3894856,
+          "passed": true
+        },
+        {
+          "wall_ns": 4046421,
+          "passed": true
+        },
+        {
+          "wall_ns": 3991683,
+          "passed": true
+        },
+        {
+          "wall_ns": 4004340,
+          "passed": true
+        },
+        {
+          "wall_ns": 4010872,
+          "passed": true
+        },
+        {
+          "wall_ns": 3804021,
+          "passed": true
+        },
+        {
+          "wall_ns": 4081775,
+          "passed": true
+        },
+        {
+          "wall_ns": 3896266,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "fixture": "exit",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 3592898,
+          "passed": true
+        },
+        {
+          "wall_ns": 3507751,
+          "passed": true
+        },
+        {
+          "wall_ns": 3589178,
+          "passed": true
+        },
+        {
+          "wall_ns": 3446238,
+          "passed": true
+        },
+        {
+          "wall_ns": 2482146,
+          "passed": true
+        },
+        {
+          "wall_ns": 3336289,
+          "passed": true
+        },
+        {
+          "wall_ns": 3418307,
+          "passed": true
+        },
+        {
+          "wall_ns": 3548378,
+          "passed": true
+        },
+        {
+          "wall_ns": 3576297,
+          "passed": true
+        },
+        {
+          "wall_ns": 3550570,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "fixture": "binary-64k",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 4647902,
+          "passed": true
+        },
+        {
+          "wall_ns": 4233158,
+          "passed": true
+        },
+        {
+          "wall_ns": 4159695,
+          "passed": true
+        },
+        {
+          "wall_ns": 5332009,
+          "passed": true
+        },
+        {
+          "wall_ns": 5840134,
+          "passed": true
+        },
+        {
+          "wall_ns": 5652945,
+          "passed": true
+        },
+        {
+          "wall_ns": 5530906,
+          "passed": true
+        },
+        {
+          "wall_ns": 5464971,
+          "passed": true
+        },
+        {
+          "wall_ns": 4472636,
+          "passed": true
+        },
+        {
+          "wall_ns": 4154648,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "fixture": "exit",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 3581839,
+          "passed": true
+        },
+        {
+          "wall_ns": 3810249,
+          "passed": true
+        },
+        {
+          "wall_ns": 3894914,
+          "passed": true
+        },
+        {
+          "wall_ns": 3719515,
+          "passed": true
+        },
+        {
+          "wall_ns": 3797498,
+          "passed": true
+        },
+        {
+          "wall_ns": 3748762,
+          "passed": true
+        },
+        {
+          "wall_ns": 3758542,
+          "passed": true
+        },
+        {
+          "wall_ns": 3770335,
+          "passed": true
+        },
+        {
+          "wall_ns": 3842077,
+          "passed": true
+        },
+        {
+          "wall_ns": 3665350,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "fixture": "arguments",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2475747,
+          "passed": true
+        },
+        {
+          "wall_ns": 2422931,
+          "passed": true
+        },
+        {
+          "wall_ns": 2155266,
+          "passed": true
+        },
+        {
+          "wall_ns": 2280530,
+          "passed": true
+        },
+        {
+          "wall_ns": 2276663,
+          "passed": true
+        },
+        {
+          "wall_ns": 2253850,
+          "passed": true
+        },
+        {
+          "wall_ns": 2146150,
+          "passed": true
+        },
+        {
+          "wall_ns": 2279084,
+          "passed": true
+        },
+        {
+          "wall_ns": 2277262,
+          "passed": true
+        },
+        {
+          "wall_ns": 2201125,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "fixture": "arguments",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 3870474,
+          "passed": true
+        },
+        {
+          "wall_ns": 3689493,
+          "passed": true
+        },
+        {
+          "wall_ns": 3544090,
+          "passed": true
+        },
+        {
+          "wall_ns": 3673979,
+          "passed": true
+        },
+        {
+          "wall_ns": 3711396,
+          "passed": true
+        },
+        {
+          "wall_ns": 3748497,
+          "passed": true
+        },
+        {
+          "wall_ns": 3666496,
+          "passed": true
+        },
+        {
+          "wall_ns": 3858092,
+          "passed": true
+        },
+        {
+          "wall_ns": 3489942,
+          "passed": true
+        },
+        {
+          "wall_ns": 3640236,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "fixture": "arguments",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 3918228,
+          "passed": true
+        },
+        {
+          "wall_ns": 4470211,
+          "passed": true
+        },
+        {
+          "wall_ns": 3929148,
+          "passed": true
+        },
+        {
+          "wall_ns": 3893654,
+          "passed": true
+        },
+        {
+          "wall_ns": 3966157,
+          "passed": true
+        },
+        {
+          "wall_ns": 3920082,
+          "passed": true
+        },
+        {
+          "wall_ns": 3981379,
+          "passed": true
+        },
+        {
+          "wall_ns": 3938343,
+          "passed": true
+        },
+        {
+          "wall_ns": 3919413,
+          "passed": true
+        },
+        {
+          "wall_ns": 3891809,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "fixture": "exit",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2132367,
+          "passed": true
+        },
+        {
+          "wall_ns": 2164031,
+          "passed": true
+        },
+        {
+          "wall_ns": 2365101,
+          "passed": true
+        },
+        {
+          "wall_ns": 2317546,
+          "passed": true
+        },
+        {
+          "wall_ns": 2169440,
+          "passed": true
+        },
+        {
+          "wall_ns": 2174678,
+          "passed": true
+        },
+        {
+          "wall_ns": 2359567,
+          "passed": true
+        },
+        {
+          "wall_ns": 2465279,
+          "passed": true
+        },
+        {
+          "wall_ns": 2507269,
+          "passed": true
+        },
+        {
+          "wall_ns": 2501426,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "fixture": "binary-64k",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2949003,
+          "passed": true
+        },
+        {
+          "wall_ns": 2847977,
+          "passed": true
+        },
+        {
+          "wall_ns": 2708135,
+          "passed": true
+        },
+        {
+          "wall_ns": 2657673,
+          "passed": true
+        },
+        {
+          "wall_ns": 2805935,
+          "passed": true
+        },
+        {
+          "wall_ns": 2667715,
+          "passed": true
+        },
+        {
+          "wall_ns": 2728237,
+          "passed": true
+        },
+        {
+          "wall_ns": 2615972,
+          "passed": true
+        },
+        {
+          "wall_ns": 2732244,
+          "passed": true
+        },
+        {
+          "wall_ns": 2709596,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "fixture": "binary-64k",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 6446341,
+          "passed": true
+        },
+        {
+          "wall_ns": 6055098,
+          "passed": true
+        },
+        {
+          "wall_ns": 6004819,
+          "passed": true
+        },
+        {
+          "wall_ns": 5979661,
+          "passed": true
+        },
+        {
+          "wall_ns": 5792239,
+          "passed": true
+        },
+        {
+          "wall_ns": 5515634,
+          "passed": true
+        },
+        {
+          "wall_ns": 5584135,
+          "passed": true
+        },
+        {
+          "wall_ns": 5703172,
+          "passed": true
+        },
+        {
+          "wall_ns": 5663456,
+          "passed": true
+        },
+        {
+          "wall_ns": 5711770,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "fixture": "binary-64k",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2692830,
+          "passed": true
+        },
+        {
+          "wall_ns": 2498072,
+          "passed": true
+        },
+        {
+          "wall_ns": 2616462,
+          "passed": true
+        },
+        {
+          "wall_ns": 2837327,
+          "passed": true
+        },
+        {
+          "wall_ns": 2670388,
+          "passed": true
+        },
+        {
+          "wall_ns": 2676543,
+          "passed": true
+        },
+        {
+          "wall_ns": 2757258,
+          "passed": true
+        },
+        {
+          "wall_ns": 2615126,
+          "passed": true
+        },
+        {
+          "wall_ns": 2621377,
+          "passed": true
+        },
+        {
+          "wall_ns": 2590308,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "fixture": "arguments",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 4277688,
+          "passed": true
+        },
+        {
+          "wall_ns": 3945740,
+          "passed": true
+        },
+        {
+          "wall_ns": 3975795,
+          "passed": true
+        },
+        {
+          "wall_ns": 3925404,
+          "passed": true
+        },
+        {
+          "wall_ns": 3974933,
+          "passed": true
+        },
+        {
+          "wall_ns": 4016679,
+          "passed": true
+        },
+        {
+          "wall_ns": 3904171,
+          "passed": true
+        },
+        {
+          "wall_ns": 3916417,
+          "passed": true
+        },
+        {
+          "wall_ns": 3815557,
+          "passed": true
+        },
+        {
+          "wall_ns": 3871915,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "fixture": "exit",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2169297,
+          "passed": true
+        },
+        {
+          "wall_ns": 2091845,
+          "passed": true
+        },
+        {
+          "wall_ns": 2145671,
+          "passed": true
+        },
+        {
+          "wall_ns": 2211295,
+          "passed": true
+        },
+        {
+          "wall_ns": 2168032,
+          "passed": true
+        },
+        {
+          "wall_ns": 2161207,
+          "passed": true
+        },
+        {
+          "wall_ns": 2218899,
+          "passed": true
+        },
+        {
+          "wall_ns": 2290384,
+          "passed": true
+        },
+        {
+          "wall_ns": 2228626,
+          "passed": true
+        },
+        {
+          "wall_ns": 2174793,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "fixture": "exit",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 3731027,
+          "passed": true
+        },
+        {
+          "wall_ns": 3755741,
+          "passed": true
+        },
+        {
+          "wall_ns": 3658899,
+          "passed": true
+        },
+        {
+          "wall_ns": 3672623,
+          "passed": true
+        },
+        {
+          "wall_ns": 3884346,
+          "passed": true
+        },
+        {
+          "wall_ns": 3838884,
+          "passed": true
+        },
+        {
+          "wall_ns": 4256673,
+          "passed": true
+        },
+        {
+          "wall_ns": 3619511,
+          "passed": true
+        },
+        {
+          "wall_ns": 3645763,
+          "passed": true
+        },
+        {
+          "wall_ns": 3647545,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "fixture": "exit",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 4006877,
+          "passed": true
+        },
+        {
+          "wall_ns": 3957243,
+          "passed": true
+        },
+        {
+          "wall_ns": 3953356,
+          "passed": true
+        },
+        {
+          "wall_ns": 4066079,
+          "passed": true
+        },
+        {
+          "wall_ns": 4062626,
+          "passed": true
+        },
+        {
+          "wall_ns": 4013768,
+          "passed": true
+        },
+        {
+          "wall_ns": 4027397,
+          "passed": true
+        },
+        {
+          "wall_ns": 3906990,
+          "passed": true
+        },
+        {
+          "wall_ns": 3844379,
+          "passed": true
+        },
+        {
+          "wall_ns": 3961946,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "fixture": "arguments",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 3915862,
+          "passed": true
+        },
+        {
+          "wall_ns": 3664707,
+          "passed": true
+        },
+        {
+          "wall_ns": 3665466,
+          "passed": true
+        },
+        {
+          "wall_ns": 3933536,
+          "passed": true
+        },
+        {
+          "wall_ns": 3853402,
+          "passed": true
+        },
+        {
+          "wall_ns": 3793274,
+          "passed": true
+        },
+        {
+          "wall_ns": 3747397,
+          "passed": true
+        },
+        {
+          "wall_ns": 3740816,
+          "passed": true
+        },
+        {
+          "wall_ns": 3844855,
+          "passed": true
+        },
+        {
+          "wall_ns": 3791124,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "fixture": "arguments",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2296855,
+          "passed": true
+        },
+        {
+          "wall_ns": 2351829,
+          "passed": true
+        },
+        {
+          "wall_ns": 2412891,
+          "passed": true
+        },
+        {
+          "wall_ns": 2165042,
+          "passed": true
+        },
+        {
+          "wall_ns": 2139923,
+          "passed": true
+        },
+        {
+          "wall_ns": 2137690,
+          "passed": true
+        },
+        {
+          "wall_ns": 2291631,
+          "passed": true
+        },
+        {
+          "wall_ns": 2264666,
+          "passed": true
+        },
+        {
+          "wall_ns": 2190330,
+          "passed": true
+        },
+        {
+          "wall_ns": 2327422,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "fixture": "binary-64k",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 5928142,
+          "passed": true
+        },
+        {
+          "wall_ns": 5679457,
+          "passed": true
+        },
+        {
+          "wall_ns": 5669730,
+          "passed": true
+        },
+        {
+          "wall_ns": 5513440,
+          "passed": true
+        },
+        {
+          "wall_ns": 5767801,
+          "passed": true
+        },
+        {
+          "wall_ns": 5620075,
+          "passed": true
+        },
+        {
+          "wall_ns": 5530731,
+          "passed": true
+        },
+        {
+          "wall_ns": 5726946,
+          "passed": true
+        },
+        {
+          "wall_ns": 5507086,
+          "passed": true
+        },
+        {
+          "wall_ns": 5639870,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "fixture": "binary-64k",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 5324322,
+          "passed": true
+        },
+        {
+          "wall_ns": 5497394,
+          "passed": true
+        },
+        {
+          "wall_ns": 5331022,
+          "passed": true
+        },
+        {
+          "wall_ns": 5651440,
+          "passed": true
+        },
+        {
+          "wall_ns": 5438062,
+          "passed": true
+        },
+        {
+          "wall_ns": 5554530,
+          "passed": true
+        },
+        {
+          "wall_ns": 5489856,
+          "passed": true
+        },
+        {
+          "wall_ns": 5549137,
+          "passed": true
+        },
+        {
+          "wall_ns": 5357356,
+          "passed": true
+        },
+        {
+          "wall_ns": 5348397,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 6,
+      "fixture": "exit",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 3698155,
+          "passed": true
+        },
+        {
+          "wall_ns": 3670045,
+          "passed": true
+        },
+        {
+          "wall_ns": 3701576,
+          "passed": true
+        },
+        {
+          "wall_ns": 3589939,
+          "passed": true
+        },
+        {
+          "wall_ns": 3602573,
+          "passed": true
+        },
+        {
+          "wall_ns": 3615623,
+          "passed": true
+        },
+        {
+          "wall_ns": 3489392,
+          "passed": true
+        },
+        {
+          "wall_ns": 3431175,
+          "passed": true
+        },
+        {
+          "wall_ns": 4067838,
+          "passed": true
+        },
+        {
+          "wall_ns": 3482648,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 6,
+      "fixture": "binary-64k",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 5932040,
+          "passed": true
+        },
+        {
+          "wall_ns": 5707319,
+          "passed": true
+        },
+        {
+          "wall_ns": 5522005,
+          "passed": true
+        },
+        {
+          "wall_ns": 5692997,
+          "passed": true
+        },
+        {
+          "wall_ns": 5618203,
+          "passed": true
+        },
+        {
+          "wall_ns": 5788728,
+          "passed": true
+        },
+        {
+          "wall_ns": 5684487,
+          "passed": true
+        },
+        {
+          "wall_ns": 5669308,
+          "passed": true
+        },
+        {
+          "wall_ns": 5645623,
+          "passed": true
+        },
+        {
+          "wall_ns": 5571367,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 6,
+      "fixture": "exit",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 3857678,
+          "passed": true
+        },
+        {
+          "wall_ns": 3823506,
+          "passed": true
+        },
+        {
+          "wall_ns": 3950909,
+          "passed": true
+        },
+        {
+          "wall_ns": 3708886,
+          "passed": true
+        },
+        {
+          "wall_ns": 3901127,
+          "passed": true
+        },
+        {
+          "wall_ns": 3860475,
+          "passed": true
+        },
+        {
+          "wall_ns": 3944074,
+          "passed": true
+        },
+        {
+          "wall_ns": 3943348,
+          "passed": true
+        },
+        {
+          "wall_ns": 3692376,
+          "passed": true
+        },
+        {
+          "wall_ns": 3654596,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 6,
+      "fixture": "binary-64k",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 5658539,
+          "passed": true
+        },
+        {
+          "wall_ns": 5418831,
+          "passed": true
+        },
+        {
+          "wall_ns": 5410179,
+          "passed": true
+        },
+        {
+          "wall_ns": 5411309,
+          "passed": true
+        },
+        {
+          "wall_ns": 5451217,
+          "passed": true
+        },
+        {
+          "wall_ns": 5469091,
+          "passed": true
+        },
+        {
+          "wall_ns": 5504047,
+          "passed": true
+        },
+        {
+          "wall_ns": 5489692,
+          "passed": true
+        },
+        {
+          "wall_ns": 5529566,
+          "passed": true
+        },
+        {
+          "wall_ns": 5509847,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 6,
+      "fixture": "binary-64k",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2609575,
+          "passed": true
+        },
+        {
+          "wall_ns": 2462678,
+          "passed": true
+        },
+        {
+          "wall_ns": 2503359,
+          "passed": true
+        },
+        {
+          "wall_ns": 2598590,
+          "passed": true
+        },
+        {
+          "wall_ns": 2626850,
+          "passed": true
+        },
+        {
+          "wall_ns": 2586114,
+          "passed": true
+        },
+        {
+          "wall_ns": 2564297,
+          "passed": true
+        },
+        {
+          "wall_ns": 2634663,
+          "passed": true
+        },
+        {
+          "wall_ns": 2727745,
+          "passed": true
+        },
+        {
+          "wall_ns": 2554601,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 6,
+      "fixture": "arguments",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 3837795,
+          "passed": true
+        },
+        {
+          "wall_ns": 3759657,
+          "passed": true
+        },
+        {
+          "wall_ns": 3592239,
+          "passed": true
+        },
+        {
+          "wall_ns": 3755144,
+          "passed": true
+        },
+        {
+          "wall_ns": 3738306,
+          "passed": true
+        },
+        {
+          "wall_ns": 3687630,
+          "passed": true
+        },
+        {
+          "wall_ns": 3699998,
+          "passed": true
+        },
+        {
+          "wall_ns": 3752632,
+          "passed": true
+        },
+        {
+          "wall_ns": 3562960,
+          "passed": true
+        },
+        {
+          "wall_ns": 3552168,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 6,
+      "fixture": "arguments",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 4079048,
+          "passed": true
+        },
+        {
+          "wall_ns": 3888673,
+          "passed": true
+        },
+        {
+          "wall_ns": 3948451,
+          "passed": true
+        },
+        {
+          "wall_ns": 3991001,
+          "passed": true
+        },
+        {
+          "wall_ns": 3992187,
+          "passed": true
+        },
+        {
+          "wall_ns": 3824862,
+          "passed": true
+        },
+        {
+          "wall_ns": 4074603,
+          "passed": true
+        },
+        {
+          "wall_ns": 4046615,
+          "passed": true
+        },
+        {
+          "wall_ns": 4024310,
+          "passed": true
+        },
+        {
+          "wall_ns": 3888848,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 6,
+      "fixture": "exit",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2172182,
+          "passed": true
+        },
+        {
+          "wall_ns": 2215872,
+          "passed": true
+        },
+        {
+          "wall_ns": 2136941,
+          "passed": true
+        },
+        {
+          "wall_ns": 2337362,
+          "passed": true
+        },
+        {
+          "wall_ns": 2278993,
+          "passed": true
+        },
+        {
+          "wall_ns": 2272404,
+          "passed": true
+        },
+        {
+          "wall_ns": 2171838,
+          "passed": true
+        },
+        {
+          "wall_ns": 2212430,
+          "passed": true
+        },
+        {
+          "wall_ns": 2264471,
+          "passed": true
+        },
+        {
+          "wall_ns": 2177499,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 6,
+      "fixture": "arguments",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2166068,
+          "passed": true
+        },
+        {
+          "wall_ns": 2299457,
+          "passed": true
+        },
+        {
+          "wall_ns": 2264149,
+          "passed": true
+        },
+        {
+          "wall_ns": 2170877,
+          "passed": true
+        },
+        {
+          "wall_ns": 2226661,
+          "passed": true
+        },
+        {
+          "wall_ns": 2312746,
+          "passed": true
+        },
+        {
+          "wall_ns": 2341228,
+          "passed": true
+        },
+        {
+          "wall_ns": 2159831,
+          "passed": true
+        },
+        {
+          "wall_ns": 2179723,
+          "passed": true
+        },
+        {
+          "wall_ns": 2168820,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 7,
+      "fixture": "binary-64k",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 5786534,
+          "passed": true
+        },
+        {
+          "wall_ns": 5597329,
+          "passed": true
+        },
+        {
+          "wall_ns": 5456534,
+          "passed": true
+        },
+        {
+          "wall_ns": 4995094,
+          "passed": true
+        },
+        {
+          "wall_ns": 4761984,
+          "passed": true
+        },
+        {
+          "wall_ns": 6005358,
+          "passed": true
+        },
+        {
+          "wall_ns": 4858208,
+          "passed": true
+        },
+        {
+          "wall_ns": 4569997,
+          "passed": true
+        },
+        {
+          "wall_ns": 6506807,
+          "passed": true
+        },
+        {
+          "wall_ns": 6183301,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 7,
+      "fixture": "arguments",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 3941088,
+          "passed": true
+        },
+        {
+          "wall_ns": 4012557,
+          "passed": true
+        },
+        {
+          "wall_ns": 4186391,
+          "passed": true
+        },
+        {
+          "wall_ns": 4176116,
+          "passed": true
+        },
+        {
+          "wall_ns": 4359376,
+          "passed": true
+        },
+        {
+          "wall_ns": 4014072,
+          "passed": true
+        },
+        {
+          "wall_ns": 3984810,
+          "passed": true
+        },
+        {
+          "wall_ns": 3917031,
+          "passed": true
+        },
+        {
+          "wall_ns": 3910239,
+          "passed": true
+        },
+        {
+          "wall_ns": 3889645,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 7,
+      "fixture": "exit",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2509992,
+          "passed": true
+        },
+        {
+          "wall_ns": 2238370,
+          "passed": true
+        },
+        {
+          "wall_ns": 2376637,
+          "passed": true
+        },
+        {
+          "wall_ns": 2246125,
+          "passed": true
+        },
+        {
+          "wall_ns": 2545052,
+          "passed": true
+        },
+        {
+          "wall_ns": 2308531,
+          "passed": true
+        },
+        {
+          "wall_ns": 2309613,
+          "passed": true
+        },
+        {
+          "wall_ns": 2166932,
+          "passed": true
+        },
+        {
+          "wall_ns": 2318628,
+          "passed": true
+        },
+        {
+          "wall_ns": 2473197,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 7,
+      "fixture": "arguments",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 4390715,
+          "passed": true
+        },
+        {
+          "wall_ns": 4157076,
+          "passed": true
+        },
+        {
+          "wall_ns": 4242496,
+          "passed": true
+        },
+        {
+          "wall_ns": 4071781,
+          "passed": true
+        },
+        {
+          "wall_ns": 4106459,
+          "passed": true
+        },
+        {
+          "wall_ns": 4055871,
+          "passed": true
+        },
+        {
+          "wall_ns": 4417899,
+          "passed": true
+        },
+        {
+          "wall_ns": 4311609,
+          "passed": true
+        },
+        {
+          "wall_ns": 4120649,
+          "passed": true
+        },
+        {
+          "wall_ns": 4149673,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 7,
+      "fixture": "exit",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 3803259,
+          "passed": true
+        },
+        {
+          "wall_ns": 4045120,
+          "passed": true
+        },
+        {
+          "wall_ns": 3954341,
+          "passed": true
+        },
+        {
+          "wall_ns": 4080712,
+          "passed": true
+        },
+        {
+          "wall_ns": 4070413,
+          "passed": true
+        },
+        {
+          "wall_ns": 3952072,
+          "passed": true
+        },
+        {
+          "wall_ns": 3975058,
+          "passed": true
+        },
+        {
+          "wall_ns": 3945479,
+          "passed": true
+        },
+        {
+          "wall_ns": 4039510,
+          "passed": true
+        },
+        {
+          "wall_ns": 3925374,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 7,
+      "fixture": "arguments",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2230014,
+          "passed": true
+        },
+        {
+          "wall_ns": 2284232,
+          "passed": true
+        },
+        {
+          "wall_ns": 2264700,
+          "passed": true
+        },
+        {
+          "wall_ns": 2293216,
+          "passed": true
+        },
+        {
+          "wall_ns": 2234009,
+          "passed": true
+        },
+        {
+          "wall_ns": 2396506,
+          "passed": true
+        },
+        {
+          "wall_ns": 2296500,
+          "passed": true
+        },
+        {
+          "wall_ns": 2202267,
+          "passed": true
+        },
+        {
+          "wall_ns": 2151005,
+          "passed": true
+        },
+        {
+          "wall_ns": 2375386,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 7,
+      "fixture": "binary-64k",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2770678,
+          "passed": true
+        },
+        {
+          "wall_ns": 2683274,
+          "passed": true
+        },
+        {
+          "wall_ns": 2760386,
+          "passed": true
+        },
+        {
+          "wall_ns": 2861808,
+          "passed": true
+        },
+        {
+          "wall_ns": 2765218,
+          "passed": true
+        },
+        {
+          "wall_ns": 2641055,
+          "passed": true
+        },
+        {
+          "wall_ns": 2702258,
+          "passed": true
+        },
+        {
+          "wall_ns": 2840481,
+          "passed": true
+        },
+        {
+          "wall_ns": 2856061,
+          "passed": true
+        },
+        {
+          "wall_ns": 2861843,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 7,
+      "fixture": "exit",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 3728668,
+          "passed": true
+        },
+        {
+          "wall_ns": 3744542,
+          "passed": true
+        },
+        {
+          "wall_ns": 3810138,
+          "passed": true
+        },
+        {
+          "wall_ns": 3833233,
+          "passed": true
+        },
+        {
+          "wall_ns": 3669327,
+          "passed": true
+        },
+        {
+          "wall_ns": 3694462,
+          "passed": true
+        },
+        {
+          "wall_ns": 3837496,
+          "passed": true
+        },
+        {
+          "wall_ns": 3841871,
+          "passed": true
+        },
+        {
+          "wall_ns": 3848643,
+          "passed": true
+        },
+        {
+          "wall_ns": 3716603,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 7,
+      "fixture": "binary-64k",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 6046492,
+          "passed": true
+        },
+        {
+          "wall_ns": 6501635,
+          "passed": true
+        },
+        {
+          "wall_ns": 6170698,
+          "passed": true
+        },
+        {
+          "wall_ns": 5878485,
+          "passed": true
+        },
+        {
+          "wall_ns": 5956413,
+          "passed": true
+        },
+        {
+          "wall_ns": 6013969,
+          "passed": true
+        },
+        {
+          "wall_ns": 5952136,
+          "passed": true
+        },
+        {
+          "wall_ns": 6037228,
+          "passed": true
+        },
+        {
+          "wall_ns": 5747410,
+          "passed": true
+        },
+        {
+          "wall_ns": 5959266,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 8,
+      "fixture": "exit",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2327746,
+          "passed": true
+        },
+        {
+          "wall_ns": 2261726,
+          "passed": true
+        },
+        {
+          "wall_ns": 2312813,
+          "passed": true
+        },
+        {
+          "wall_ns": 2416657,
+          "passed": true
+        },
+        {
+          "wall_ns": 2288885,
+          "passed": true
+        },
+        {
+          "wall_ns": 2254730,
+          "passed": true
+        },
+        {
+          "wall_ns": 2264974,
+          "passed": true
+        },
+        {
+          "wall_ns": 2269016,
+          "passed": true
+        },
+        {
+          "wall_ns": 2215682,
+          "passed": true
+        },
+        {
+          "wall_ns": 2438055,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 8,
+      "fixture": "exit",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 3879482,
+          "passed": true
+        },
+        {
+          "wall_ns": 3761194,
+          "passed": true
+        },
+        {
+          "wall_ns": 3649153,
+          "passed": true
+        },
+        {
+          "wall_ns": 3696902,
+          "passed": true
+        },
+        {
+          "wall_ns": 3655399,
+          "passed": true
+        },
+        {
+          "wall_ns": 3700221,
+          "passed": true
+        },
+        {
+          "wall_ns": 3758696,
+          "passed": true
+        },
+        {
+          "wall_ns": 3879198,
+          "passed": true
+        },
+        {
+          "wall_ns": 3904132,
+          "passed": true
+        },
+        {
+          "wall_ns": 3917497,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 8,
+      "fixture": "arguments",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2358257,
+          "passed": true
+        },
+        {
+          "wall_ns": 2327725,
+          "passed": true
+        },
+        {
+          "wall_ns": 2399082,
+          "passed": true
+        },
+        {
+          "wall_ns": 2343144,
+          "passed": true
+        },
+        {
+          "wall_ns": 2250815,
+          "passed": true
+        },
+        {
+          "wall_ns": 2366796,
+          "passed": true
+        },
+        {
+          "wall_ns": 2359488,
+          "passed": true
+        },
+        {
+          "wall_ns": 2274236,
+          "passed": true
+        },
+        {
+          "wall_ns": 2396907,
+          "passed": true
+        },
+        {
+          "wall_ns": 2320986,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 8,
+      "fixture": "binary-64k",
+      "route": "direct",
+      "calls": [
+        {
+          "wall_ns": 2816599,
+          "passed": true
+        },
+        {
+          "wall_ns": 2767919,
+          "passed": true
+        },
+        {
+          "wall_ns": 2654157,
+          "passed": true
+        },
+        {
+          "wall_ns": 2868944,
+          "passed": true
+        },
+        {
+          "wall_ns": 2761906,
+          "passed": true
+        },
+        {
+          "wall_ns": 2840686,
+          "passed": true
+        },
+        {
+          "wall_ns": 2726020,
+          "passed": true
+        },
+        {
+          "wall_ns": 2635978,
+          "passed": true
+        },
+        {
+          "wall_ns": 2735279,
+          "passed": true
+        },
+        {
+          "wall_ns": 2816905,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 8,
+      "fixture": "exit",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 4601654,
+          "passed": true
+        },
+        {
+          "wall_ns": 3964036,
+          "passed": true
+        },
+        {
+          "wall_ns": 3880140,
+          "passed": true
+        },
+        {
+          "wall_ns": 4006874,
+          "passed": true
+        },
+        {
+          "wall_ns": 3957745,
+          "passed": true
+        },
+        {
+          "wall_ns": 4030427,
+          "passed": true
+        },
+        {
+          "wall_ns": 4008324,
+          "passed": true
+        },
+        {
+          "wall_ns": 3962496,
+          "passed": true
+        },
+        {
+          "wall_ns": 3904649,
+          "passed": true
+        },
+        {
+          "wall_ns": 4041738,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 8,
+      "fixture": "arguments",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 3963899,
+          "passed": true
+        },
+        {
+          "wall_ns": 3966524,
+          "passed": true
+        },
+        {
+          "wall_ns": 4263056,
+          "passed": true
+        },
+        {
+          "wall_ns": 3979250,
+          "passed": true
+        },
+        {
+          "wall_ns": 4058406,
+          "passed": true
+        },
+        {
+          "wall_ns": 4006321,
+          "passed": true
+        },
+        {
+          "wall_ns": 4021288,
+          "passed": true
+        },
+        {
+          "wall_ns": 3905744,
+          "passed": true
+        },
+        {
+          "wall_ns": 4219880,
+          "passed": true
+        },
+        {
+          "wall_ns": 4182317,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 8,
+      "fixture": "binary-64k",
+      "route": "configured",
+      "calls": [
+        {
+          "wall_ns": 6347054,
+          "passed": true
+        },
+        {
+          "wall_ns": 6074509,
+          "passed": true
+        },
+        {
+          "wall_ns": 5790158,
+          "passed": true
+        },
+        {
+          "wall_ns": 6100859,
+          "passed": true
+        },
+        {
+          "wall_ns": 5876167,
+          "passed": true
+        },
+        {
+          "wall_ns": 5489694,
+          "passed": true
+        },
+        {
+          "wall_ns": 5606503,
+          "passed": true
+        },
+        {
+          "wall_ns": 5563640,
+          "passed": true
+        },
+        {
+          "wall_ns": 5505102,
+          "passed": true
+        },
+        {
+          "wall_ns": 6119828,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 8,
+      "fixture": "arguments",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 3940926,
+          "passed": true
+        },
+        {
+          "wall_ns": 3846903,
+          "passed": true
+        },
+        {
+          "wall_ns": 3978824,
+          "passed": true
+        },
+        {
+          "wall_ns": 3710667,
+          "passed": true
+        },
+        {
+          "wall_ns": 3712837,
+          "passed": true
+        },
+        {
+          "wall_ns": 3813523,
+          "passed": true
+        },
+        {
+          "wall_ns": 3856615,
+          "passed": true
+        },
+        {
+          "wall_ns": 3999542,
+          "passed": true
+        },
+        {
+          "wall_ns": 3942167,
+          "passed": true
+        },
+        {
+          "wall_ns": 3935496,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "round": 8,
+      "fixture": "binary-64k",
+      "route": "checker",
+      "calls": [
+        {
+          "wall_ns": 6119515,
+          "passed": true
+        },
+        {
+          "wall_ns": 5969830,
+          "passed": true
+        },
+        {
+          "wall_ns": 5816231,
+          "passed": true
+        },
+        {
+          "wall_ns": 5789432,
+          "passed": true
+        },
+        {
+          "wall_ns": 6035477,
+          "passed": true
+        },
+        {
+          "wall_ns": 5884733,
+          "passed": true
+        },
+        {
+          "wall_ns": 5679076,
+          "passed": true
+        },
+        {
+          "wall_ns": 5757783,
+          "passed": true
+        },
+        {
+          "wall_ns": 5749107,
+          "passed": true
+        },
+        {
+          "wall_ns": 5799253,
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "scope": "One shared-host healthy-fixture series. Direct controller caches fixture bytes and omits checker file loading, guards, incremental caps and its extra process. Not safety-contract parity, a memory benchmark or a universal speed claim.",
+  "shuffle_seed": 20261105,
+  "fixtures": {
+    "exit": {
+      "stdin_bytes": 0,
+      "stdout_bytes": 0,
+      "stdin_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "arguments": {
+      "stdin_bytes": 0,
+      "stdout_bytes": 14,
+      "stdin_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "275648a86b5ed0f52357ba245bfd8a22eff7b36f475c9e2b8c018723a54fb1fb"
+    },
+    "binary-64k": {
+      "stdin_bytes": 65536,
+      "stdout_bytes": 65536,
+      "stdin_sha256": "7daca2095d0438260fa849183dfc67faa459fdf4936e1bc91eec6b281b27e4c2",
+      "stdout_sha256": "7daca2095d0438260fa849183dfc67faa459fdf4936e1bc91eec6b281b27e4c2"
+    }
+  },
+  "measured_elapsed_ns": 3284391412,
+  "controller_fds": [
+    4,
+    4
+  ],
+  "finished_at": "2026-11-05T00:10:43.503007+00:00",
+  "load_average_finish": [
+    2.28076171875,
+    3.0380859375,
+    4.384765625
+  ]
+}
