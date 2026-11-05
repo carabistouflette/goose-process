@@ -70,7 +70,7 @@ def setup(goose, cc):
             command(['git', 'init', str(tree)])
             command(['git', 'remote', 'add', 'origin',
                      'https://github.com/carabistouflette/goose-check.git'], cwd=tree)
-            command(['git', 'fetch', '--depth', '1', 'origin', REVISION], cwd=tree)
+            command(['git', 'fetch', '--no-auto-maintenance', '--depth', '1', 'origin', REVISION], cwd=tree)
             command(['git', 'checkout', '--detach', REVISION], cwd=tree)
             clean_source(tree, REVISION)
             tree.rename(SOURCE)
