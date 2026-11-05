@@ -85,7 +85,7 @@ test: helpers
 	./.build/worker-client
 	$(GOOSE) build examples/worker.goose --cc $(CC) --debug --no-bce -o .build/worker-client-debug
 	./.build/worker-client-debug
-	python3 tests/ownership.py $(abspath $(GOOSE))
+	python3 tests/ownership.py "$(abspath $(GOOSE))"
 	python3 tests/stream_soak_controller.py
 	python3 tests/duplex_soak_controller.py
 	python3 tests/duplex_pair_controller.py
@@ -94,7 +94,7 @@ test: helpers
 	$(MAKE) native
 native: helpers
 	$(CC) $(CFLAGS) -O2 tests/pipeline.c $(NATIVE_SOURCES) $(PIPELINE_WRAPS) -o .build/pipeline-native
-	python3 scripts/run_pipeline.py .build/pipeline-native $(abspath .build/pipeline-helper)
+	python3 scripts/run_pipeline.py .build/pipeline-native "$(abspath .build/pipeline-helper)"
 	$(CC) $(CFLAGS) -O2 tests/stdin.c $(NATIVE_SOURCES) -Wl,--wrap=send,--wrap=clock_gettime,--wrap=poll,--wrap=__poll_chk,--wrap=waitpid -o .build/stdin-native
 	python3 scripts/run.py .build/stdin-native
 	$(CC) $(CFLAGS) -O2 tests/stream.c $(NATIVE_SOURCES) -Wl,--wrap=read -o .build/stream-native
@@ -106,11 +106,11 @@ native: helpers
 	$(CC) $(CFLAGS) -O2 tests/lifecycle.c $(NATIVE_SOURCES) $(LIFECYCLE_WRAPS) -o .build/lifecycle
 	python3 scripts/run.py .build/lifecycle
 	$(CC) $(CFLAGS) -O2 -pthread tests/native.c $(NATIVE_SOURCES) -o .build/native
-	python3 scripts/run.py .build/native $(abspath .build/helper)
+	python3 scripts/run.py .build/native "$(abspath .build/helper)"
 	$(CC) $(CFLAGS) -O2 tests/failures.c $(NATIVE_SOURCES) -Wl,--wrap=syscall -Wl,--wrap=kill -Wl,--wrap=waitpid -o .build/failures
 	python3 scripts/run.py .build/failures
 	$(CC) $(CFLAGS) -O2 tests/syscalls.c $(NATIVE_SOURCES) @tests/syscalls.wraps -o .build/syscalls-test
-	python3 scripts/run.py .build/syscalls-test $(abspath .build/helper)
+	python3 scripts/run.py .build/syscalls-test "$(abspath .build/helper)"
 	$(CC) $(CFLAGS) -O2 tests/deadlines.c $(NATIVE_SOURCES) $(DEADLINE_WRAPS) -o .build/deadlines
 	python3 scripts/run.py .build/deadlines
 	$(CC) $(CFLAGS) -O2 -shared -fPIC $(NATIVE_SOURCES) -o .build/process.so
@@ -119,7 +119,7 @@ native: helpers
 	python3 tests/validation.py
 sanitize: helpers
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/pipeline.c $(NATIVE_SOURCES) $(PIPELINE_WRAPS) -o .build/pipeline-sanitize
-	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run_pipeline.py .build/pipeline-sanitize $(abspath .build/pipeline-helper)
+	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run_pipeline.py .build/pipeline-sanitize "$(abspath .build/pipeline-helper)"
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie examples/worker.c -o .build/worker-sanitize
 	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 tests/worker.py .build/worker-sanitize
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/stdin.c $(NATIVE_SOURCES) -Wl,--wrap=send,--wrap=clock_gettime,--wrap=poll,--wrap=__poll_chk,--wrap=waitpid -o .build/stdin-sanitize
@@ -133,22 +133,22 @@ sanitize: helpers
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/lifecycle.c $(NATIVE_SOURCES) $(LIFECYCLE_WRAPS) -o .build/lifecycle-sanitize
 	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/lifecycle-sanitize
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie -pthread tests/native.c $(NATIVE_SOURCES) -o .build/native-sanitize
-	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/native-sanitize $(abspath .build/helper)
+	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/native-sanitize "$(abspath .build/helper)"
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/failures.c $(NATIVE_SOURCES) -Wl,--wrap=syscall -Wl,--wrap=kill -Wl,--wrap=waitpid -o .build/failures-sanitize
 	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/failures-sanitize
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/syscalls.c $(NATIVE_SOURCES) @tests/syscalls.wraps -o .build/syscalls-sanitize
-	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/syscalls-sanitize $(abspath .build/helper)
+	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/syscalls-sanitize "$(abspath .build/helper)"
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/deadlines.c $(NATIVE_SOURCES) $(DEADLINE_WRAPS) -o .build/deadlines-sanitize
 	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/deadlines-sanitize
 bench: helpers
 	python3 scripts/native-manifest.py --check
 	mkdir -p .build
 	$(GOOSE) build bench/bench.goose --cc $(BENCH_CC) -O2 -o .build/bench
-	python3 bench/measure.py --goose $(abspath $(GOOSE)) --cc $(BENCH_CC) --iterations $(BENCH_ITERATIONS)
+	python3 bench/measure.py --goose "$(abspath $(GOOSE))" --cc $(BENCH_CC) --iterations $(BENCH_ITERATIONS)
 compare-check:
-	python3 bench/compare/measure.py --goose $(abspath $(GOOSE)) --cc $(BENCH_CC) --build-only
+	python3 bench/compare/measure.py --goose "$(abspath $(GOOSE))" --cc $(BENCH_CC) --build-only
 compare:
-	python3 bench/compare/measure.py --goose $(abspath $(GOOSE)) --cc $(BENCH_CC)
+	python3 bench/compare/measure.py --goose "$(abspath $(GOOSE))" --cc $(BENCH_CC)
 fuzz:
 	mkdir -p .build
 	python3 scripts/fuzz-seeds.py
@@ -156,10 +156,10 @@ fuzz:
 	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 .build/fuzz -runs=$(FUZZ_RUNS) -seed=3025 -max_len=1048704 -timeout=5 -artifact_prefix=.build/ .build/fuzz-corpus
 profile: helpers
 	$(CC) $(CFLAGS) -O2 bench/profile.c $(NATIVE_SOURCES) -o .build/profile
-	strace -c -e trace=wait4,read,poll -o .build/syscalls.txt .build/profile $(abspath .build/helper)
+	strace -c -e trace=wait4,read,poll -o .build/syscalls.txt .build/profile "$(abspath .build/helper)"
 memcheck: helpers
 	$(CC) $(CFLAGS) -O1 -g bench/profile.c $(NATIVE_SOURCES) -o .build/memcheck
-	python3 scripts/run.py valgrind --tool=memcheck --error-exitcode=99 --track-origins=yes --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=definite,indirect,possible --child-silent-after-fork=yes --log-file=.build/memcheck.log .build/memcheck $(abspath .build/helper)
+	python3 scripts/run.py valgrind --tool=memcheck --error-exitcode=99 --track-origins=yes --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=definite,indirect,possible --child-silent-after-fork=yes --log-file=.build/memcheck.log .build/memcheck "$(abspath .build/helper)"
 
 .PHONY: checker-setup checker-consumer
 checker-setup:
