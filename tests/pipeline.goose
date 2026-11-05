@@ -50,6 +50,37 @@ fn main() {
     clean(arguments); assert(process::pipeline_success(arguments));
     assert(out == "a b\x00$(not-run)\x00*\x00;\x00" && first_err.len == 0 && second_err.len == 0);
 
+    let directory_text = resource_dir(); let directory: const u8[:] = directory_text[..];
+    let first_environment = [process::EnvOverride { key: "PATH", value: directory },
+        process::EnvOverride { key: "PIPE_STAGE", value: "first" }];
+    let second_environment = [process::EnvOverride { key: "PATH", value: directory },
+        process::EnvOverride { key: "PIPE_STAGE", value: "second" }];
+    let environments = process::run_pipeline(["pipeline-helper", "environment-source"], process::Options {
+        cwd: "/", clear_environment: true, environment: first_environment[..], search_path: true,
+    }, ["pipeline-helper", "environment-copy"], process::Options {
+        cwd: "/tmp", clear_environment: true, environment: second_environment[..], search_path: true,
+    }, out, first_err, second_err);
+    clean(environments); assert(process::pipeline_success(environments));
+    assert(out == "first\x00/\x00" && first_err.len == 0 && second_err == "second\x00/tmp\x00");
+
+    // Caller storage and prior owned captures may back staging inputs.
+    out.clear(); out.append(helper);
+    let old_executable: const u8[:] = out[..];
+    let staged = process::run_pipeline([old_executable, "args", "alias"], process::Options { .. },
+        [helper, "copy", "0"], process::Options { .. }, out, first_err, second_err);
+    clean(staged); assert(process::pipeline_success(staged) && out == "alias\x00");
+    let prior = process::pipeline_stdout(owner);
+    let reused = process::start_pipeline([helper, "copy", "0"], process::Options {
+        stdin: process::Input.Bytes, input: prior,
+    }, [helper, "copy", "0"], process::Options { stdout_limit: 786432 }, owner);
+    checked(owner, reused.error == process::Error.None);
+    let reuse_done = process::wait_pipeline(owner); clean(reuse_done);
+    assert(process::pipeline_success(reuse_done) && process::pipeline_stdout(owner).len == 786432);
+    for i in 786432 {
+        let expected: u8 = if i < 262144 { 'x' } else { ((i - 262144) % 256) as u8 };
+        assert(process::pipeline_stdout(owner)[i] == expected);
+    }
+
     // Exercise each independent capture at an exact cap, one over, empty/zero,
     // and nonempty/zero. Intermediate pipeline bytes are not accumulated here.
     for channel in 3 {

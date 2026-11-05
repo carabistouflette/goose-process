@@ -46,7 +46,13 @@ static void idle(void) {
 }
 int main(int argc, char **argv) {
     if (argc < 2) return 91;
-    if (!strcmp(argv[1], "source") && argc == 4) {
+    if ((!strcmp(argv[1], "environment-source") || !strcmp(argv[1], "environment-copy")) && argc == 2) {
+        const char *value = getenv("PIPE_STAGE"); char directory[4096];
+        if (!value || !getcwd(directory, sizeof directory)) return 94;
+        int fd = !strcmp(argv[1], "environment-source") ? 1 : 2;
+        emit(fd, value, strlen(value) + 1); emit(fd, directory, strlen(directory) + 1);
+        if (fd == 2) copy_input();
+    } else if (!strcmp(argv[1], "source") && argc == 4) {
         fill(2, 'y', number(argv[3])); fill(1, 'x', number(argv[2])); copy_input();
     } else if (!strcmp(argv[1], "copy") && argc == 3) {
         fill(2, 'z', number(argv[2])); copy_input();

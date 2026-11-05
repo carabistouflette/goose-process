@@ -55,5 +55,15 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
                            0, (gp_metadata){config, 11}, (gp_metadata){storage, 24}, (gp_metadata){meta, 6});
     assert(result == 1 || result == 2 || result == 3);
     assert(meta[5] == 0);
+    /* Both pipeline commands remain under the unconditional spawn refusal. */
+    int64_t pipe_state[55] = {0}, pipe_meta[17] = {0}, second[11];
+    for (size_t i = 0; i < 11; ++i) second[i] = config[i];
+    second[3] = 0;
+    result = (int)gp_pipeline_start((gp_input){data + offset, (int64_t)(size - offset)},
+        fields[0], fields[1], fields[2], (gp_input){data + offset, (int64_t)(size - offset)},
+        fields[0], fields[1], fields[2], 0, (gp_metadata){config, 11}, (gp_metadata){second, 11},
+        (gp_metadata){pipe_state, 55}, (gp_metadata){pipe_meta, 17});
+    assert(result >= 1 && result <= 4);
+    assert(pipe_meta[8] == 0 && pipe_meta[14] == 0 && !pipe_meta[15] && !pipe_meta[16]);
     return 0;
 }
