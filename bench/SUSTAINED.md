@@ -1,5 +1,9 @@
 # Sustained consumer soak
 
+**Historical study.** Results and unchanged-source statements below apply to
+the named revisions, not current main. Reproduce with those source, compiler and
+dependency versions. See [current benchmark scope](CURRENTNESS.md).
+
 This optional Linux harness extends the [short functional soak](SOAK.md) with a
 monotonic duration budget, explicit warmup, finite output pressure and current
 resource snapshots. It uses the same published Honk consumer and pinned Goose

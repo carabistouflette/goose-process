@@ -1,5 +1,9 @@
 # Checked duplex sessions, 2026-11-05
 
+**Historical study.** Results and unchanged-source statements below apply to
+the named revisions, not current main. Reproduce with those source, compiler and
+dependency versions. See [current benchmark scope](../CURRENTNESS.md).
+
 All **360 measured sessions and 72 warmups** passed the exact frame, output,
 EOF and exit-status checks. This is a shared-host successful-workload comparison
 of four bounded adapters, with the [documented policy differences](README.md).

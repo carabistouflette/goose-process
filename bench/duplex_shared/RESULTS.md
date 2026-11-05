@@ -1,5 +1,9 @@
 # Shared-engine duplex cost, 2026-11-05
 
+**Historical study.** Results and unchanged-source statements below apply to
+the named revisions, not current main. Reproduce with those source, compiler and
+dependency versions. See [current benchmark scope](../CURRENTNESS.md).
+
 The shared-engine routes had close session medians and overlapping ranges.
 Removing one duplicate native-state reload reduces generated work, but the
 paired wall times do **not** establish a reliable session-latency improvement.

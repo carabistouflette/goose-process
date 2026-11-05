@@ -1,5 +1,9 @@
 # Shared native-kernel profiling
 
+**Historical study.** Results and unchanged-source statements below apply to
+the named revisions, not current main. Reproduce with those source, compiler and
+dependency versions. See [current benchmark scope](../CURRENTNESS.md).
+
 This diagnostic compares the Goose public wrapper with a Rust front end using
 **the same C process engine**, not Rust std::process or an independent security
 implementation. See [the method](README.md#shared-kernel-diagnostic-track).

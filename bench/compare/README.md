@@ -1,5 +1,9 @@
 # Rust, Go, Python and Goose process comparison
 
+**Historical study.** Results and unchanged-source statements below apply to
+the named revisions, not current main. Reproduce with those source, compiler and
+dependency versions. See [current benchmark scope](../CURRENTNESS.md).
+
 [Recorded results, toolchains and sample ranges](RESULTS.md) are available with
 [all raw samples](../results/linux-stdlib-2026-11-04.json).
 

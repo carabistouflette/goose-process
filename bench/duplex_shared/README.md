@@ -1,5 +1,9 @@
 # Shared-native-engine duplex diagnostic
 
+**Historical study.** Results and unchanged-source statements below apply to
+the named revisions, not current main. Reproduce with those source, compiler and
+dependency versions. See [current benchmark scope](../CURRENTNESS.md).
+
 This track compares the public Goose wrapper with a fixed Rust FFI wrapper that
 links **the exact native object bytes used by Goose**. It separates wrapper,
 staging and checking costs from the different process policies in the

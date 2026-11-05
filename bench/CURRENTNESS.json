@@ -1,0 +1,1447 @@
+{
+  "audit_date": "2026-11-05",
+  "current_implementation": "7f759bb22e4afcbe65c78dee20861509c3310a52",
+  "method": "Git object comparison for all named local source revisions; SHA256 of each raw report; complete pipeline source map checked against current Git bytes. No measurements rerun. Historical records do not imply current performance.",
+  "reports": [
+    {
+      "report": "bench/results/checker-overhead-2026-11-05.json",
+      "sha256": "4182a248434d0101fd8992a5dc30c21b405040427bb78329b4af8d4f7c74e8f2",
+      "source_revision": "ccbe654f84d4c80ca0063a3e256ab368b64d9250",
+      "consumer_revision": null,
+      "checker_revision": "32de6c4783bf8d3242e042993dadd160a98b2945",
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "bd512e93bf4ac2ee5b3d71042cba5586bff69b0c",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "796cf7c557b057e70fc95bc3ae9be78add46e7ed",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "b49f7c1b4351590cb3c177bd9d44bc0cb8cf70f5",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "1b857c0ed1d1b23a2fddb45a56dcbfe543f7da4c",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "f55fbb373962825587998b15c0a7a501b2f28c13",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/duplex-compare-2026-11-05.json",
+      "sha256": "9eb2161c0a06ca76d2d9581ed5de4e97bfd5e8527989fa515ce5ec2bb376828e",
+      "source_revision": "e52219364fab917e901e7a578e34c53d6880139a",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "de1a7bfac290766cd01e28ccbaf53e3c2bf3d8b0",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "c5ecbb6512b5256cf192b1c0a74aee9212ee2872",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/duplex-compare-before-span-2026-11-05.json",
+      "sha256": "a1ce969bef7578970a0fbaeb804f7abdc071bc0b523915e97b7f5af40c4360be",
+      "source_revision": "25e9b37fa15b65054dd9136e5a01f84d4e4b2f05",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "de1a7bfac290766cd01e28ccbaf53e3c2bf3d8b0",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "c5ecbb6512b5256cf192b1c0a74aee9212ee2872",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/duplex-deadlines-2026-11-05.json",
+      "sha256": "a17806a3760d7f5b058f0a8845af14fc08a726f54371b7f266520bbe0dd096df",
+      "source_revision": "1395b4f8a3c0e6895e27dee747b2bfd387cc77f9",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "de1a7bfac290766cd01e28ccbaf53e3c2bf3d8b0",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "c5ecbb6512b5256cf192b1c0a74aee9212ee2872",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/duplex-profile-before-span-2026-11-05.json",
+      "sha256": "01eb32fddddccb65a7d42740b0a6b67dbe86c74143e584564d503b27e5b628a4",
+      "source_revision": "45e311c58d8b1a586c12dd7526040e2d107fb50f",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "de1a7bfac290766cd01e28ccbaf53e3c2bf3d8b0",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "c5ecbb6512b5256cf192b1c0a74aee9212ee2872",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/duplex-profile-span-2026-11-05.json",
+      "sha256": "2e477d3e44621a76c0fdfb4933aa8e15dbc47a58cf2e2f61b38ce9c9c2056c6c",
+      "source_revision": "1395b4f8a3c0e6895e27dee747b2bfd387cc77f9",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "de1a7bfac290766cd01e28ccbaf53e3c2bf3d8b0",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "c5ecbb6512b5256cf192b1c0a74aee9212ee2872",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/duplex-soak-2026-11-05.json",
+      "sha256": "ebaf652a9de7459f31002bd179e3cff76fc3d9b8baf694cbe6497f6d222a03c6",
+      "source_revision": "a91e10f7b8337433ba904accf291c696e9d53ba8",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "de1a7bfac290766cd01e28ccbaf53e3c2bf3d8b0",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "c5ecbb6512b5256cf192b1c0a74aee9212ee2872",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/honk-soak-2026-11-04.json",
+      "sha256": "1a847af8a22ec6e29dcd90e11d838722b4716804699e2d5f7da8a2869c1502ba",
+      "source_revision": null,
+      "consumer_revision": "453aa53dc7b20622782423c64cc180097f653650",
+      "checker_revision": null,
+      "classification": "historical consumer"
+    },
+    {
+      "report": "bench/results/honk-sustained-2026-11-04.json",
+      "sha256": "c4f61621d3836ae30e7edcaf346e7f237b7c81eeea60ce832a838152b485b8fe",
+      "source_revision": null,
+      "consumer_revision": "453aa53dc7b20622782423c64cc180097f653650",
+      "checker_revision": null,
+      "classification": "historical consumer"
+    },
+    {
+      "report": "bench/results/linux-gcc-2026-11-04.json",
+      "sha256": "076519fd68e5627f598fed31beb234ebf9d7f7eb85db31785c069ae566d38021",
+      "source_revision": "9fd737c08f491ff842725c16189073891c8cfff7",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "63e6b7b29af9bee50cc5e865fb6bd7be74b4e820",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "04bb5e4e45a230f8f7ca3c6b71cdf01f28910fb2",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "2d8bb4e61aca031e1b37f9bf5d7d49d9063bf3c4",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": null,
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": null,
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "53c8b73211667650dfc0af4561ff20ef9acf6204",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/launch.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/linux-shared-kernel-2026-11-04.json",
+      "sha256": "5aa5a295cebf2397ece8a230458574e4d9c37fc9c35cb5d14a40e10fa8f8c871",
+      "source_revision": "3a7e6f8f50101d4f8aac8386f58f4c5a4a1c86d3",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "21b4f51f93f3c2f8041da4f017dcf9bf363e4d93",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "1520db54b4513490a9a73b01e2566c4a6dbca559",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "57b47f190247cb2d5234a8e69e5d0acd82883bb9",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "41f58be076b23759c441fc09e9078650c714adcd",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "1b857c0ed1d1b23a2fddb45a56dcbfe543f7da4c",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "f55fbb373962825587998b15c0a7a501b2f28c13",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/launch.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/linux-shared-profile-2026-11-04.json",
+      "sha256": "3ee6c3521fd8c72f57b1e8c1baa85d571302995899036a53f0643ffc119e880a",
+      "source_revision": "3a7e6f8f50101d4f8aac8386f58f4c5a4a1c86d3",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "21b4f51f93f3c2f8041da4f017dcf9bf363e4d93",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "1520db54b4513490a9a73b01e2566c4a6dbca559",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "57b47f190247cb2d5234a8e69e5d0acd82883bb9",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "41f58be076b23759c441fc09e9078650c714adcd",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "1b857c0ed1d1b23a2fddb45a56dcbfe543f7da4c",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "f55fbb373962825587998b15c0a7a501b2f28c13",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/launch.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/linux-stdlib-2026-11-04.json",
+      "sha256": "2c92ba81a8d1a9034a7258e331b55d360cb7270102cd34910a643652ebf782f6",
+      "source_revision": "12c509e49ec0b1a83c2621db4dea0d7f2001645d",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "21b4f51f93f3c2f8041da4f017dcf9bf363e4d93",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "09abf1a7abf80f8cd598506f05c5eb06ec6b7113",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "3e2c9e2092da7933f0a709e5915ec8576cbf6732",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "41f58be076b23759c441fc09e9078650c714adcd",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "1b857c0ed1d1b23a2fddb45a56dcbfe543f7da4c",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "f55fbb373962825587998b15c0a7a501b2f28c13",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/launch.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/pidfd-profile-control-2026-11-05.json",
+      "sha256": "b69b2ba42614acf835fb3637e1078bf8f5e90267c45db9e40de3f6e4318a2f75",
+      "classification": "historical profiler controls",
+      "source_revision": null
+    },
+    {
+      "report": "bench/results/pipeline-2026-11-05.json",
+      "sha256": "f95c3ad3925886e932d0700b22e6f1b717535079de265268e99e83a53d1f94e5",
+      "source_revision": "396ada2b8d9a55a22d405a77833f4a03e6aa889d",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "65dbddc570727f142a3e3b008bf5435b4023f311",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "2cd6386764f0ac739560834017e2cc1c009e432a",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "85c29010cea8b06e15ec1249543564b6bb471018",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "945e666abadc8693c8e9dab1e41ffb2271bf0e26",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [],
+      "classification": "current through checked bridge"
+    },
+    {
+      "report": "bench/results/stdin-2026-11-05.json",
+      "sha256": "28b643e1ef14bdd7f7d1ef504f9a24f668a4f8fc46114c89c375632661966ba0",
+      "source_revision": "e6286440045a6ff30354c30d6a3c3f8e216b0c8c",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "de1a7bfac290766cd01e28ccbaf53e3c2bf3d8b0",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "c5ecbb6512b5256cf192b1c0a74aee9212ee2872",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/stream-2026-11-05.json",
+      "sha256": "162b279fcfb79be7837b8265d224c0d23f1afeb73be5ecd6dfb218519e15c1af",
+      "source_revision": "072d125f963104437038153bcb42bbc521cec28a",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "dc9a06c8fcc723ad5f8ca2c723575bc11ead906d",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "d89f64d1440fdf6c8e0db7b363d774817132d72d",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "0ddddea56d389f827da38e17da0c3cd932f2f428",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "532cdafa84e0a695a2ab9c7cbf9077f733fbf346",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0e086031e269254bbd4187751d2f570ebdb40529",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/stream-profile-finite-2026-11-05.json",
+      "sha256": "69548b6a447ad183a6afcab7a61f2cc0ce9cc79191cad5e887d5dc6fbd806487",
+      "source_revision": "54a6679919f2b11ac0adcb78a35c8f7853b69b7f",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "dc9a06c8fcc723ad5f8ca2c723575bc11ead906d",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "d89f64d1440fdf6c8e0db7b363d774817132d72d",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "0ddddea56d389f827da38e17da0c3cd932f2f428",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "532cdafa84e0a695a2ab9c7cbf9077f733fbf346",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0e086031e269254bbd4187751d2f570ebdb40529",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/stream-profile-finite-first-2026-11-05.json",
+      "sha256": "2dcf4b372949ea2711036153524edd93f1fa18fdad212464fcebdccb14d52008",
+      "source_revision": "bce7fbf05161bf65b4cc8c0ec45ac0411bdcc43f",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "dc9a06c8fcc723ad5f8ca2c723575bc11ead906d",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "d89f64d1440fdf6c8e0db7b363d774817132d72d",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "0ddddea56d389f827da38e17da0c3cd932f2f428",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "532cdafa84e0a695a2ab9c7cbf9077f733fbf346",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0e086031e269254bbd4187751d2f570ebdb40529",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/stream-profile-full-2026-11-05.json",
+      "sha256": "567041c8944792d60a639ecfc0435b9d3f8c6922cf6a34fb4647f7588fdf18bb",
+      "source_revision": "51b5226a3c080e34dd4192b7e3e823eff745dc57",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "dc9a06c8fcc723ad5f8ca2c723575bc11ead906d",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "d89f64d1440fdf6c8e0db7b363d774817132d72d",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "0ddddea56d389f827da38e17da0c3cd932f2f428",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "532cdafa84e0a695a2ab9c7cbf9077f733fbf346",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0e086031e269254bbd4187751d2f570ebdb40529",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/stream-soak-2026-11-05.json",
+      "sha256": "fcd443c05871098077bf3845712f0d5c31e557ab3a93c985f2c1322e4342a9e5",
+      "source_revision": "51b5226a3c080e34dd4192b7e3e823eff745dc57",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "dc9a06c8fcc723ad5f8ca2c723575bc11ead906d",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "d89f64d1440fdf6c8e0db7b363d774817132d72d",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "0ddddea56d389f827da38e17da0c3cd932f2f428",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "532cdafa84e0a695a2ab9c7cbf9077f733fbf346",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0e086031e269254bbd4187751d2f570ebdb40529",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/wrapper-paired-grouped-2026-11-05.json",
+      "sha256": "9e070581d07aca62ebb929d1fa860ced768df7756c74284add9dc2cb152827e6",
+      "source_revision": "e6f193ea5c1ae2cd927dfd2a82cff7e5ff66bddc",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "198f8dc068a8874abdc504d215f6e1a9473c074f",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "9db4f78e1dc7d6aec5d90b790b4f683a7f1eb825",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/wrapper-paired-output-arg-first-2026-11-05.json",
+      "sha256": "8c3867fa0db89b9aae52009a58cf5e6f8f95019ea89de7af7cafcc89b714ffda",
+      "source_revision": "5836b3e6d94dc659ab31d54aa0e05d6c56a64581",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "b261415758398eca59740e19b86079b7f8fbc412",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "c8263ba0ae0ee1c76c1fa0209d586a5c52785f93",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/wrapper-paired-output-arg-repeat-2026-11-05.json",
+      "sha256": "6a3da3bfa86323c5af71b118859e87cc1242e2e64ef52d2b26c7b300ed912080",
+      "source_revision": "473b2597a6526491e713f3ee17a5edd3f2a7da19",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "b261415758398eca59740e19b86079b7f8fbc412",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "c8263ba0ae0ee1c76c1fa0209d586a5c52785f93",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/wrapper-profile-baseline-2026-11-05.json",
+      "sha256": "e2fc9b88328e2f0acbf3cbbc31e61eaaeeafb98ec0bd84193ef84c35cb2c9197",
+      "source_revision": "473b2597a6526491e713f3ee17a5edd3f2a7da19",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "b261415758398eca59740e19b86079b7f8fbc412",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "c8263ba0ae0ee1c76c1fa0209d586a5c52785f93",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/wrapper-profile-grouped-2026-11-05.json",
+      "sha256": "03c44768b58915606ab2c1e1009256f4ba1de460d5eca31685ac6c01fa41e3ab",
+      "source_revision": "e6f193ea5c1ae2cd927dfd2a82cff7e5ff66bddc",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "198f8dc068a8874abdc504d215f6e1a9473c074f",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "9db4f78e1dc7d6aec5d90b790b4f683a7f1eb825",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/wrapper-profile-output-arg-2026-11-05.json",
+      "sha256": "9a36e762f4aa9cb28499d5a1edad4507bc4ed065c43710a6f2d9ecca61d3bd36",
+      "source_revision": "473b2597a6526491e713f3ee17a5edd3f2a7da19",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "b261415758398eca59740e19b86079b7f8fbc412",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "c8263ba0ae0ee1c76c1fa0209d586a5c52785f93",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/wrapper-shared-baseline-2026-11-05.json",
+      "sha256": "620ca150006da808ccc4b0097d4db86d6722c593d1f5cafa8ead30c65419fd4f",
+      "source_revision": "73c953ee754447f54ad49ee3606c5adecfbd8430",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "de1a7bfac290766cd01e28ccbaf53e3c2bf3d8b0",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "c5ecbb6512b5256cf192b1c0a74aee9212ee2872",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/wrapper-shared-grouped-2026-11-05.json",
+      "sha256": "f5e81b9670022c05b69f67e2119725debc1ebb033edf3cfaac9691ef2ecdfab3",
+      "source_revision": "e6f193ea5c1ae2cd927dfd2a82cff7e5ff66bddc",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "198f8dc068a8874abdc504d215f6e1a9473c074f",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "9db4f78e1dc7d6aec5d90b790b4f683a7f1eb825",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/wrapper-shared-output-arg-2026-11-05.json",
+      "sha256": "f196f01ed53abc14e038c8a1670a23eb869342c6b3b62b20dcae877850de5c36",
+      "source_revision": "5836b3e6d94dc659ab31d54aa0e05d6c56a64581",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "b261415758398eca59740e19b86079b7f8fbc412",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "c8263ba0ae0ee1c76c1fa0209d586a5c52785f93",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/wrapper-soak-grouped-2026-11-05.json",
+      "sha256": "e5bba83dc3bf893d4b50e36c1183a83d80a700d9abaaa1575405cbd7e45cacc7",
+      "source_revision": "e6f193ea5c1ae2cd927dfd2a82cff7e5ff66bddc",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "198f8dc068a8874abdc504d215f6e1a9473c074f",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "9db4f78e1dc7d6aec5d90b790b4f683a7f1eb825",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/wrapper-startup-rejection-2026-11-05.json",
+      "sha256": "7a022d82f369e264be47e8a451cc61e42a89d9cf6a83f0d4dd0cc16384a6b7bd",
+      "source_revision": "473b2597a6526491e713f3ee17a5edd3f2a7da19",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "b261415758398eca59740e19b86079b7f8fbc412",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "c8263ba0ae0ee1c76c1fa0209d586a5c52785f93",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/wrapper-stdlib-grouped-2026-11-05.json",
+      "sha256": "ce6086df8fc0432f0695673a8024c75650e4fccf13282fefc11c6bc7b45b377e",
+      "source_revision": "e6f193ea5c1ae2cd927dfd2a82cff7e5ff66bddc",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "198f8dc068a8874abdc504d215f6e1a9473c074f",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "9db4f78e1dc7d6aec5d90b790b4f683a7f1eb825",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    },
+    {
+      "report": "bench/results/wrapper-stdlib-output-arg-2026-11-05.json",
+      "sha256": "ac8d00094f1f829cd5243d342f7d68d4588a4ab500ba2ff5a33d6fc8ba1ea50a",
+      "source_revision": "ad835374b555f5f95b6faf2d098fd5c947a4eca4",
+      "consumer_revision": null,
+      "checker_revision": null,
+      "runtime_git_objects": {
+        "process.goose": {
+          "measured": "57dbe00c17803ca2a58b6996a93ce2d71ed347fb",
+          "current": "65dbddc570727f142a3e3b008bf5435b4023f311"
+        },
+        "process.build": {
+          "measured": "b261415758398eca59740e19b86079b7f8fbc412",
+          "current": "64d8bfa2e15f27eeb61df72ea4489e6a28853e0c"
+        },
+        "GOOSE_REVISION": {
+          "measured": "86a83a7da7bd50a064c3e9fd23655224550fb987",
+          "current": "86a83a7da7bd50a064c3e9fd23655224550fb987"
+        },
+        "native/process.c": {
+          "measured": "c8263ba0ae0ee1c76c1fa0209d586a5c52785f93",
+          "current": "2cd6386764f0ac739560834017e2cc1c009e432a"
+        },
+        "native/launch.c": {
+          "measured": "36277383a7d2d877febc312a61efaedef375d904",
+          "current": "36277383a7d2d877febc312a61efaedef375d904"
+        },
+        "native/internal.h": {
+          "measured": "b3fab971f734f06500c93b6be4a8d9d3dda183a1",
+          "current": "85c29010cea8b06e15ec1249543564b6bb471018"
+        },
+        "native/process.h": {
+          "measured": "0a2a75f54c0d466a2cbea6035a9585a62884e285",
+          "current": "945e666abadc8693c8e9dab1e41ffb2271bf0e26"
+        }
+      },
+      "changed_runtime_paths": [
+        "process.goose",
+        "process.build",
+        "native/process.c",
+        "native/internal.h",
+        "native/process.h"
+      ],
+      "classification": "historical implementation"
+    }
+  ],
+  "pipeline_source_bridge": {
+    "GOOSE_REVISION": "64e14b181dfe96743211738fb0f1b1f7798ea940da2ca50ff122e6f028c24e15",
+    "bench/pipeline.goose": "84e2340c55922fecbf3a1c24a382bc70bbe44d0335010314d2d20299eb6941a6",
+    "bench/pipeline_measure.py": "c5ff185516765b732df29595d1661bd370d015768f864e7f67c8339624336e5d",
+    "native/internal.h": "e93a61f32c9e34baf1e679d2152708900ec60a48d15e6a4dd7092d9b6e8afa26",
+    "native/launch.c": "1b893ad4bb688af81d8f2ef1e3dbddaabcadeede23768e4da6d518b86c607c3e",
+    "native/process.c": "25483fddc122019a44f0b96e1b4f9cbae267d5c9423085dbb77c0122241fddac",
+    "native/process.h": "0cf1ab71c3e5e53708400196bc2de21792c0bb6b532b20238c9b095c00573210",
+    "process.build": "8a5d9f7b263c7e7a465d285af9d6de736fc1c119a433c00c5dc7c22aa4e4f4cb",
+    "process.goose": "68f193e6a5b7f574a96444c48d5ef0ed71d6ee36e92185abf7d7e6480a7ae2c8",
+    "scripts/checker_consumer.py": "c82bb35244ecb93f07cad6ca8c69b2f7a063bb7c65b66d943cc5965fc875436c",
+    "scripts/native-manifest.py": "d52d6aac990586b00a18f961ee8bf98acc20170879fe94cd440fae057ce6accd",
+    "tests/pipeline_helper.c": "884be40cdd4ac0f28136ae16f55698a44e82bdbc76b591f1669f4e997b03d493"
+  },
+  "pipeline_tools": {
+    "goose": {
+      "recorded_sha256": "9d37f42abee55079a179cda33b2c28c2879789135b37333c78654bb6ed536f2a",
+      "local_matches": true
+    },
+    "cc": {
+      "recorded_sha256": "8aac907d6fbf40394b424b5fa4a2ad1aa291dac7d3a0315c5b415c1f5ace1287",
+      "local_matches": true
+    }
+  },
+  "pipeline_pre_post_equal": true
+}

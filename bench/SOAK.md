@@ -1,5 +1,9 @@
 # Controlled Honk service soak
 
+**Historical study.** Results and unchanged-source statements below apply to
+the named revisions, not current main. Reproduce with those source, compiler and
+dependency versions. See [current benchmark scope](CURRENTNESS.md).
+
 Post-release validation on 2026-11-04 used public Honk main
 [`453aa53dc7b20622782423c64cc180097f653650`](https://github.com/carabistouflette/honk/commit/453aa53dc7b20622782423c64cc180097f653650),
 with [GCC/Clang CI](https://github.com/carabistouflette/honk/actions/runs/41860574134).

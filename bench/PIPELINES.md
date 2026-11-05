@@ -5,6 +5,14 @@ This short local experiment compares `run_pipeline` with an explicitly owned
 policy. It does not compare another process library or establish isolated copy
 cost, general throughput, safety superiority, peak memory or absence of leaks.
 
+## Source currentness
+
+The measured source `396ada2b8d9a55a22d405a77833f4a03e6aa889d` has the same
+12 recorded implementation/build/compiler/driver/fixture/controller files as
+published main `7f759bb22e4afcbe65c78dee20861509c3310a52`. The recorded Goose and
+GCC executable hashes also match the binaries used for the documentation audit.
+This is a checked source bridge, not a new timing run. See [the audit](CURRENTNESS.md).
+
 ## Reproduction and scope
 
 Commit measurement sources first, then run on Linux with the pinned compiler:

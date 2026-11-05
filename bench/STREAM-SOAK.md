@@ -1,5 +1,9 @@
 # Sustained resident streaming validation, 2026-11-05
 
+**Historical study.** Results and unchanged-source statements below apply to
+the named revisions, not current main. Reproduce with those source, compiler and
+dependency versions. See [current benchmark scope](CURRENTNESS.md).
+
 One resident Goose consumer completed **19,879 measured cases over
 300.054586994 seconds**, after 12 warmups. All cases passed. At every quiescent
 checkpoint it had three descriptors and no remaining child. No library runtime

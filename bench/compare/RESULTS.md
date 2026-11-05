@@ -1,5 +1,9 @@
 # Recorded standard-library comparison
 
+**Historical study.** Results and unchanged-source statements below apply to
+the named revisions, not current main. Reproduce with those source, compiler and
+dependency versions. See [current benchmark scope](../CURRENTNESS.md).
+
 Source: clean commit
 [`12c509e49ec0b1a83c2621db4dea0d7f2001645d`](https://github.com/carabistouflette/goose-process/commit/12c509e49ec0b1a83c2621db4dea0d7f2001645d),
 2026-11-04. [Raw samples and provenance](../results/linux-stdlib-2026-11-04.json).
@@ -43,7 +47,7 @@ pipes for the baselines; Rust additionally starts/joins a writer thread for each
 input call. Capture allocation/reuse strategies differ. The complete differences
 and scope are in [the harness documentation](README.md).
 
-The current result supports a competitive successful-workload implementation
+This historical result supported a competitive successful-workload implementation
 with bounded defaults. It does not justify removing safety checks or adding
 complexity to chase differences smaller than host variability. For a stronger
 claim, independently validate matched safety-contract adapters, collect repeated

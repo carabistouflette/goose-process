@@ -1,5 +1,9 @@
 # Bounded framed-worker comparison
 
+**Historical study.** Results and unchanged-source statements below apply to
+the named revisions, not current main. Reproduce with those source, compiler and
+dependency versions. See [current benchmark scope](../CURRENTNESS.md).
+
 This track compares four implementations of one successful interactive protocol.
 It measures a whole checked worker session, not pure spawn time, individual
 request latency, whole-API feature parity or a general language/safety ranking.
