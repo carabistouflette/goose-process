@@ -49,7 +49,34 @@ bookkeeping; storing that local value cannot invalidate its owner/phase. Buffers
 cannot alias storage after validation. Concurrent mutation of one Child is not
 a supported contract. Legacy callers need no new public result or state layout.
 
-## Results
+## Completed results
 
-No new measurement or optimization result is claimed by this acceptance document.
-Completed results will name their exact source revisions and limits.
+The [shared-engine results](../bench/duplex_shared/RESULTS.md) retain all 13
+records: baseline, initial output-argument candidate, final grouped result,
+paired sessions, profiles, four-adapter reruns, resident validation and an
+intentional rejected startup fixture. All timed invocations passed. Source,
+compiler, frozen executable/native-object and profile-log identities were
+independently checked against their actual revisions.
+
+The final native implementation at
+`e6f193ea5c1ae2cd927dfd2a82cff7e5ff66bddc` uses one private grouped result,
+preserving the original helper argument count. Public/native signatures and
+the 24-word Child layout stay unchanged. Full normal GCC/Clang suites, both
+ASan/UBSan compilers, intercepted-spawn 10,000-run fuzzing, Clang static analysis
+and successful/rejected shared-worker probes passed. Additional regressions
+cover rejection/result ownership and failed launches; normal controller tests
+preserve startup-failure reports before any sample launches.
+
+A clean local clone with spaces/fresh Goose cache completed 2,562 measured
+resident cases plus 12 warmups over 300.396593840 seconds. Every measured
+quiescent checkpoint had three descriptors, no child and unchanged observed
+RSS/mappings. Matching existing compiler use is not a cold bootstrap claim;
+quiescent snapshots omit active peaks, child memory and allocator accounting.
+CPU2 validation overlapped part of this shared-host CPU0 soak.
+
+Independent design, Rust FFI, Standards, Spec, final-native and evidence reviews
+found no remaining native/publication blocker within their scopes. The Spec
+recorder-retention finding is fixed and tested. Recorded instruction work is
+modestly lower, while before/after wall-time ranges overlap and directions
+differ. No reliable session-latency improvement or general speed/memory/safety
+ranking is established. Hosted exact-head CI remains a separate publication gate.

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Report incremental-input openness from validated pump state, avoiding a
+  duplicate native child-state reload while preserving validation and ABI.
+- Add exact-native-object wrapper comparisons, paired samples and profiles;
+  instruction work is modestly reduced without an established session speedup.
+
 ## 0.1.0 — 2026-11-04
 
 First experimental release. The API may change before 1.0.

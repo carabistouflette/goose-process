@@ -7,6 +7,9 @@ staging and checking costs from the different process policies in the
 `std::process`, an independent native implementation, full public-API parity or
 independent security evidence: a native engine bug is shared by both routes.
 
+[Recorded versions, paired sessions, profiles and limits](RESULTS.md) retain all
+three native variants and the final validation results.
+
 From a standalone Linux checkout, with the pinned Goose compiler, GCC, installed
 Rust, `ar` and Python 3.11+:
 

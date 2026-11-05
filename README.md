@@ -81,6 +81,8 @@ five-minute run, quiescent resource observations, profiles and their limits.
 The [incremental duplex validation](docs/DUPLEX-VALIDATION.md) adds a resident
 stdin soak and a [checked worker comparison](bench/duplex_compare/RESULTS.md)
 with Rust, Go and Python adapters, retained samples and explicit policy differences.
+The [shared-engine wrapper study](bench/duplex_shared/RESULTS.md) isolates native
+policy from wrapper work and records the small state-reload optimization.
 Pipelines, PTYs, credential switching and Windows are outside the current scope.
 See [the Rust/Go/Python feature comparison](docs/COMPARISON.md).
 
