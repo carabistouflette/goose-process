@@ -24,6 +24,7 @@ check:
 	$(GOOSE) check tests/api.goose
 	$(GOOSE) check examples/command.goose
 	$(GOOSE) check examples/compiler.goose
+	$(GOOSE) check examples/worker.goose
 	$(GOOSE) check tests/features.goose
 	$(GOOSE) check tests/stream.goose
 	$(GOOSE) check tests/stdin.goose
@@ -32,6 +33,7 @@ check:
 	$(GOOSE) check bench/stream_soak.goose
 helpers:
 	mkdir -p .build
+	$(CC) $(CFLAGS) -O2 examples/worker.c -o .build/worker
 	$(CC) $(CFLAGS) -O2 tests/helper.c -o .build/helper.new
 	mv .build/helper.new .build/helper
 	cp .build/helper tests/helper.new
@@ -60,11 +62,15 @@ test: helpers
 	./.build/stdin-debug
 	$(GOOSE) run examples/command.goose
 	$(GOOSE) run examples/compiler.goose
+	$(GOOSE) build examples/worker.goose --cc $(CC) -O2 -o .build/worker-client
+	./.build/worker-client
 	python3 tests/ownership.py $(abspath $(GOOSE))
 	python3 tests/stream_soak_controller.py
 	python3 bench/stream_soak.py --goose "$(GOOSE)" --cc "$(CC)" --seconds 1 --smoke --output .build/stream-soak-smoke.json
 	$(MAKE) native
 native: helpers
+	$(CC) $(CFLAGS) -O2 tests/stdin.c $(NATIVE_SOURCES) -Wl,--wrap=send,--wrap=clock_gettime,--wrap=poll,--wrap=__poll_chk -o .build/stdin-native
+	python3 scripts/run.py .build/stdin-native
 	$(CC) $(CFLAGS) -O2 tests/stream.c $(NATIVE_SOURCES) -Wl,--wrap=read -o .build/stream-native
 	python3 scripts/run.py .build/stream-native
 	$(CC) $(CFLAGS) -O2 tests/caller.c $(NATIVE_SOURCES) $(CALLER_WRAPS) -o .build/caller
@@ -86,6 +92,8 @@ native: helpers
 	$(CC) $(CFLAGS) -O2 -shared -fPIC tests/validation.c $(NATIVE_SOURCES) -Wl,--wrap=posix_spawn -Wl,--wrap=clock_gettime -o .build/validation.so
 	python3 tests/validation.py
 sanitize: helpers
+	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/stdin.c $(NATIVE_SOURCES) -Wl,--wrap=send,--wrap=clock_gettime,--wrap=poll,--wrap=__poll_chk -o .build/stdin-sanitize
+	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/stdin-sanitize
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/stream.c $(NATIVE_SOURCES) -Wl,--wrap=read -o .build/stream-sanitize
 	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run.py .build/stream-sanitize
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/caller.c $(NATIVE_SOURCES) $(CALLER_WRAPS) -o .build/caller-sanitize
