@@ -11,6 +11,7 @@ DEADLINE_WRAPS = -Wl,--wrap=clock_gettime -Wl,--wrap=poll -Wl,--wrap=__poll_chk 
 LIFECYCLE_WRAPS = -Wl,--wrap=clock_gettime,--wrap=poll,--wrap=__poll_chk,--wrap=syscall,--wrap=kill
 EXTENDED_WRAPS = -Wl,--wrap=socketpair,--wrap=shutdown,--wrap=send
 CALLER_WRAPS = -Wl,--wrap=syscall,--wrap=kill,--wrap=waitpid
+PIPELINE_WRAPS = -Wl,--wrap=posix_spawn,--wrap=syscall,--wrap=kill,--wrap=waitpid,--wrap=clock_gettime,--wrap=pipe2,--wrap=socketpair,--wrap=poll,--wrap=__poll_chk,--wrap=read,--wrap=send
 
 .PHONY: setup format check test helpers native sanitize bench compare compare-check fuzz profile memcheck
 setup:
@@ -36,6 +37,7 @@ check:
 	$(GOOSE) check bench/stdin.goose
 	$(GOOSE) check bench/duplex_soak.goose
 	$(GOOSE) check bench/duplex_compare/driver.goose
+	$(GOOSE) check bench/pipeline.goose
 helpers:
 	mkdir -p .build
 	$(CC) $(CFLAGS) -O2 examples/worker.c -o .build/worker
@@ -91,6 +93,8 @@ test: helpers
 	python3 bench/stream_soak.py --goose "$(GOOSE)" --cc "$(CC)" --seconds 1 --smoke --output .build/stream-soak-smoke.json
 	$(MAKE) native
 native: helpers
+	$(CC) $(CFLAGS) -O2 tests/pipeline.c $(NATIVE_SOURCES) $(PIPELINE_WRAPS) -o .build/pipeline-native
+	python3 scripts/run_pipeline.py .build/pipeline-native $(abspath .build/pipeline-helper)
 	$(CC) $(CFLAGS) -O2 tests/stdin.c $(NATIVE_SOURCES) -Wl,--wrap=send,--wrap=clock_gettime,--wrap=poll,--wrap=__poll_chk,--wrap=waitpid -o .build/stdin-native
 	python3 scripts/run.py .build/stdin-native
 	$(CC) $(CFLAGS) -O2 tests/stream.c $(NATIVE_SOURCES) -Wl,--wrap=read -o .build/stream-native
@@ -114,6 +118,8 @@ native: helpers
 	$(CC) $(CFLAGS) -O2 -shared -fPIC tests/validation.c $(NATIVE_SOURCES) -Wl,--wrap=posix_spawn -Wl,--wrap=clock_gettime -o .build/validation.so
 	python3 tests/validation.py
 sanitize: helpers
+	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/pipeline.c $(NATIVE_SOURCES) $(PIPELINE_WRAPS) -o .build/pipeline-sanitize
+	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 scripts/run_pipeline.py .build/pipeline-sanitize $(abspath .build/pipeline-helper)
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie examples/worker.c -o .build/worker-sanitize
 	ASAN_OPTIONS=detect_leaks=1:abort_on_error=1 UBSAN_OPTIONS=halt_on_error=1 python3 tests/worker.py .build/worker-sanitize
 	$(SANITIZER_CC) $(CFLAGS) -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -no-pie tests/stdin.c $(NATIVE_SOURCES) -Wl,--wrap=send,--wrap=clock_gettime,--wrap=poll,--wrap=__poll_chk,--wrap=waitpid -o .build/stdin-sanitize

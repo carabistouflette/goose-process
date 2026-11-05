@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -62,6 +63,14 @@ int main(int argc, char **argv) {
         long code = number(argv[2]); return code < 126 ? (int)code : 91;
     } else if (!strcmp(argv[1], "idle") && argc == 2) {
         idle();
+    } else if (!strcmp(argv[1], "descendant") && argc == 2) {
+        pid_t child = fork();
+        if (child < 0) return 95;
+        if (!child) { close(0); idle(); _exit(0); }
+        char text[32];
+        int length = snprintf(text, sizeof text, "%ld\n", (long)child);
+        if (length <= 0 || (size_t)length >= sizeof text) return 95;
+        emit(1, text, (size_t)length);
     } else if (!strcmp(argv[1], "prefix") && argc == 2) {
         emit(1, "ready", 5); emit(2, "first\n", 6); idle();
     } else if (!strcmp(argv[1], "flood") && argc == 2) {
