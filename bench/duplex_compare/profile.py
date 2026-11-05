@@ -15,6 +15,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--measurement', type=Path, default=measure.ROOT / '.build/duplex-compare-2026-11-05.json')
     parser.add_argument('--output', type=Path, default=measure.ROOT / '.build/duplex-profile.json')
+    parser.add_argument('--directory', type=Path, default=measure.ROOT / '.build/duplex-compare')
     parser.add_argument('--language', action='append', choices=['goose', 'rust'])
     parser.add_argument('--tool', action='append', choices=['strace', 'memcheck', 'callgrind'])
     args = parser.parse_args()
@@ -22,7 +23,7 @@ def main():
     if recorded['status'] != 'complete' or measure.controller.git('status', '--porcelain'):
         raise ValueError('completed measurement and clean source required')
     measure.controller.controller_scope()
-    directory = measure.ROOT / '.build/duplex-compare'
+    directory = args.directory.resolve()
     worker = directory / 'worker'
     strace, valgrind = [measure.controller.executable(name) for name in ['strace', 'valgrind']]
     inputs = dict(worker=worker, binary_goose=directory / 'goose', binary_rust=directory / 'rust')
@@ -31,6 +32,7 @@ def main():
         raise ValueError('profile artifacts differ from measured binaries')
     report = dict(status='incomplete', source_revision=measure.controller.git('rev-parse', 'HEAD'),
                   timestamp=datetime.now(timezone.utc).isoformat(), measurement_sha256=measure.digest(args.measurement),
+                  measurement_scope=recorded['scope'], native_object_pairs=recorded.get('native_object_pairs'),
                   hashes=hashes, script_sha256=measure.digest(Path(__file__)),
                   tools={name: dict(sha256=measure.digest(path), version=measure.version(path, '--version').splitlines()[0])
                          for name, path in [('strace', strace), ('valgrind', valgrind)]},
