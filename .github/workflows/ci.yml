@@ -29,6 +29,9 @@ jobs:
         run: |
           gcc --version
           nm .build/syscalls-sanitize | rg 'poll|read|wrap' || true
+      - name: Check the published fixture-tool consumer
+        if: ${{ matrix.cc == 'gcc' }}
+        run: make checker-setup checker-source-test checker-consumer CC=gcc
       - run: make bench BENCH_ITERATIONS=5
         env:
           BENCH_CC: ${{ matrix.cc }}

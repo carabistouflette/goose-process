@@ -114,3 +114,8 @@ samples; there is no universal throughput claim.
 
 [Apache-2.0](LICENSE). Copyright 2026 goose-process contributors.
 See [third-party and tooling notices](THIRD_PARTY.md).
+
+An optional [goose-check consumer workflow](docs/CHECKER-CONSUMER.md) verifies
+this checkout's real public regressions with exact stdout/exit fixtures and
+binary stdin, using the pinned external developer tool. `make checker-setup`
+performs the explicit download; `make checker-consumer` is offline afterwards.

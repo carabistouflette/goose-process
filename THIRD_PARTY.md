@@ -22,3 +22,10 @@ by this repository.
 The optional comparison harness also uses the host Rust compiler, Go toolchain
 and their standard libraries. No Rust crates, Go modules or Python packages are
 downloaded or vendored; the original comparison drivers carry Apache-2.0 notices.
+
+The optional `checker-setup` developer target downloads goose-check at
+`CHECKER_REVISION` into ignored build storage and builds it with the shared
+pinned compiler. That independent project retains its Apache-2.0 license and
+bundled dependency notices. It is not vendored or required by this library's
+runtime/build. The consumer uses stable checker source while testing the
+current library; see docs/CHECKER-CONSUMER.md.

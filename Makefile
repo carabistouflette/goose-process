@@ -106,3 +106,8 @@ checker-setup:
 	python3 scripts/checker_consumer.py --goose "$(GOOSE)" --cc "$(CC)" --setup
 checker-consumer:
 	python3 scripts/checker_consumer.py --goose "$(GOOSE)" --cc "$(CC)"
+.PHONY: checker-source-test checker-overhead
+checker-source-test:
+	python3 tests/checker_setup.py
+checker-overhead:
+	python3 bench/checker_overhead.py --goose "$(GOOSE)" --cc "$(CC)"
