@@ -29,6 +29,12 @@ def version(binary, *arguments):
     return subprocess.check_output([binary, *arguments], timeout=30, text=True).strip()
 
 
+class InvocationFailed(RuntimeError):
+    def __init__(self, result):
+        self.result = result
+        super().__init__('driver invocation failed: ' + json.dumps(result))
+
+
 def build(args):
     tools = {name: controller.executable(value) for name, value in
              dict(goose=args.goose, cc=args.cc, go='go', python=sys.executable).items()}
@@ -67,25 +73,36 @@ def build(args):
     return worker, commands, identities, versions
 
 
-def checked(command, worker, size):
+def checked(command, worker, size, timeout=45):
     cpu_before = resource.getrusage(resource.RUSAGE_CHILDREN)
     began = time.monotonic_ns()
-    code, output, errors = controller.run_owned([*command, worker, str(size), '128'],
-                                               timeout=45, stderr=subprocess.PIPE)
+    watchdog = False
+    try:
+        code, output, errors = controller.run_owned([*command, worker, str(size), '128'],
+                                                   timeout=timeout, stderr=subprocess.PIPE)
+    except subprocess.TimeoutExpired as error:
+        # run_owned kills/reaps its private group before propagating. Preserve
+        # the bytes observed at timeout, rather than only str(TimeoutExpired).
+        watchdog = True; code = None
+        output, errors = error.output or b'', error.stderr or b''
     external_ns = time.monotonic_ns() - began
     cpu_after = resource.getrusage(resource.RUSAGE_CHILDREN)
-    result = dict(returncode=code, stdout=output.decode('ascii', errors='replace'),
+    result = dict(returncode=code, watchdog_timeout=watchdog, stdout=output.decode('ascii', errors='replace'),
                   stderr=errors.decode('utf-8', errors='replace'), outer_wall_ns=external_ns,
                   process_tree_user_seconds=cpu_after.ru_utime - cpu_before.ru_utime,
                   process_tree_system_seconds=cpu_after.ru_stime - cpu_before.ru_stime, passed=False)
-    if code or errors or controller.adopted_cleanup():
-        raise RuntimeError('driver failed, emitted diagnostics or retained a child: ' + json.dumps(result))
+    result['adopted_cleanup_count'] = controller.adopted_cleanup()
+    if watchdog or code or errors or result['adopted_cleanup_count']:
+        raise InvocationFailed(result)
     fields = output.split()
     if len(fields) != 3:
-        raise RuntimeError('driver protocol shape differs: ' + json.dumps(result))
-    values = [int(value) for value in fields]
+        raise InvocationFailed(result)
+    try:
+        values = [int(value) for value in fields]
+    except ValueError as error:
+        raise InvocationFailed(result) from error
     if values[0] <= 0 or values[1:] != [128 * (size + 4), 512]:
-        raise RuntimeError('driver totals/time differ: ' + json.dumps(result))
+        raise InvocationFailed(result)
     result.update(wall_ns=values[0], stdout_bytes=values[1], stderr_bytes=values[2], passed=True)
     return result
 
@@ -144,10 +161,14 @@ def main():
                 sample = dict(round=round_number, order=order_index, language=language, payload_size=size,
                               warmup=None, calls=[], passed=False)
                 report['samples'].append(sample)
+                report['active_invocation'] = dict(round=round_number, order=order_index, language=language,
+                                                   payload_size=size, phase='warmup', call_index=0)
                 sample['warmup'] = checked(commands[language], worker, size)
-                for _ in range(args.calls):
+                for call_index in range(args.calls):
+                    report['active_invocation'].update(phase='measured', call_index=call_index)
                     sample['calls'].append(checked(commands[language], worker, size))
                 sample['passed'] = True
+        report.pop('active_invocation', None)
         if report['hashes'] != {name: digest(path) for name, path in identities.items()}:
             raise RuntimeError('source/compiler/binary identity changed')
         if controller.git('rev-parse', 'HEAD') != report['source_revision'] or controller.git('status', '--porcelain') != initial_status:
@@ -158,6 +179,8 @@ def main():
         report['status'] = 'complete'
     except BaseException as error:
         report.update(status='failed', error_kind=type(error).__name__, error=str(error))
+        if isinstance(error, InvocationFailed):
+            report['failed_invocation'] = error.result
         raise
     finally:
         try:

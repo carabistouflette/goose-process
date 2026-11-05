@@ -67,7 +67,8 @@ boundary rather than a production policy implemented by these benchmark drivers.
   calls kill after successful reaping. This is a custom deadline/bounded-I/O
   adapter around Rust std, not a claim that std exposes the Goose API.
 - Go uses `exec.CommandContext`, its three pipe methods and two fixed-buffer
-  reader goroutines with one-record result channels. It waits for readers to
+  reader goroutines with explicit request permissions and one-record result
+  channels. Reads detect a span exceeding the current response remainder. It waits for readers to
   complete before `Cmd.Wait`, and cancels/kills/waits on error. Goroutine/runtime
   allocation and scheduling are part of this route.
 - Python uses binary `Popen` pipes, nonblocking descriptors and selectors,
@@ -105,8 +106,11 @@ runtime resident. A session itself keeps one child for all 128 requests. Raw JSO
 retains every record/output/status/order, compiler/platform/affinity/load, flags,
 Git source revision/dirty state and source/compiler/driver/worker hashes. It
 checks hashes and Git identity before/after; ordinary timing requires clean source.
-A failure aborts the series and retains the failed driver output in its error
-record rather than skipping it. Successful and rejected-fixture probes are
+A failure aborts the series and retains the failed driver output and invocation
+context in its error record rather than skipping it. Watchdog failures retain
+the partial stdout/stderr observed when the timeout occurred, after private-group
+cleanup; they do not claim to reconstruct bytes produced beyond that observation.
+Successful and rejected-fixture probes are
 separate from measured samples.
 
 Auxiliary outer wall and process-tree user/system CPU include driver startup and
@@ -117,7 +121,9 @@ CPU affinity does not provide exclusive cores, temperature/frequency control or
 portable speed guarantees. Timing differences require interpretation of these
 contracts and measurement noise before an optimization is justified.
 
-`check.py` runs all eight successful combinations, then rejects three actual
+`check.py` runs all eight successful combinations, then rejects four actual
 worker variants for each language: early EOF, corrupt stdout and excess output
-after explicit EOF. All twelve must fail without leaving an adopted child.
+after explicit EOF, and all responses frontloaded before requests. All sixteen
+must fail without leaving an adopted child. A separate watchdog fixture proves
+partial stdout/stderr retention after timeout cleanup.
 It does not establish generic failure-policy parity or prove the absence of bugs.

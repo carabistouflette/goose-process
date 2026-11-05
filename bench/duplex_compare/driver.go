@@ -14,7 +14,7 @@ import (
 )
 
 // Each reader has one bounded buffer and a one-record channel. No capture grows.
-func reader(ctx context.Context, stream io.Reader, expected []byte, requests, width int, result chan<- error, group *sync.WaitGroup) {
+func reader(ctx context.Context, stream io.Reader, expected []byte, requests, width int, start <-chan struct{}, result chan<- error, group *sync.WaitGroup) {
 	defer group.Done()
 	var buffer [257]byte
 	send := func(err error) bool {
@@ -26,14 +26,19 @@ func reader(ctx context.Context, stream io.Reader, expected []byte, requests, wi
 		}
 	}
 	for request := 0; request < requests; request++ {
+		select {
+		case <-start:
+		case <-ctx.Done():
+			return
+		}
 		for offset := 0; offset < len(expected); {
-			count := len(expected) - offset
-			if count > width {
-				count = width
-			}
-			n, err := io.ReadFull(stream, buffer[:count])
+			n, err := stream.Read(buffer[:width])
 			if err != nil {
 				send(err)
+				return
+			}
+			if n <= 0 || n > len(expected)-offset {
+				send(fmt.Errorf("zero progress or per-request excess output"))
 				return
 			}
 			for i := 0; i < n; i++ {
@@ -58,10 +63,11 @@ func reader(ctx context.Context, stream io.Reader, expected []byte, requests, wi
 }
 
 func execute(worker string, frame []byte, requests int) (time.Duration, error) {
+	began := time.Now()
 	var group sync.WaitGroup
 	outResult, errResult := make(chan error, 1), make(chan error, 1)
+	outStart, errStart := make(chan struct{}), make(chan struct{})
 	ack := []byte{'a', 'c', 'k', 0}
-	began := time.Now()
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, worker)
@@ -99,8 +105,8 @@ func execute(worker string, frame []byte, requests int) (time.Duration, error) {
 		group.Wait()
 	}()
 	group.Add(2)
-	go reader(ctx, output, frame, requests, 257, outResult, &group)
-	go reader(ctx, errors, ack, requests, 3, errResult, &group)
+	go reader(ctx, output, frame, requests, 257, outStart, outResult, &group)
+	go reader(ctx, errors, ack, requests, 3, errStart, errResult, &group)
 	receive := func(channel <-chan error) error {
 		select {
 		case err := <-channel:
@@ -110,6 +116,13 @@ func execute(worker string, frame []byte, requests int) (time.Duration, error) {
 		}
 	}
 	for request := 0; request < requests; request++ {
+		for _, start := range []chan struct{}{outStart, errStart} {
+			select {
+			case start <- struct{}{}:
+			case <-ctx.Done():
+				return 0, ctx.Err()
+			}
+		}
 		for offset := 0; offset < len(frame); {
 			n, err := input.Write(frame[offset:])
 			if err != nil {
