@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
     }
     memcpy(packed + length + 1, "held", 5); command.len = length + 6;
     int64_t state[24] = {0}, meta[6], done = 0;
-    int64_t config[11] = {1000, 6, 3, 0, -1, -1, -1, 0, 0, 0, 0, 0};
+    int64_t config[11] = {1000, 6, 3, 0, -1, -1, -1, 0, 0, 0, 0};
     assert(gp_start(command, empty(), empty(), empty(), 0, words(config, 11), words(state, 24), words(meta, 6)) == 0);
     uint8_t byte; int result;
     do {
