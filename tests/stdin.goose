@@ -92,14 +92,11 @@ fn main() {
         stderr_limit: 262144,
     }, child);
     assert(result.error == process::Error.None);
-    sent = 0; received = 0; closed = false; done = false; var backpressured = false;
+    sent = 0; received = 0; closed = false; done = false;
     while !done {
         let offered = if sent < 1048576 { input[sent % input.len..] } else { empty[..] };
         let current = process::io_step(child, offered, out[..], empty[..], 20);
         assert(current.status.error == process::Error.None);
-        if offered.len > 0 && current.input_accepted == 0 && current.input_open && current.stdout_count > 0 {
-            backpressured = true;
-        }
         for i in current.stdout_count {
             let expected: u8 = if received + i < 262144 { 'x' } else { ((received + i - 262144) % 256) as u8 };
             assert(out[i] == expected);
@@ -111,7 +108,7 @@ fn main() {
         done = current.done;
         if done { assert(process::success(current.status)); }
     }
-    assert(backpressured && sent == 1048576 && received == 1310720 && process::stderr(child).len == 262144);
+    assert(sent == 1048576 && received == 1310720 && process::stderr(child).len == 262144);
     for byte in process::stderr(child) { assert(byte == 'y'); }
     result = process::start([helper, "bytes"], process::Options {
         stdout:       process::Output.Stream, stderr: process::Output.Capture, stdin: process::Input.Stream,

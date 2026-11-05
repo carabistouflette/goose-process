@@ -16,6 +16,8 @@
 static bool fail_after_send, clock_failed, inspect_idle;
 static ssize_t accepted;
 static int idle_polls;
+static bool eagain_once;
+static int send_calls;
 static bool deny_reap_once;
 static pid_t tested_pid;
 static int wait_denials;
@@ -34,6 +36,8 @@ int __wrap_clock_gettime(clockid_t clock, struct timespec *value) {
 ssize_t __real_send(int fd, const void *data, size_t size, int flags);
 ssize_t __wrap_send(int fd, const void *data, size_t size, int flags) {
     assert(flags & MSG_NOSIGNAL);
+    ++send_calls;
+    if (eagain_once) { eagain_once = false; errno = EAGAIN; return -1; }
     ssize_t count = __real_send(fd, data, size, flags);
     if (fail_after_send && count > 0) { accepted = count; clock_failed = true; }
     return count;
@@ -84,6 +88,12 @@ int main(void) {
     assert(gp_io_step(words(state, 24), (gp_input){(uint8_t *)progress, sizeof progress}, none, none, 0,
                        words(meta, 6), words(progress, 3)) == 1);
     assert(gp_id(words(state, 24)) == pid);
+    eagain_once = true;
+    assert(gp_io_step(words(state, 24), (gp_input){input, sizeof input}, none, none, 20,
+                       words(meta, 6), words(progress, 3)) == 0);
+    assert(!progress[0] && progress[1] == 0 && progress[2] && send_calls == 1);
+    assert(gp_io_step(words(state, 24), empty(), none, none, 0, words(meta, 6), words(progress, 3)) == 0);
+    assert(progress[1] == 0 && progress[2] && send_calls == 1); /* No retained offer/queue. */
     fail_after_send = true;
     int code = (int)gp_io_step(words(state, 24), (gp_input){input, sizeof input}, none, none, 20,
                                words(meta, 6), words(progress, 3));
