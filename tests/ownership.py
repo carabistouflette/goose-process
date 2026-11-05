@@ -12,6 +12,14 @@ fn main() {
     var child = process::Child { .. };
 '''
 CASES = {
+    'pipeline_copy': ('var pipe = process::Pipeline { .. }; var other: process::Pipeline = pipe;', 'root owners cannot be copied'),
+    'pipeline_array': ('var pipes: process::Pipeline[1];', 'root'),
+    'pipeline_view': ('''var pipe = process::Pipeline { .. };
+    let started = process::start_pipeline(["/bin/true"], process::Options { .. },
+        ["/bin/cat"], process::Options { .. }, pipe);
+    let view = process::pipeline_stdout(pipe);
+    let finished = process::close_pipeline(pipe);
+    print(view, started.error, finished.error);''', 'shrinks'),
     'copy': ('var other: process::Child = child;', 'root owners cannot be copied'),
     'array': ('var children: process::Child[1];', 'root'),
     'view': ('''let started = process::start(["/bin/true"], process::Options { .. }, child);

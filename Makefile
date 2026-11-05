@@ -25,9 +25,11 @@ check:
 	$(GOOSE) check examples/command.goose
 	$(GOOSE) check examples/compiler.goose
 	$(GOOSE) check examples/worker.goose
+	$(GOOSE) check examples/pipeline.goose
 	$(GOOSE) check tests/features.goose
 	$(GOOSE) check tests/stream.goose
 	$(GOOSE) check tests/stdin.goose
+	$(GOOSE) check tests/pipeline.goose
 	$(GOOSE) check bench/bench.goose
 	$(GOOSE) check bench/stream.goose
 	$(GOOSE) check bench/stream_soak.goose
@@ -41,6 +43,10 @@ helpers:
 	mv .build/helper.new .build/helper
 	cp .build/helper tests/helper.new
 	mv tests/helper.new tests/helper
+	$(CC) $(CFLAGS) -O2 tests/pipeline_helper.c -o .build/pipeline-helper.new
+	mv .build/pipeline-helper.new .build/pipeline-helper
+	cp .build/pipeline-helper tests/pipeline-helper.new
+	mv tests/pipeline-helper.new tests/pipeline-helper
 test: helpers
 	python3 scripts/native-manifest.py --check
 	$(GOOSE) run tests/api.goose
@@ -63,6 +69,13 @@ test: helpers
 	./.build/stdin
 	$(GOOSE) build tests/stdin.goose --cc $(CC) --debug --no-bce -o .build/stdin-debug
 	./.build/stdin-debug
+	python3 scripts/run_pipeline.py $(GOOSE) run tests/pipeline.goose
+	$(GOOSE) build tests/pipeline.goose --cc $(CC) -O2 -o .build/pipeline
+	python3 scripts/run_pipeline.py .build/pipeline
+	$(GOOSE) build tests/pipeline.goose --cc $(CC) --debug --no-bce -o .build/pipeline-debug
+	python3 scripts/run_pipeline.py .build/pipeline-debug
+	$(GOOSE) build examples/pipeline.goose --cc $(CC) -O2 -o .build/pipeline-example
+	python3 scripts/run_pipeline.py .build/pipeline-example
 	$(GOOSE) run examples/command.goose
 	$(GOOSE) run examples/compiler.goose
 	python3 tests/worker.py .build/worker

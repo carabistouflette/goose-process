@@ -4,3 +4,5 @@ __pycache__/
 
 /tests/helper
 /tests/helper.new
+/tests/pipeline-helper
+/tests/pipeline-helper.new
