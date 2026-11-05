@@ -143,7 +143,9 @@ def main():
     mode.add_argument('--probe-only', action='store_true', help='build and check four unmeasured cells; dirty sources allowed')
     args = parser.parse_args()
     report = dict(status='incomplete', timestamp=timestamp(), mode='build' if args.build_only else 'probe' if args.probe_only else 'measure',
-                  platform=platform.platform(), cpu_affinity=sorted(os.sched_getaffinity(0)),
+                  platform=platform.platform(), python_version=sys.version,
+                  python_executable=str(Path(sys.executable).resolve()),
+                  libc=platform.libc_ver(), cpu_affinity=sorted(os.sched_getaffinity(0)),
                   load_start=list(os.getloadavg()),
                   cpu_model=next((line.split(':', 1)[1].strip() for line in Path('/proc/cpuinfo').read_text().splitlines()
                                   if line.startswith('model name')), platform.machine()),

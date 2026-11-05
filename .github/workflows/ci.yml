@@ -35,5 +35,7 @@ jobs:
       - run: make bench BENCH_ITERATIONS=5
         env:
           BENCH_CC: ${{ matrix.cc }}
+      - name: Check pipeline measurement protocol without timing claims
+        run: python3 bench/pipeline_measure.py --goose .toolchain/goose/build/goose --cc "${{ matrix.cc }}" --probe-only
       - run: make fuzz
         if: ${{ matrix.cc == 'clang' }}

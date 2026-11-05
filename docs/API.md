@@ -216,7 +216,7 @@ Both stage timeouts must be equal and positive: one absolute deadline covers
 preparation, launch and pumping. First input is Null or finite Bytes; first stdout
 and second stdin are reserved for the connection. Both stderr streams and final
 stdout are independently captured, each up to 1 MiB. Other routing modes are
-rejected before launch. Captures plus finite input use at most 4 MiB payload;
+rejected before launch. Retained captures plus finite input use at most 4 MiB payload;
 `run_pipeline` additionally copies up to 3 MiB into caller buffers. Interstage
 bytes pass through the kernel pipe without a library accumulation queue.
 
