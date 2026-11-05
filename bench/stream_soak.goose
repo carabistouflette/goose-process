@@ -19,8 +19,9 @@ fn main() {
     print("ready"); flush_stdout();
     while read_line(line) {
         if line == "stop" { print("stopped ", index); flush_stdout(); return; }
-        assert(line == "next");
-        let kind = index % 6;
+        assert(line == "next" || line == "finite");
+        let finite_kinds = [0, 1, 4, 5];
+        let kind = if line == "finite" { finite_kinds[index % 4] } else { index % 6 };
         let began = clock_ns();
         var status = process::Status { .. };
         if kind == 0 {
