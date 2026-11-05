@@ -1,0 +1,855 @@
+{
+  "status": "complete",
+  "source_revision": "072d125f963104437038153bcb42bbc521cec28a",
+  "hashes": {
+    "helper": "d192898ee4c38e3246845fc9f7b578f775f98636780691a04bc290f43415cbad",
+    "binary": "25d89da8bdbe3ae1b0042ee3d6e39c1425a3a68cb45395a3328c5374b67293b5",
+    "goose": "9d37f42abee55079a179cda33b2c28c2879789135b37333c78654bb6ed536f2a",
+    "cc": "8aac907d6fbf40394b424b5fa4a2ad1aa291dac7d3a0315c5b415c1f5ace1287",
+    "driver": "38cce948f8af813b415c777c4f88f3509b892a2747234a9f6e0968baa73d18b5",
+    "source": "62273abd4c7bd5add164a1a68aa2fcdd04052b9004e956307637eed3c07c68df",
+    "manifest": "12122343b26c51d9c3e677c930e65feb447e36026252a5b1f04126145d76c3f9"
+  },
+  "timestamp": "2026-11-05T07:12:41.543727+00:00",
+  "platform": "Linux-7.2.11-arch1-1-x86_64-with-glibc2.44",
+  "python": "3.14.9",
+  "goose_version": "goose eadca40 (runtime 3025e5810379)",
+  "cc_version": "gcc (GCC) 16.2.1 20260810",
+  "compiler_revision": "eadca409f68210893f366e60d0c2f0dc29a339be",
+  "cpu_affinity": [
+    0
+  ],
+  "load_start": [
+    4.08837890625,
+    3.67138671875,
+    2.87646484375
+  ],
+  "cpu_model": "Intel(R) Core(TM) Ultra 7 258V",
+  "build_flags": "helper -std=c11 -Wall -Wextra -Werror -O2; Goose driver --cc selected-compiler -O2",
+  "rounds": 9,
+  "calls_per_cell": 5,
+  "seed": 20261105,
+  "samples": [
+    {
+      "round": 0,
+      "size_per_stream": 65536,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 1056743\n1 865983\n2 838997\n3 811091\n4 802843\n5 765508\n",
+      "warmup_ns": 1056743,
+      "calls_ns": [
+        865983,
+        838997,
+        811091,
+        802843,
+        765508
+      ]
+    },
+    {
+      "round": 0,
+      "size_per_stream": 1048576,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 6461935\n1 3249991\n2 3036468\n3 3028941\n4 2886972\n5 3236130\n",
+      "warmup_ns": 6461935,
+      "calls_ns": [
+        3249991,
+        3036468,
+        3028941,
+        2886972,
+        3236130
+      ]
+    },
+    {
+      "round": 0,
+      "size_per_stream": 1048576,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 3871007\n1 3656668\n2 3348946\n3 3612296\n4 3234197\n5 3722786\n",
+      "warmup_ns": 3871007,
+      "calls_ns": [
+        3656668,
+        3348946,
+        3612296,
+        3234197,
+        3722786
+      ]
+    },
+    {
+      "round": 0,
+      "size_per_stream": 65536,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 1329012\n1 816630\n2 1182112\n3 787121\n4 769059\n5 825311\n",
+      "warmup_ns": 1329012,
+      "calls_ns": [
+        816630,
+        1182112,
+        787121,
+        769059,
+        825311
+      ]
+    },
+    {
+      "round": 0,
+      "size_per_stream": 1048576,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 3273524\n1 3155927\n2 3333403\n3 3037195\n4 3267828\n5 2798762\n",
+      "warmup_ns": 3273524,
+      "calls_ns": [
+        3155927,
+        3333403,
+        3037195,
+        3267828,
+        2798762
+      ]
+    },
+    {
+      "round": 0,
+      "size_per_stream": 65536,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 1429948\n1 913404\n2 821722\n3 778279\n4 803058\n5 747413\n",
+      "warmup_ns": 1429948,
+      "calls_ns": [
+        913404,
+        821722,
+        778279,
+        803058,
+        747413
+      ]
+    },
+    {
+      "round": 1,
+      "size_per_stream": 65536,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 1271892\n1 903172\n2 825860\n3 873119\n4 787116\n5 1080937\n",
+      "warmup_ns": 1271892,
+      "calls_ns": [
+        903172,
+        825860,
+        873119,
+        787116,
+        1080937
+      ]
+    },
+    {
+      "round": 1,
+      "size_per_stream": 1048576,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 2868128\n1 3021798\n2 3150044\n3 3120021\n4 2977107\n5 3162175\n",
+      "warmup_ns": 2868128,
+      "calls_ns": [
+        3021798,
+        3150044,
+        3120021,
+        2977107,
+        3162175
+      ]
+    },
+    {
+      "round": 1,
+      "size_per_stream": 1048576,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 3829492\n1 3402610\n2 3818865\n3 3466888\n4 3623434\n5 3297451\n",
+      "warmup_ns": 3829492,
+      "calls_ns": [
+        3402610,
+        3818865,
+        3466888,
+        3623434,
+        3297451
+      ]
+    },
+    {
+      "round": 1,
+      "size_per_stream": 65536,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 1106597\n1 928344\n2 880739\n3 786772\n4 799210\n5 792577\n",
+      "warmup_ns": 1106597,
+      "calls_ns": [
+        928344,
+        880739,
+        786772,
+        799210,
+        792577
+      ]
+    },
+    {
+      "round": 1,
+      "size_per_stream": 65536,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 1048825\n1 869516\n2 821660\n3 1076541\n4 805377\n5 744935\n",
+      "warmup_ns": 1048825,
+      "calls_ns": [
+        869516,
+        821660,
+        1076541,
+        805377,
+        744935
+      ]
+    },
+    {
+      "round": 1,
+      "size_per_stream": 1048576,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 6515346\n1 3539908\n2 2746717\n3 3565537\n4 2808811\n5 3211769\n",
+      "warmup_ns": 6515346,
+      "calls_ns": [
+        3539908,
+        2746717,
+        3565537,
+        2808811,
+        3211769
+      ]
+    },
+    {
+      "round": 2,
+      "size_per_stream": 1048576,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 6517409\n1 3434942\n2 3106177\n3 3238830\n4 3134006\n5 3234181\n",
+      "warmup_ns": 6517409,
+      "calls_ns": [
+        3434942,
+        3106177,
+        3238830,
+        3134006,
+        3234181
+      ]
+    },
+    {
+      "round": 2,
+      "size_per_stream": 1048576,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 3090704\n1 3348607\n2 2939817\n3 2918903\n4 3155160\n5 2923521\n",
+      "warmup_ns": 3090704,
+      "calls_ns": [
+        3348607,
+        2939817,
+        2918903,
+        3155160,
+        2923521
+      ]
+    },
+    {
+      "round": 2,
+      "size_per_stream": 65536,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 1216377\n1 969574\n2 844774\n3 800980\n4 793798\n5 1072499\n",
+      "warmup_ns": 1216377,
+      "calls_ns": [
+        969574,
+        844774,
+        800980,
+        793798,
+        1072499
+      ]
+    },
+    {
+      "round": 2,
+      "size_per_stream": 65536,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 1070042\n1 986091\n2 1028833\n3 1161775\n4 795965\n5 829087\n",
+      "warmup_ns": 1070042,
+      "calls_ns": [
+        986091,
+        1028833,
+        1161775,
+        795965,
+        829087
+      ]
+    },
+    {
+      "round": 2,
+      "size_per_stream": 65536,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 1484022\n1 838156\n2 848143\n3 791574\n4 963367\n5 788192\n",
+      "warmup_ns": 1484022,
+      "calls_ns": [
+        838156,
+        848143,
+        791574,
+        963367,
+        788192
+      ]
+    },
+    {
+      "round": 2,
+      "size_per_stream": 1048576,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 3515662\n1 3768207\n2 3300348\n3 3778473\n4 3441623\n5 3618394\n",
+      "warmup_ns": 3515662,
+      "calls_ns": [
+        3768207,
+        3300348,
+        3778473,
+        3441623,
+        3618394
+      ]
+    },
+    {
+      "round": 3,
+      "size_per_stream": 1048576,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 6364028\n1 3690811\n2 3407353\n3 3734862\n4 3175472\n5 3886309\n",
+      "warmup_ns": 6364028,
+      "calls_ns": [
+        3690811,
+        3407353,
+        3734862,
+        3175472,
+        3886309
+      ]
+    },
+    {
+      "round": 3,
+      "size_per_stream": 65536,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 1553725\n1 915919\n2 880233\n3 835045\n4 853801\n5 877994\n",
+      "warmup_ns": 1553725,
+      "calls_ns": [
+        915919,
+        880233,
+        835045,
+        853801,
+        877994
+      ]
+    },
+    {
+      "round": 3,
+      "size_per_stream": 65536,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 1356395\n1 1036183\n2 844409\n3 793957\n4 872649\n5 827269\n",
+      "warmup_ns": 1356395,
+      "calls_ns": [
+        1036183,
+        844409,
+        793957,
+        872649,
+        827269
+      ]
+    },
+    {
+      "round": 3,
+      "size_per_stream": 1048576,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 3734728\n1 3683097\n2 3628553\n3 3415303\n4 3496346\n5 3523326\n",
+      "warmup_ns": 3734728,
+      "calls_ns": [
+        3683097,
+        3628553,
+        3415303,
+        3496346,
+        3523326
+      ]
+    },
+    {
+      "round": 3,
+      "size_per_stream": 1048576,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 3746863\n1 3370774\n2 3228100\n3 3195000\n4 3289610\n5 3178564\n",
+      "warmup_ns": 3746863,
+      "calls_ns": [
+        3370774,
+        3228100,
+        3195000,
+        3289610,
+        3178564
+      ]
+    },
+    {
+      "round": 3,
+      "size_per_stream": 65536,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 1229944\n1 975131\n2 930957\n3 845070\n4 864386\n5 826973\n",
+      "warmup_ns": 1229944,
+      "calls_ns": [
+        975131,
+        930957,
+        845070,
+        864386,
+        826973
+      ]
+    },
+    {
+      "round": 4,
+      "size_per_stream": 65536,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 1104117\n1 891168\n2 890871\n3 797568\n4 1062518\n5 937037\n",
+      "warmup_ns": 1104117,
+      "calls_ns": [
+        891168,
+        890871,
+        797568,
+        1062518,
+        937037
+      ]
+    },
+    {
+      "round": 4,
+      "size_per_stream": 1048576,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 3086631\n1 3133484\n2 2958953\n3 2914312\n4 2798647\n5 2918833\n",
+      "warmup_ns": 3086631,
+      "calls_ns": [
+        3133484,
+        2958953,
+        2914312,
+        2798647,
+        2918833
+      ]
+    },
+    {
+      "round": 4,
+      "size_per_stream": 1048576,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 3489271\n1 3353609\n2 3455657\n3 3360105\n4 3421481\n5 3569182\n",
+      "warmup_ns": 3489271,
+      "calls_ns": [
+        3353609,
+        3455657,
+        3360105,
+        3421481,
+        3569182
+      ]
+    },
+    {
+      "round": 4,
+      "size_per_stream": 65536,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 1101405\n1 901873\n2 815534\n3 1109575\n4 800915\n5 837684\n",
+      "warmup_ns": 1101405,
+      "calls_ns": [
+        901873,
+        815534,
+        1109575,
+        800915,
+        837684
+      ]
+    },
+    {
+      "round": 4,
+      "size_per_stream": 1048576,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 6158482\n1 3276293\n2 3650325\n3 2903292\n4 3232665\n5 3137549\n",
+      "warmup_ns": 6158482,
+      "calls_ns": [
+        3276293,
+        3650325,
+        2903292,
+        3232665,
+        3137549
+      ]
+    },
+    {
+      "round": 4,
+      "size_per_stream": 65536,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 1298670\n1 866067\n2 843398\n3 827889\n4 785478\n5 796348\n",
+      "warmup_ns": 1298670,
+      "calls_ns": [
+        866067,
+        843398,
+        827889,
+        785478,
+        796348
+      ]
+    },
+    {
+      "round": 5,
+      "size_per_stream": 1048576,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 2994708\n1 3069115\n2 2871498\n3 2945579\n4 2908682\n5 2727422\n",
+      "warmup_ns": 2994708,
+      "calls_ns": [
+        3069115,
+        2871498,
+        2945579,
+        2908682,
+        2727422
+      ]
+    },
+    {
+      "round": 5,
+      "size_per_stream": 65536,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 1078650\n1 893504\n2 832725\n3 782561\n4 823066\n5 739981\n",
+      "warmup_ns": 1078650,
+      "calls_ns": [
+        893504,
+        832725,
+        782561,
+        823066,
+        739981
+      ]
+    },
+    {
+      "round": 5,
+      "size_per_stream": 65536,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 1164401\n1 816053\n2 824559\n3 743234\n4 734555\n5 769550\n",
+      "warmup_ns": 1164401,
+      "calls_ns": [
+        816053,
+        824559,
+        743234,
+        734555,
+        769550
+      ]
+    },
+    {
+      "round": 5,
+      "size_per_stream": 65536,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 1321327\n1 825086\n2 882180\n3 813915\n4 811281\n5 777155\n",
+      "warmup_ns": 1321327,
+      "calls_ns": [
+        825086,
+        882180,
+        813915,
+        811281,
+        777155
+      ]
+    },
+    {
+      "round": 5,
+      "size_per_stream": 1048576,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 6315147\n1 3319954\n2 3289767\n3 3187648\n4 3260729\n5 3270550\n",
+      "warmup_ns": 6315147,
+      "calls_ns": [
+        3319954,
+        3289767,
+        3187648,
+        3260729,
+        3270550
+      ]
+    },
+    {
+      "round": 5,
+      "size_per_stream": 1048576,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 3427451\n1 3340703\n2 3366001\n3 3269350\n4 3236601\n5 3147532\n",
+      "warmup_ns": 3427451,
+      "calls_ns": [
+        3340703,
+        3366001,
+        3269350,
+        3236601,
+        3147532
+      ]
+    },
+    {
+      "round": 6,
+      "size_per_stream": 1048576,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 2794289\n1 2897827\n2 2576385\n3 2698111\n4 2851574\n5 2609287\n",
+      "warmup_ns": 2794289,
+      "calls_ns": [
+        2897827,
+        2576385,
+        2698111,
+        2851574,
+        2609287
+      ]
+    },
+    {
+      "round": 6,
+      "size_per_stream": 65536,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 975228\n1 868885\n2 848152\n3 729320\n4 798444\n5 779088\n",
+      "warmup_ns": 975228,
+      "calls_ns": [
+        868885,
+        848152,
+        729320,
+        798444,
+        779088
+      ]
+    },
+    {
+      "round": 6,
+      "size_per_stream": 65536,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 929523\n1 877062\n2 778248\n3 792389\n4 785831\n5 781532\n",
+      "warmup_ns": 929523,
+      "calls_ns": [
+        877062,
+        778248,
+        792389,
+        785831,
+        781532
+      ]
+    },
+    {
+      "round": 6,
+      "size_per_stream": 65536,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 1216139\n1 775123\n2 754046\n3 781223\n4 777412\n5 822077\n",
+      "warmup_ns": 1216139,
+      "calls_ns": [
+        775123,
+        754046,
+        781223,
+        777412,
+        822077
+      ]
+    },
+    {
+      "round": 6,
+      "size_per_stream": 1048576,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 6039803\n1 3016040\n2 3065062\n3 3028351\n4 3093390\n5 3079312\n",
+      "warmup_ns": 6039803,
+      "calls_ns": [
+        3016040,
+        3065062,
+        3028351,
+        3093390,
+        3079312
+      ]
+    },
+    {
+      "round": 6,
+      "size_per_stream": 1048576,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 3435340\n1 3244137\n2 3399261\n3 3079501\n4 3134903\n5 3106701\n",
+      "warmup_ns": 3435340,
+      "calls_ns": [
+        3244137,
+        3399261,
+        3079501,
+        3134903,
+        3106701
+      ]
+    },
+    {
+      "round": 7,
+      "size_per_stream": 1048576,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 3309709\n1 3258392\n2 3207986\n3 3036296\n4 3153115\n5 3089915\n",
+      "warmup_ns": 3309709,
+      "calls_ns": [
+        3258392,
+        3207986,
+        3036296,
+        3153115,
+        3089915
+      ]
+    },
+    {
+      "round": 7,
+      "size_per_stream": 65536,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 976707\n1 866578\n2 783804\n3 727108\n4 746473\n5 752027\n",
+      "warmup_ns": 976707,
+      "calls_ns": [
+        866578,
+        783804,
+        727108,
+        746473,
+        752027
+      ]
+    },
+    {
+      "round": 7,
+      "size_per_stream": 65536,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 1052348\n1 798802\n2 825390\n3 841952\n4 775207\n5 740795\n",
+      "warmup_ns": 1052348,
+      "calls_ns": [
+        798802,
+        825390,
+        841952,
+        775207,
+        740795
+      ]
+    },
+    {
+      "round": 7,
+      "size_per_stream": 1048576,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 5938404\n1 2754149\n2 3031313\n3 2951569\n4 2966424\n5 2992595\n",
+      "warmup_ns": 5938404,
+      "calls_ns": [
+        2754149,
+        3031313,
+        2951569,
+        2966424,
+        2992595
+      ]
+    },
+    {
+      "round": 7,
+      "size_per_stream": 65536,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 1164371\n1 846901\n2 780093\n3 742049\n4 772997\n5 731298\n",
+      "warmup_ns": 1164371,
+      "calls_ns": [
+        846901,
+        780093,
+        742049,
+        772997,
+        731298
+      ]
+    },
+    {
+      "round": 7,
+      "size_per_stream": 1048576,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 2700900\n1 2743950\n2 2682821\n3 2761460\n4 2733306\n5 2675988\n",
+      "warmup_ns": 2700900,
+      "calls_ns": [
+        2743950,
+        2682821,
+        2761460,
+        2733306,
+        2675988
+      ]
+    },
+    {
+      "round": 8,
+      "size_per_stream": 1048576,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 5867078\n1 3143767\n2 2981252\n3 2957369\n4 2971382\n5 2972548\n",
+      "warmup_ns": 5867078,
+      "calls_ns": [
+        3143767,
+        2981252,
+        2957369,
+        2971382,
+        2972548
+      ]
+    },
+    {
+      "round": 8,
+      "size_per_stream": 1048576,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 2899251\n1 2804728\n2 2665587\n3 2689539\n4 2705019\n5 2828634\n",
+      "warmup_ns": 2899251,
+      "calls_ns": [
+        2804728,
+        2665587,
+        2689539,
+        2705019,
+        2828634
+      ]
+    },
+    {
+      "round": 8,
+      "size_per_stream": 65536,
+      "route": "capture",
+      "passed": true,
+      "stdout": "0 1191972\n1 782767\n2 802083\n3 719632\n4 747168\n5 790687\n",
+      "warmup_ns": 1191972,
+      "calls_ns": [
+        782767,
+        802083,
+        719632,
+        747168,
+        790687
+      ]
+    },
+    {
+      "round": 8,
+      "size_per_stream": 65536,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 1045711\n1 792760\n2 798351\n3 753239\n4 778833\n5 783371\n",
+      "warmup_ns": 1045711,
+      "calls_ns": [
+        792760,
+        798351,
+        753239,
+        778833,
+        783371
+      ]
+    },
+    {
+      "round": 8,
+      "size_per_stream": 65536,
+      "route": "stream-16k",
+      "passed": true,
+      "stdout": "0 1151599\n1 798479\n2 810263\n3 784024\n4 709633\n5 913380\n",
+      "warmup_ns": 1151599,
+      "calls_ns": [
+        798479,
+        810263,
+        784024,
+        709633,
+        913380
+      ]
+    },
+    {
+      "round": 8,
+      "size_per_stream": 1048576,
+      "route": "stream-4k",
+      "passed": true,
+      "stdout": "0 3394755\n1 3265812\n2 3192832\n3 3198096\n4 3076535\n5 3084921\n",
+      "warmup_ns": 3394755,
+      "calls_ns": [
+        3265812,
+        3192832,
+        3198096,
+        3076535,
+        3084921
+      ]
+    }
+  ],
+  "scope": "One shared-host CPU-affinity series; no exclusive isolation or general speed/memory claim. Public APIs, identical successful bytes/status: two independent streams each 64KiB or 1MiB. Capture enforces total caps; Stream does not. Not safety-policy parity. Per-call timer includes public launch/drain/reap and byte validation; driver startup/build excluded. Reusable capture buffers and streamed Child; fixed 16KiB stack spans per stream (4KiB view for stream-4k). One warmup per cell process retained separately.",
+  "controller_fds": [
+    4,
+    4
+  ],
+  "finished_at": "2026-11-05T07:12:42.441178+00:00",
+  "load_finish": [
+    4.0009765625,
+    3.66015625,
+    2.87744140625
+  ]
+}

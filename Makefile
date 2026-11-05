@@ -23,6 +23,7 @@ check:
 	$(GOOSE) format --check process.goose tests examples bench
 	$(GOOSE) check tests/api.goose
 	$(GOOSE) check examples/command.goose
+	$(GOOSE) check examples/compiler.goose
 	$(GOOSE) check tests/features.goose
 	$(GOOSE) check tests/stream.goose
 	$(GOOSE) check bench/bench.goose
@@ -50,6 +51,7 @@ test: helpers
 	$(GOOSE) build tests/stream.goose --cc $(CC) --debug --no-bce -o .build/stream-debug
 	./.build/stream-debug
 	$(GOOSE) run examples/command.goose
+	$(GOOSE) run examples/compiler.goose
 	python3 tests/ownership.py $(abspath $(GOOSE))
 	$(MAKE) native
 native: helpers

@@ -178,6 +178,10 @@ def build(goose, cc):
     command([goose, 'build', ROOT / 'examples/command.goose', '--cc', cc,
              '-O2', '-o', destination])
     programs['example'] = destination
+    destination = OUTPUT / 'compiler'
+    command([goose, 'build', ROOT / 'examples/compiler.goose', '--cc', cc,
+             '-O2', '-o', destination])
+    programs['compiler'] = destination
     return programs
 
 
