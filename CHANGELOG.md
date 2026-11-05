@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Add managed two-stage pipelines with one shared deadline, bounded captures,
+  finite stdin, per-stage outcomes and explicit dual-child cleanup/transfer.
+- Add pipe-pressure, partial-launch, deadline, descriptor and cleanup-fault
+  regressions, plus a real positive/negative C compiler pipeline example.
 - Report incremental-input openness from validated pump state, avoiding a
   duplicate native child-state reload while preserving validation and ABI.
 - Add exact-native-object wrapper comparisons, paired samples and profiles;

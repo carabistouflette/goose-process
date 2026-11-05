@@ -189,8 +189,8 @@ chunks keep both streams, input and cancellation responsive. These are payload
 bounds, not exact allocator or RSS budgets.
 
 Requires Linux kernel 5.3+ and glibc 2.34+; no silent fallback weakens descriptor
-isolation. No Windows/macOS, PTYs, process groups, credential switching, pipeline
-builder. Fd routing permits application-owned
+isolation. No Windows/macOS, PTYs, process groups, credential switching, arbitrary
+pipeline graphs. Fd routing permits application-owned
 live streams. See [comparison scope](COMPARISON.md).
 
 Separate owners/buffers may run concurrently. The host must not externally reap
@@ -202,6 +202,31 @@ failure follows runtime policy; native allocation failures return SystemError/EN
 Native callers must provide valid pointer/length pairs; validation cannot make
 arbitrary C pointers safe. The library is not an environment sanitizer or sandbox
 and does not constrain a command's own interpretation of scripts/options.
+
+## Managed two-stage pipelines
+
+`Pipeline` owns exactly two commands connected by a blocking pipe. Use
+`start_pipeline`, bounded `pipeline_step`, `wait_pipeline` and `close_pipeline`,
+or synchronous `run_pipeline`. `PipelineStatus` preserves both stage outcomes
+and actual launch flags; `pipeline_success` requires both stages to succeed.
+Borrow captures with `pipeline_stdout`, `pipeline_first_stderr` and
+`pipeline_second_stderr`. Views cannot survive a mutating owner operation.
+
+Both stage timeouts must be equal and positive: one absolute deadline covers
+preparation, launch and pumping. First input is Null or finite Bytes; first stdout
+and second stdin are reserved for the connection. Both stderr streams and final
+stdout are independently captured, each up to 1 MiB. Other routing modes are
+rejected before launch. Captures plus finite input use at most 4 MiB payload;
+`run_pipeline` additionally copies up to 3 MiB into caller buffers. Interstage
+bytes pass through the kernel pipe without a library accumulation queue.
+
+Ordinary nonzero exits and upstream SIGPIPE remain stage outcomes. Cancellation
+requests both direct-child kills before either blocking wait. Each stage may
+transfer one unreaped PID independently; callers must recover both while retaining
+their execution scope. Downstream starts first and may perform side effects
+before upstream launch fails. Descendants are not supervised; inherited capture
+descriptors may keep a pipeline open until its deadline. See the full
+[routing, ownership and failure contract](PIPELINES.md) before integrating.
 
 ## Bounded live output
 
